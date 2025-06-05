@@ -4,14 +4,14 @@
 
 technologies used in project:
 
-	- **frontend**:
+	- frontend:
 		- angular
 		- angularSSR
 		- NgRx
 		- angular cdk
 		- tailwindCSS
 		- spartanUI
-	- **backend**:
+	- backend:
 		- nestJS
 		- postgreSQL
 		- prismaORM
