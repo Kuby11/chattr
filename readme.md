@@ -17,3 +17,4 @@ technologies used in project:
 		- prismaORM
 		- JWT
 
+### for now it only has authentication and authorization logic implemented, but soon will be added more features 
