@@ -1,0 +1,78 @@
+@defer (hydrate on hover) {
+	<div class="flex flex-col items-center gap-7">
+		<div class=" flex flex-col gap-2 justify-center items-center text-foreground">
+			<h1 class="text-4xl font-medium">register</h1>
+			<p>create account</p>
+		</div>
+		<div
+		class="w-full flex flex-col items-center gap-7 rounded-[0.75rem] md:border md:shadow sm:p-7"
+		
+		>
+			<form
+				class="flex flex-col gap-3 items-center w-full"
+				[formGroup]="form"
+				(ngSubmit)="onSubmit()"
+			>
+				<hlm-form-field class="w-full">
+					<p class="ml-3 text-sm text-">username</p>
+					<input
+						class="w-full"
+						hlmInput
+						placeholder="user"
+						name="username"
+						type="text"
+						formControlName="username"
+					>
+					<hlm-error class="ml-3">
+						@if (form.controls.username.hasError('minlength')){
+							username must be at least 3 characters
+						}@else if (form.controls.username.hasError('maxlength')) {
+							username must be at most 24 characters
+						}@else if (form.controls.username.hasError('pattern')) {
+							username should only contain letters, numbers, and underscores
+						}@else {
+							username required
+						}
+					</hlm-error>
+				</hlm-form-field>
+				<hlm-form-field class="w-full">
+					<p class="ml-3 text-sm text-">email</p>
+					<input
+						class="w-full"
+						hlmInput
+						placeholder="user@example.com"
+						name="email"
+						type="email"
+						formControlName="email"
+					>
+					<hlm-error class="ml-3">email is required</hlm-error>
+				</hlm-form-field>
+				<hlm-form-field class="w-full relative">
+					<p class="ml-3 text-sm text-">password</p>
+					<input
+						class="w-full"
+						style="anchor-name: --input-anchor;"
+						hlmInput
+						placeholder="secret password"
+						name="username" [type]="passwordVisible() ? 'password' : 'text'"
+						formControlName="password"
+					>
+					<hlm-error class="ml-3">password is required</hlm-error>
+					<hide-button
+						class="absolute left-[-2rem] top-0"
+						(hideStateProps)="getState($event)"
+						style="position-anchor: --input-anchor; position-area: center right;"
+					/>
+				</hlm-form-field>
+				@if(message()?.isError){
+					<hlm-error>{{ message()?.message }}</hlm-error>
+				}
+				<button class="w-full mt-4" hlmBtn type="button" type="submit">login</button>
+			</form>
+		</div>
+		<span class="shrink-0 flex gap-2 text-foreground">
+		already have a account?
+		<a class="hover:cursor-pointer text-primary" routerLink="/auth">login</a>
+		</span>
+	</div>
+}

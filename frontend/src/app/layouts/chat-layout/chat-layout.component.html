@@ -1,0 +1,18 @@
+<div class="flex h-[100dvh] relative">
+	@defer(hydrate on hover) {
+		<app-sidebar/>
+	}
+	<div class="flex flex-col w-full">
+		<div class="w-full border-b min-h-17 p-5 bg-background">
+			@defer (hydrate on hover) {
+				<div class="flex gap-1">
+					<p>{{ currentPage() }}</p>
+				</div>
+			}
+		</div>
+		<div class="h-full p-5">
+			<router-outlet/>
+		</div>
+	</div>
+	<hlm-toaster/>
+</div>

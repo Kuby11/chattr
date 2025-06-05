@@ -1,0 +1,57 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "paths": {
+      "@spartan-ng/ui-avatar-helm": [
+        ".\\libs/src/ui/ui-avatar-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-button-helm": [
+        ".\\libs/src/ui/ui-button-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-formfield-helm": [
+        ".\\libs/src/ui/ui-formfield-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-hovercard-helm": [
+        ".\\libs/src/ui/ui-hovercard-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-icon-helm": [
+        ".\\libs/src/ui/ui-icon-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-input-helm": [
+        ".\\libs/src/ui/ui-input-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-separator-helm": [
+        ".\\libs/src/ui/ui-separator-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-skeleton-helm": [
+        ".\\libs/src/ui/ui-skeleton-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-sonner-helm": [
+        ".\\libs/src/ui/ui-sonner-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-tooltip-helm": [
+        ".\\libs/src/ui/ui-tooltip-helm/src/index.ts"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
