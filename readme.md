@@ -14,6 +14,7 @@ frontend:
 
 backend:
 - nestJS
+- bun package manager
 - postgreSQL
 - prisma ORM
 - websockets (using socket.io)
