@@ -1,11 +1,15 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Role, User } from '@prisma/client';
 import { JwtPayload } from 'src/auth/interfaces';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as argon2 from 'argon2';
+import { userDto } from './dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
   async findOne(emailOrIdOrUsername: string): Promise<User> {
     const user = await this.prisma.user.findFirst({
@@ -20,6 +24,35 @@ export class UserService {
     if (!user) {
       throw new NotFoundException("User not found");
     }
+    return user;
+  }
+
+  async createUser(dto: userDto): Promise<User>{
+    
+    const password = await argon2.hash(dto.password);
+    const findUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [{email: dto.email}, {username: dto.username}]
+      },
+    });
+    
+    if (findUser) throw new ConflictException("User with this data already exists");
+    
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        username: dto.username,
+        password: password,
+        profile: {
+          create: {
+            displayName: dto.username,
+            bio: undefined,
+            avatar: undefined,
+          },
+        },
+      } 
+    })
+
     return user;
   }
 

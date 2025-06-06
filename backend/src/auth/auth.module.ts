@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GUARDS } from './guards';
 import { options } from './configs';
 import { STRATEGIES } from './strategies';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   controllers: [AuthController],
@@ -17,6 +18,7 @@ import { STRATEGIES } from './strategies';
     PrismaService,
     UserService,
     JwtService,
+    UserModule,
     ...STRATEGIES,
     ...GUARDS,
   ],

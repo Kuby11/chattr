@@ -11,34 +11,19 @@ import { Tokens } from './interfaces/token.interface';
 import { stringToMs } from 'src/libs/utils';
 import { Response } from 'express';
 import { IS_DEV_ENV } from 'src/libs/utils/is-dev.util';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly userService: UserService,
     private readonly Jwt: JwtService,
     private readonly config: ConfigService
   ) {}
 
   async register(dto: RegisterDto): Promise<User> {
-    const password = await argon2.hash(dto.password);
-    const findUser = await this.prisma.user.findFirst({
-      where: {
-				OR: [{email: dto.email}, {username: dto.username}]
-      },
-    });
-    if (findUser) {
-      throw new ConflictException("User with this data already exists");
-    }
-    const user = await this.prisma.user.create({
-      data: {
-        username: dto.username,
-        email: dto.email,
-        password: password,
-      },
-    });
-
-    return user;
+    return await this.userService.createUser(dto);
   }
 
   async validateUser(dto: LoginDto, agent: string): Promise<Tokens> {		
