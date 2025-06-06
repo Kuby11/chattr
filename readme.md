@@ -11,6 +11,7 @@ technologies used in project:
 		- angular cdk
 		- tailwindCSS
 		- spartanUI
+		
   - backend:
 		- nestJS
 		- postgreSQL
