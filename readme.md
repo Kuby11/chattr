@@ -2,16 +2,16 @@
 
 ## fullstack online chat wep application 
 
-technologies used in project
+technologies used in project:
 
-  frontend:
-		- angular
+  - frontend:
+    - angular
 		- angularSSR
 		- NgRx
 		- angular cdk
 		- tailwindCSS
 		- spartanUI
-  backend:
+  - backend:
 		- nestJS
 		- postgreSQL
 		- prismaORM
