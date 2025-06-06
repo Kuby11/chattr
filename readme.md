@@ -2,7 +2,7 @@
 
 ## fullstack online chat wep application 
 
-technologies used in project:
+### technologies used in project:
 
 frontend:
 - angular
