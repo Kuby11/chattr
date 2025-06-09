@@ -53,7 +53,6 @@ export class AuthController {
     this.authService.setRefreshTokenCookies(response, tokens)
   }
   
-  // @Public()
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   async logout(
@@ -71,6 +70,6 @@ export class AuthController {
       httpOnly: true,
       secure: true
     });
-    response.sendStatus(HttpStatus.OK)
+    response.send({ success: true, message: "logged out" })
   }
 }
