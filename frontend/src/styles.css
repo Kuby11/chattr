@@ -5,7 +5,7 @@
 
 
 :root {
-	--font-sans: 'geist';
+	--font-sans: 'inter';
 	view-transition-name: none;
 }
 
@@ -13,45 +13,9 @@
 /* outline: auto; */
 }
 
-@layer base {
-* {
-@apply border-border;
-}
-}
-
 html,body{
-background-color: hsl(var(--background));
-@apply text-primary ;
-}
-
-@layer base {
-* {
-@apply border-border;
-}
-}
-
-@layer base {
-* {
-@apply border-border;
-}
-}
-
-@layer base {
-* {
-@apply border-border;
-}
-}
-
-@layer base {
-* {
-@apply border-border;
-}
-}
-
-@layer base {
-* {
-@apply border-border;
-}
+	background-color: hsl(var(--background));
+	/* @apply text-primary ; */
 }
 
 @layer base {
