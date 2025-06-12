@@ -27,6 +27,19 @@ export class UserService {
     return user;
   }
 
+  async findUserById(userId: string): Promise<User>{
+		const user = await this.prisma.user.findFirst({
+			where: {
+				id: userId,
+			}
+		})
+
+		if(!user) throw new NotFoundException("profile not found");
+
+		return user
+	}
+
+
   async createUser(dto: userDto): Promise<User>{
     
     const password = await argon2.hash(dto.password);
