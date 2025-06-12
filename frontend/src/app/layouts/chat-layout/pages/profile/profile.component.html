@@ -1,3 +1,35 @@
-<p>profile works!</p>
-<button hlmBtn (click)="logout()">logout</button>
-<button hlmBtn (click)="test()" class="ml-2" >test</button>
+<div class="p-5 w-full h-full">
+	<div class="flex flex-col gap-5 w-full h-full border rounded-[0.75rem] p-5">
+		<div class="w-full h-90 bg-primary rounded-[0.75rem] relative">
+			<hlm-avatar 
+				variant="large" 
+				class="h-20 w-20 absolute bottom-[-2.5rem] left-10 border-5 border-background"
+			>
+				<img [src]="profileData()?.avatar"  hlmAvatarImage />
+				<span 
+					class="text-white bg-destructive text-4xl" 
+					hlmAvatarFallback
+				>
+					{{profileData()?.displayName?.slice(0,1)}}
+				</span>
+		 </hlm-avatar>
+		</div>
+		<div class="flex gap-10 mt-10 px-10">
+			<div class="flex flex-col gap-2 w-full">
+				<h2 class="text-3xl font-medium">{{  profileData()?.displayName }}</h2>
+				<h4>{{  '@' + userData()?.username }}</h4>
+				<h3>{{ 'joined at: ' + (userData()?.createdAt | date:'mediumDate') }}</h3>
+			</div>
+			<div class="w-full">
+				<h2 class="text-xl mb-5">user`s bio</h2>
+				<div class="w-full h-70 border rounded-[0.75rem] p-3 text-border">
+					{{ 
+						profileData()?.bio
+						? profileData()?.bio
+						: 'no bio'
+					 }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
