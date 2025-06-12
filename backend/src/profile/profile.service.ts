@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProfileDto } from './dto';
 import { Profile } from '@prisma/client';
@@ -32,6 +32,20 @@ export class ProfileService {
 				}
 			}
 		})
+	}
+
+	async findProfile(userId: string): Promise<Profile>{
+		const profile = await this.prisma.profile.findFirst({
+			where: {
+				user: {
+					id: userId,
+				},
+			}
+		})
+
+		if(!profile) throw new NotFoundException("profile not found");
+
+		return profile
 	}
 
 }
