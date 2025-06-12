@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal,} from '@angular/core';
 import { currentPageService } from '../../services';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { ActivatedRoute } from '@angular/router';
 import { Profile, User } from '../../../../shared/interfaces';
 import { map } from 'rxjs';
@@ -10,7 +9,6 @@ import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-profile',
   imports: [
-    HlmButtonDirective,
     HlmAvatarComponent,
     HlmAvatarFallbackDirective,
     HlmAvatarImageDirective,
