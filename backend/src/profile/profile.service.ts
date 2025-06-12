@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProfileDto } from './dto';
 import { Profile } from '@prisma/client';
+import { JwtPayload } from 'src/auth/interfaces';
 
 @Injectable()
 export class ProfileService {
@@ -46,6 +47,16 @@ export class ProfileService {
 		if(!profile) throw new NotFoundException("profile not found");
 
 		return profile
+	}
+
+	async getCurrentProfile(user: JwtPayload){
+		return await this.prisma.profile.findFirst({
+			where: {
+				user: {
+					id: user.id,
+				},
+			}
+		})
 	}
 
 }
