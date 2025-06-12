@@ -17,7 +17,7 @@ import { HlmSeparatorDirective } from '@spartan-ng/ui-separator-helm';
 import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { BrnTooltipContentDirective } from '@spartan-ng/brain/tooltip';
 import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-tooltip-helm';
-import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
+import { ThemeSwitcherComponent } from '../../features/components/theme-switcher/theme-switcher.components';
 
 
 
@@ -57,7 +57,7 @@ export class SidebarComponent {
   sidebarCommunicationItems = [
     {
       title: 'Profile',
-      route: 'profile',
+      route: 'profile/me',
       icon: 'iconoirProfileCircle',
     },
     {
