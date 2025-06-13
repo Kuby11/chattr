@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable, OnInit } from '@angular/core';
 import { AuthInterface, TokenResponse } from '../interfaces';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, interval, Observable, Subscription, tap, throwError } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 
@@ -13,11 +13,25 @@ export class AuthService {
   private readonly cookie = inject(CookieService);
   private readonly router = inject(Router);
   private readonly API_URL = 'http://localhost:3000';
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly subscription?: Subscription
 
   errorMessage: string | null = null
-
   access_token: string | null = null;
   refresh_token: string | null = null;
+
+  constructor() {
+    this.subscription = interval(1000 * 60 * 5)
+    .subscribe(() => {
+      if(this.isAuth()){
+        this.refreshToken().subscribe()
+      }
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.subscription?.unsubscribe()
+    });
+  }
 
   isAuth(): boolean {
     if(!this.access_token){
@@ -45,6 +59,7 @@ export class AuthService {
         })
       );
   }
+
   register(payload: AuthInterface){
     return this.http
       .post<TokenResponse>(`${this.API_URL}/auth/register`, payload, { withCredentials: true })
@@ -61,6 +76,7 @@ export class AuthService {
         })
       );
   }
+
   logout(){
     return this.http
     .post(`${this.API_URL}/auth/logout`,{}, { withCredentials: true })
@@ -77,6 +93,7 @@ export class AuthService {
       console.log('logged out');
     })
   }
+
   refreshToken(){
     return this.http
     .post<TokenResponse>(`${this.API_URL}/auth/refresh-token`,{}, { withCredentials: true })
@@ -89,10 +106,12 @@ export class AuthService {
       })
     )
   }
+
   getMe(){
     return this.http.
     get(`${this.API_URL}/user/me`)
   }
+
   private saveTokens(res: TokenResponse){
     this.access_token = res.access_token;
     this.refresh_token = res.refresh_token;
