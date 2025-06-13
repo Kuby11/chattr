@@ -45,6 +45,9 @@
       ],
       "@spartan-ng/ui-tooltip-helm": [
         ".\\libs/src/ui/ui-tooltip-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-dialog-helm": [
+        ".\\libs/src/ui/ui-dialog-helm/src/index.ts"
       ]
     }
   },
