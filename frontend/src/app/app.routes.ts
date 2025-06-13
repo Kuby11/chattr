@@ -9,6 +9,9 @@ import { SettingsComponent } from './layouts/chat-layout/pages/settings/settings
 import { ProfileComponent } from './layouts/chat-layout/pages/profile/profile.component';
 import { authPageGuard } from './auth/guards/auth-page.guard';
 import { HomePageComponent } from './layouts/chat-layout/pages/home-page/home-page.component';
+import { ChatPageComponent } from './layouts/chat-layout/pages/chat-page/chat-page.component';
+import { userResolver } from './features/resolvers/user.resolver';
+import { profileResolver } from './features/resolvers/profile.resolver';
 
 export const routes: Routes = [
   {
@@ -18,35 +21,43 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component: HomePageComponent 
+        component: HomePageComponent,
       },
       {
         path: 'settings',
-        component: SettingsComponent
+        component: SettingsComponent,
       },
       {
-        path: 'profile',
-        component: ProfileComponent
-      }
-    ]
+        path: 'profile/:id',
+        component: ProfileComponent,
+        resolve: {
+          profile: profileResolver,
+          user: userResolver
+        }
+      },
+      {
+        path: 'chats',
+        component: ChatPageComponent,
+      },
+    ],
   },
   {
     path: 'auth',
     component: AuthLayoutComponent,
-    // canActivate: [authPageGuard],
+    canActivate: [authPageGuard],
     children: [
       {
         path: '',
-        component: LoginComponent
+        component: LoginComponent,
       },
       {
         path: 'register',
-        component: RegisterComponent
+        component: RegisterComponent,
       },
-    ]
+    ],
   },
   {
     path: '**',
-    component: NotFoundComponent
-  }
+    component: NotFoundComponent,
+  },
 ];
