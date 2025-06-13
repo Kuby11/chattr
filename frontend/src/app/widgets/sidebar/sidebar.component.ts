@@ -26,8 +26,8 @@ import { ThemeSwitcherComponent } from '../../features/components/theme-switcher
   imports: [
     RouterLink,
     RouterLinkActive,
-    HlmButtonDirective, 
-    HlmIconDirective, 
+    HlmButtonDirective,
+    HlmIconDirective,
     NgIcon,
     HlmSeparatorDirective,
     BrnSeparatorComponent,
@@ -47,17 +47,16 @@ import { ThemeSwitcherComponent } from '../../features/components/theme-switcher
       iconoirPeopleTag,
       iconoirUser,
       iconoirArchive,
-      iconoirEmojiTalkingHappy
+      iconoirEmojiTalkingHappy,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  
   sidebarCommunicationItems = [
     {
       title: 'Profile',
-      route: 'profile/me',
+      route: 'currentProfile',
       icon: 'iconoirProfileCircle',
     },
     {
@@ -82,5 +81,5 @@ export class SidebarComponent {
       route: 'archive',
       icon: 'iconoirArchive',
     },
-  ]
+  ];
 }
