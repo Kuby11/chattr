@@ -18,7 +18,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Chat      Chat[]
+  // Chat      Chat[]
   profile   Profile?
   token     Token[]
 
@@ -45,8 +45,8 @@ model Chat {
   updatedAt DateTime @updatedAt
   messages  Message[]
 
-  sender    User     @relation(fields: [senderId], references: [id])
-  senderId  String   @map("sender_id")
+  // sender    User     @relation(fields: [senderId], references: [id])
+  // senderId  String   @map("sender_id")
 
   @@map("chats")
 }
