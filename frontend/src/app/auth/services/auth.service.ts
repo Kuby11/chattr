@@ -21,7 +21,7 @@ export class AuthService {
   refresh_token: string | null = null;
 
   constructor() {
-    this.subscription = interval(1000 * 60 * 5)
+    this.subscription = interval(1000 * 60 * 3)
     .subscribe(() => {
       if(this.isAuth()){
         this.refreshToken().subscribe()
