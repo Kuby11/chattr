@@ -10,6 +10,14 @@ export class UserService {
   private readonly http = inject(HttpClient)
   private readonly URL = API_URL
 
+  currentUser: User | null = null;
+
+  constructor() {
+    this.getMe().subscribe((user) => {
+      this.currentUser = user;
+    })
+  }
+
   getAllUsers() {
     return this.http.get<User[]>(`${this.URL}/user/all`)
   }
