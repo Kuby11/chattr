@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { provideIcons, NgIcon } from '@ng-icons/core'
@@ -18,8 +18,8 @@ import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { BrnTooltipContentDirective } from '@spartan-ng/brain/tooltip';
 import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-tooltip-helm';
 import { ThemeSwitcherComponent } from '../../features/components/theme-switcher/theme-switcher.components';
-
-
+import { UserService } from '../../shared/services/user.service';
+import { User } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-sidebar',
@@ -53,10 +53,13 @@ import { ThemeSwitcherComponent } from '../../features/components/theme-switcher
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
+  private readonly currentUser = inject(UserService).currentUser;
+
+
   sidebarCommunicationItems = [
     {
       title: 'Profile',
-      route: 'currentProfile',
+      route: `profile/${this.currentUser?.id}`,
       icon: 'iconoirProfileCircle',
     },
     {
