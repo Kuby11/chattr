@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DestroyRef, inject, Injectable, OnInit } from '@angular/core';
 import { AuthInterface, TokenResponse } from '../interfaces';
-import { catchError, interval, Observable, Subscription, tap, throwError } from 'rxjs';
+import { catchError, delay, interval, map, Observable, Subscription, tap, throwError } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 
@@ -17,14 +17,22 @@ export class AuthService {
   private readonly subscription?: Subscription
 
   errorMessage: string | null = null
-  access_token: string | null = null;
-  refresh_token: string | null = null;
+  access_token: string | undefined = undefined;
+  refresh_token: string | undefined = undefined;
 
   constructor() {
+    //todo improve token refreshing
+  
+    if(this.refresh_token === undefined){
+      this.cookie.delete('REFRESH_TOKEN');
+    }
+
     this.subscription = interval(1000 * 60 * 3)
     .subscribe(() => {
       if(this.isAuth()){
-        this.refreshToken().subscribe()
+        console.log('triggered')
+        this.refreshToken()
+        .subscribe()
       }
     });
 
@@ -38,7 +46,7 @@ export class AuthService {
       this.access_token = this.cookie.get('ACCESS_TOKEN');
       this.refresh_token = this.cookie.get('REFRESH_TOKEN');
     }
-    return !!this.access_token;
+    return !!this.access_token || !!this.refresh_token;
   }
 
   login(payload: AuthInterface) {
@@ -47,6 +55,7 @@ export class AuthService {
       .pipe(
         tap((val) => {
           this.saveTokens(val)
+          console.log(val)
 
           this.router.navigate(['/']);
         }),
@@ -82,11 +91,11 @@ export class AuthService {
     .post(`${this.API_URL}/auth/logout`,{}, { withCredentials: true })
     .pipe(
       catchError((err: HttpErrorResponse) =>{
-        return throwError(() => err);        
+        return throwError(() => err.error);        
       })
     )
     .subscribe(()=>{
-      this.access_token = null;
+      this.access_token = undefined;
   
       this.cookie.delete('ACCESS_TOKEN');
       this.router.navigate(['/auth']);
@@ -113,10 +122,14 @@ export class AuthService {
   }
 
   private saveTokens(res: TokenResponse){
-    this.access_token = res.access_token;
-    this.refresh_token = res.refresh_token;
-
-    this.cookie.set('ACCESS_TOKEN',this.access_token,{ secure: true, expires: new Date(Date.now() + 1000 * 60 * 15) });
-    this.cookie.set('REFRESH_TOKEN',this.refresh_token, { secure: true });
+    console.log('triggered saveTokens');
+    if(!this.access_token){
+      this.access_token = res.access_token;
+      this.cookie.set('ACCESS_TOKEN',this.access_token,{ secure: true, expires: new Date(Date.now() + 1000 * 60 * 15) });
+    }
+    if(!this.refresh_token){
+      this.refresh_token = res.refresh_token;
+      this.cookie.set('REFRESH_TOKEN',this.refresh_token, { secure: true });  
+    }
   }
 }
