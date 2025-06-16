@@ -11,24 +11,20 @@
 		<div class="flex flex-col gap-1">
 
 			@for (item of sidebarCommunicationItems; track $index) {
-					<hlm-tooltip>
-						<button
+				<hlm-tooltip>
+					<button
 						[routerLink]="[item.route]"
-					routerLinkActive="bg-primary text-background transition-all"
-					hlmBtn
-					hlmTooltipTrigger
-					position="left"
-					[aria-describedby]="item.title"
-					size="lg"
-					variant="ghost"
-					class="w-full flex items-center gap-4 px-2 justify-start text-md"
-				>
-					<ng-icon
-						hlm
-						[name]="item.icon"
-						size="1.7rem"
-					/>
-				</button>
+						routerLinkActive="bg-primary text-background transition-all"
+						hlmBtn
+						hlmTooltipTrigger
+						position="left"
+						[aria-describedby]="item.title"
+						size="lg"
+						variant="ghost"
+						class="w-full flex items-center gap-4 px-2 justify-start text-md"
+					>
+						<ng-icon hlm [name]="item.icon" size="1.7rem"/>
+					</button>
 					<span *brnTooltipContent class="transition-all duration-300">{{ item.title }}</span>
 				</hlm-tooltip>
 			}
