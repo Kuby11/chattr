@@ -1,8 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { Profile } from '@prisma/client';
 import { CurrentUser } from 'src/libs/decorators';
 import { JwtPayload } from 'src/auth/interfaces';
+import { ProfileDto } from './dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('profile')
 export class ProfileController {
@@ -21,5 +23,13 @@ export class ProfileController {
   @Get('me')
   async me(@CurrentUser() user: JwtPayload){
     return this.profileService.getCurrentProfile(user)
+  }
+
+  @Patch('update/:id')
+  async updateProfile(
+    @Param("id") id: string,
+    @Body() payload: UpdateProfileDto
+  ) {
+    return this.profileService.updateProfile(id, payload)
   }
 }

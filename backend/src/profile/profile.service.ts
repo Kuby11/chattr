@@ -1,8 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProfileDto } from './dto';
-import { Profile } from '@prisma/client';
+import { Prisma, Profile } from '@prisma/client';
 import { JwtPayload } from 'src/auth/interfaces';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfileService {
@@ -59,4 +60,28 @@ export class ProfileService {
 		})
 	}
 
+	async updateProfile(id: string, dto: UpdateProfileDto){
+		if(!dto) throw new ForbiddenException('Invalid body');
+		
+		try{
+			return await this.prisma.profile.update({
+				where: {
+					userId: id
+				},
+				data: {
+					...dto
+				}
+			})
+			
+		}catch (err){
+			if(
+				err instanceof Prisma.PrismaClientKnownRequestError && 
+				err.code === 'P2025'
+			){
+				throw new NotFoundException('profile not found')
+			}
+			throw err
+		} 
+			
+	}
 }
