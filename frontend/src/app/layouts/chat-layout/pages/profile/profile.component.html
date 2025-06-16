@@ -20,30 +20,91 @@
 				<h4>{{  '@' + userData()?.username }}</h4>
 				<h3>{{ 'joined at: ' + (userData()?.createdAt | date:'mediumDate') }}</h3>
 				@if (isCurrentUser()) {
-					<hlm-dialog>
-						<button brnDialogTrigger hlmBtn>Edit Profile</button>
-						<hlm-dialog-content *brnDialogContent="let ctx">
-							<hlm-dialog-header>
-								<h3 brnDialogTitle hlm class="text-2xl font-semibold">Edit profile</h3>
-								<p brnDialogDescription hlm>Make changes to your profile here. Click save when you're done.</p>
-							</hlm-dialog-header>
-							<hlm-dialog-footer>
-								<button hlmBtn type="submit">Save changes</button>
-							</hlm-dialog-footer>
-						</hlm-dialog-content>
-					</hlm-dialog>
+					<div class="flex gap-2">
+						<hlm-dialog>
+							<button brnDialogTrigger hlmBtn >logout</button>
+							<hlm-dialog-content *brnDialogContent="let ctx">
+								<div class="pt-5 flex flex-col gap-5">
+									<h2 class="text-2xl font-medium">are you sure to logout?</h2>
+									<button hlmBtn  class="w-full" (click)="logout()">yes</button>
+								</div>
+							</hlm-dialog-content>
+						
+						</hlm-dialog>
+						<hlm-dialog>
+							<button brnDialogTrigger hlmBtn>Edit Profile</button>
+							<hlm-dialog-content *brnDialogContent="let ctx">
+								<hlm-dialog-header>
+									<h3 brnDialogTitle hlm class="text-2xl font-semibold">Edit profile</h3>
+									<p brnDialogDescription hlm>Make changes to your profile here. Click save when you're done.</p>
+									<form
+										(ngSubmit)="onSubmit()"
+										[formGroup]="form"
+										class="flex flex-col gap-10 mt-5"
+									>
+										<div class="flex flex-col gap-5 w-full">
+											<h2 class="text-2xl font-medium">display name</h2>
+											<hlm-form-field>
+												<input
+													type="text"
+													placeholder="display name"
+													hlmInput
+													class="w-full"
+													formControlName="displayName"
+												>
+												<hlm-error>
+													{{
+														form.controls['displayName'].errors?.['minlength']
+														? 'display name must be at least 2 characters long'
+														: 'display name should not be more than 30 characters long'
+													}}
+												</hlm-error>
+												<hlm-hint>your display name</hlm-hint>
+											</hlm-form-field>
+										</div>
+										<div class="flex flex-col gap-5 w-full">
+											<h2 class="text-2xl font-medium">bio</h2>
+											<hlm-form-field>
+												<textarea
+													formControlName="bio"
+													hlmInput
+													placeholder="bio"
+													class="min-h-60 w-full"
+												>
+												</textarea>
+												<hlm-error>your bio must not be more than 400 characters long</hlm-error>
+												<hlm-hint>your bio</hlm-hint>
+											</hlm-form-field>
+										</div>
+										<button
+											hlmBtn
+											type="submit"
+											[variant]="canEdit() ? 'default' : 'outline'"
+											[disabled]="!canEdit()"
+										>
+											Save changes
+										</button>
+									</form>
+								</hlm-dialog-header>
+							</hlm-dialog-content>
+						</hlm-dialog>
+					</div>
 				}
 			</div>
-			<div class="flex flex-col w-full">
-				<h2 class="text-xl mb-5">user`s bio</h2>
-				<div class="w-full h-70 border rounded-[0.75rem] p-3 text-border ">
-					{{ 
-						profileData()?.bio
-						? profileData()?.bio
-						: 'no bio'
-					}}
-				</div>
+			<div class="flex flex-col w-[70%]">
+					<h2 class="text-xl mb-5 self-start">user`s bio</h2>
+					<div
+						class="w-full h-70 border rounded-[0.75rem] p-3"
+						[class.text-border]="!profileData()?.bio"
+					>
+						{{
+							profileData()?.bio
+							? profileData()?.bio
+							: 'no bio'
+						}}
+					</div>
 			</div>
 		</div>
 	</div>
 </div>
+<hlm-toaster />

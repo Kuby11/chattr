@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal,} from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal,} from '@angular/core';
 import { currentPageService } from '../../services';
 import { ActivatedRoute } from '@angular/router';
 import { Profile, User } from '../../../../shared/interfaces';
@@ -12,16 +12,22 @@ import { BrnDialogContentDirective, BrnDialogTriggerDirective } from '@spartan-n
 import {
   HlmDialogComponent,
   HlmDialogContentComponent,
-  HlmDialogDescriptionDirective,
-  HlmDialogFooterComponent,
   HlmDialogHeaderComponent,
-  HlmDialogTitleDirective,
 } from '@spartan-ng/ui-dialog-helm';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HlmFormFieldComponent, HlmHintDirective } from '@spartan-ng/ui-formfield-helm';
+import { HlmErrorDirective } from "../../../../../../libs/src/ui/ui-formfield-helm/src/lib/hlm-error.directive";
+import { ProfileService } from '../../../../shared/services/profile.service';
+import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
+import { toast } from 'ngx-sonner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../../../auth/services/auth.service';
 
 
 @Component({
   selector: 'app-profile',
   imports: [
+    ReactiveFormsModule,
     HlmAvatarComponent,
     HlmAvatarFallbackDirective,
     HlmAvatarImageDirective,
@@ -29,12 +35,14 @@ import {
     HlmInputDirective,
     HlmDialogComponent,
     HlmDialogContentComponent,
-    HlmDialogDescriptionDirective,
-    HlmDialogFooterComponent,
     HlmDialogHeaderComponent,
-    HlmDialogTitleDirective,
     BrnDialogContentDirective,
     BrnDialogTriggerDirective,
+    HlmFormFieldComponent,
+    HlmInputDirective,
+    HlmHintDirective,
+    HlmErrorDirective,
+    HlmToasterComponent,
     DatePipe,
   ],
   templateUrl: './profile.component.html',
@@ -45,23 +53,35 @@ import {
 export class ProfileComponent implements OnInit {
   private readonly currentPageService = inject(currentPageService);
   private readonly userService = inject(UserService);
+  private readonly profileService = inject(ProfileService);
+  private readonly authService = inject(AuthService) 
+  private readonly fb = inject(FormBuilder);
   private readonly activatedRoute = inject(ActivatedRoute);
 
   profileData = signal<Profile | null>(null);
   userData = signal<User | null>(null);
   isCurrentUser = signal<boolean>(false);
+  canEdit = signal<boolean>(false);
+  currentUserId = this.userService.currentUser?.id
 
-  data = this.activatedRoute.data;
-
+  routeData = this.activatedRoute.data;
+ 
   ngOnInit() {
-    this.data
-      .pipe(
-        map((data) => {
-          this.profileData.set(data['profile']);
-          this.userData.set(data['user']);
-        })
-      )
-      .subscribe();
+    this.routeData
+    .pipe(
+      map((data) => {
+        this.profileData.set(data['profile']);
+        this.userData.set(data['user']);
+      })
+    )
+    .subscribe();
+    
+    this.activatedRoute.params
+    .subscribe((paramData)=>{
+      if(this.currentUserId === paramData['id']){
+        this.isCurrentUser.set(true);
+      }
+    })
 
     this.userService
       .getMe()
@@ -73,8 +93,49 @@ export class ProfileComponent implements OnInit {
         })
       )
       .subscribe();
-   
-
+      
+      this.form.controls.displayName.setValue(this.profileData()?.displayName);
+      this.form.controls.bio.setValue(this.profileData()?.bio);
+      
+      this.form.valueChanges.subscribe((data) => {
+        if (
+          data.bio === this.profileData()?.bio &&
+          data.displayName === this.profileData()?.displayName
+        ) {
+          this.canEdit.set(false);
+        } else {
+          this.canEdit.set(true);
+        }
+      })
+      
     this.currentPageService.setPage(this.userData()?.username + '`s profile');
+  }
+
+  form = this.fb.group({
+    displayName: [
+      this.profileData()?.displayName,
+      [Validators.maxLength(30), Validators.minLength(2)],
+    ],
+    bio: [this.profileData()?.bio, [Validators.maxLength(400)]],
+  });
+
+  onSubmit() {
+    if(this.canEdit()){
+      this.profileService
+        .updateProfile(this.userData()!.id, this.form.value as Profile)
+        .subscribe();
+      if (!this.form.errors) {
+        toast.success('successfully edited profile!', {
+          action: {
+            label: 'hide',
+            onClick: () => console.log('hide'),
+          },
+        });
+      }
+    }
+  }
+
+  logout(){
+    this.authService.logout()
   }
 }
