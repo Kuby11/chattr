@@ -1,5 +1,5 @@
 <aside 
-	class="relative h-dvh borde-border border-r transition-all duration-300 w-17"
+	class="relative h-dvh border-border border-r transition-all duration-300 w-17"
 >
 	<div class="w-full flex gap-2 h-17 items-center justify-center ">
 		<a class="hover:cursor-pointer" routerLink="">
@@ -13,14 +13,14 @@
 			@for (item of sidebarCommunicationItems; track $index) {
 				<hlm-tooltip>
 					<button
+						[aria-describedby]="item.title"
 						[routerLink]="[item.route]"
-						routerLinkActive="bg-primary text-background transition-all"
-						hlmBtn
+						routerLinkActive="active"
 						hlmTooltipTrigger
 						position="left"
-						[aria-describedby]="item.title"
-						size="lg"
+						hlmBtn
 						variant="ghost"
+						size="lg"
 						class="w-full flex items-center gap-4 px-2 justify-start text-md"
 					>
 						<ng-icon hlm [name]="item.icon" size="1.7rem"/>
