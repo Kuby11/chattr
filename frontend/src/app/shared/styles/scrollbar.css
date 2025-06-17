@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+::-webkit-scrollbar {
+  @apply w-2 h-full;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background rounded-2xl border-l border-accent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-accent rounded-2xl border-l border-accent;
+}

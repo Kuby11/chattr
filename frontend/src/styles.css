@@ -1,7 +1,7 @@
 @import '@angular/cdk/overlay-prebuilt.css';
 @import "tailwindcss";
 @import '@spartan-ng/brain/hlm-tailwind-preset.css';
-
+@import './app/shared/styles/index.css';
 
 
 :root {
@@ -70,11 +70,4 @@ color-scheme: light;
 --input: 240 3.7% 15.9%;
 --ring: 346.8 77.2% 49.8%;
 color-scheme: dark;
-}
-
-
-@layer base {
-* {
-@apply border-border;
-}
 }
