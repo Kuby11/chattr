@@ -1,3 +1,10 @@
+@import 'tailwindcss';
+@import '@spartan-ng/brain/hlm-tailwind-preset.css';
+
 .height {
 	height: calc(100% - calc(68px + 0.75rem));
+}
+
+.active {
+	@apply bg-primary text-background hover:bg-primary/80;
 }
