@@ -37,9 +37,7 @@ export class AuthService {
     if (!user) throw new NotFoundException("User not found");
 
     const password = user.password;
-    if (!(await argon2.verify(password, dto.password))) {
-      throw new UnauthorizedException("Invalid password");
-    }
+    if (!(await argon2.verify(password, dto.password))) throw new UnauthorizedException("Invalid password");
 		
     return await this.generateTokens(user, agent);
   }
