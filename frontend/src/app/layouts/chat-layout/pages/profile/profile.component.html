@@ -20,6 +20,7 @@
 				<h4>{{  '@' + userData()?.username }}</h4>
 				<h3>{{ 'joined at: ' + (userData()?.createdAt | date:'mediumDate') }}</h3>
 				@if (isCurrentUser()) {
+					@defer (hydrate on hover) {
 					<div class="flex gap-2">
 						<hlm-dialog>
 							<button brnDialogTrigger hlmBtn >logout</button>
@@ -89,6 +90,7 @@
 							</hlm-dialog-content>
 						</hlm-dialog>
 					</div>
+					}
 				}
 			</div>
 			<div class="flex flex-col w-[70%]">
