@@ -50,6 +50,10 @@ export class ProfileService {
 		return profile
 	}
 
+	async findAllProfiles(): Promise<Profile[]>{
+		return await this.prisma.profile.findMany()
+	}
+
 	async getCurrentProfile(user: JwtPayload){
 		return await this.prisma.profile.findFirst({
 			where: {

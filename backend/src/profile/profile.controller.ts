@@ -20,6 +20,11 @@ export class ProfileController {
     return await this.profileService.findProfile(id);
   }
 
+  @Get('all')
+  async getAllProfiles(): Promise<Profile[]> {
+    return await this.profileService.findAllProfiles();
+  }
+
   @Get('me')
   async me(@CurrentUser() user: JwtPayload){
     return this.profileService.getCurrentProfile(user)
