@@ -51,6 +51,7 @@ export class AuthController {
     if(!tokens) throw new UnauthorizedException("can`t refresh token");
 
     this.authService.setRefreshTokenCookies(response, tokens)
+    console.log('triggered token refresh')
   }
   
   @UseGuards(AuthGuard('jwt'))
