@@ -60,53 +60,35 @@ export class ProfileComponent implements OnInit {
 
   profileData = signal<Profile | null>(null);
   userData = signal<User | null>(null);
+
   isCurrentUser = signal<boolean>(false);
   canEdit = signal<boolean>(false);
-  currentUserId = this.userService.currentUser?.id
 
+  currentUserId = this.userService.currentUser?.id
   routeData = this.activatedRoute.data;
  
   ngOnInit() {
-    this.routeData
-    .pipe(
-      map((data) => {
-        this.profileData.set(data['profile']);
-        this.userData.set(data['user']);
-      })
-    )
-    .subscribe();
+    this.loadData()
     
     this.activatedRoute.params
     .subscribe((paramData)=>{
-      if(this.currentUserId === paramData['id']){
+      const id = paramData['id'];
+      this.loadData()
+      if(this.currentUserId === id){
         this.isCurrentUser.set(true);
       }
     })
-
-    this.userService
-      .getMe()
-      .pipe(
-        tap((data) => {
-          if (data.id === this.userData()!.id) {
-            this.isCurrentUser.set(true);
-          }
-        })
-      )
-      .subscribe();
       
-      this.form.controls.displayName.setValue(this.profileData()?.displayName);
-      this.form.controls.bio.setValue(this.profileData()?.bio);
-      
-      this.form.valueChanges.subscribe((data) => {
-        if (
-          data.bio === this.profileData()?.bio &&
-          data.displayName === this.profileData()?.displayName
-        ) {
-          this.canEdit.set(false);
-        } else {
-          this.canEdit.set(true);
-        }
-      })
+    this.form.valueChanges.subscribe((data) => {
+      if (
+        data.bio === this.profileData()?.bio &&
+        data.displayName === this.profileData()?.displayName
+      ) {
+        this.canEdit.set(false);
+      } else {
+        this.canEdit.set(true);
+      }
+    })
       
     this.currentPageService.setPage(this.userData()?.username + '`s profile');
   }
@@ -137,5 +119,24 @@ export class ProfileComponent implements OnInit {
 
   logout(){
     this.authService.logout()
+  }
+
+  private loadData(){
+    this.routeData
+    .subscribe((data: any) => {
+      this.profileData.set(data['profile']);
+      this.userData.set(data['user']);
+
+      this.form.controls.displayName.setValue((this.profileData())?.displayName);
+      this.form.controls.bio.setValue(this.profileData()?.bio);
+    });
+
+    this.userService
+    .getMe()
+    .subscribe((data)=>{
+      if (data.id === this.userData()!.id) {
+        this.isCurrentUser.set(true);
+      }
+    });
   }
 }
