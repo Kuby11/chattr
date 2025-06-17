@@ -23,13 +23,12 @@ export class AuthService {
   constructor() {
     //todo improve token refreshing
   
-    if(this.refresh_token === undefined){
-      this.cookie.delete('REFRESH_TOKEN');
-    }
-
     this.subscription = interval(1000 * 60 * 3)
     .subscribe(() => {
       if(this.isAuth()){
+        if(!this.refresh_token){
+          this.cookie.delete('REFRESH_TOKEN')
+        }
         console.log('triggered')
         this.refreshToken()
         .subscribe()
@@ -46,7 +45,7 @@ export class AuthService {
       this.access_token = this.cookie.get('ACCESS_TOKEN');
       this.refresh_token = this.cookie.get('REFRESH_TOKEN');
     }
-    return !!this.access_token || !!this.refresh_token;
+    return !!this.access_token
   }
 
   login(payload: AuthInterface) {
@@ -55,8 +54,6 @@ export class AuthService {
       .pipe(
         tap((val) => {
           this.saveTokens(val)
-          console.log(val)
-
           this.router.navigate(['/']);
         }),
         catchError((err: HttpErrorResponse) =>{
@@ -95,11 +92,9 @@ export class AuthService {
       })
     )
     .subscribe(()=>{
-      this.access_token = undefined;
-  
+      this.access_token = undefined;      
       this.cookie.delete('ACCESS_TOKEN');
       this.router.navigate(['/auth']);
-      console.log('logged out');
     })
   }
 
@@ -109,7 +104,6 @@ export class AuthService {
     .pipe(
       tap((val) => { this.saveTokens(val) }),
       catchError((err: HttpErrorResponse) =>{
-        console.log('from refresh token');
         this.logout()
         return throwError(() => err);
       })
@@ -122,14 +116,9 @@ export class AuthService {
   }
 
   private saveTokens(res: TokenResponse){
-    console.log('triggered saveTokens');
-    if(!this.access_token){
+    if(!this.cookie.get('ACCESS_TOKEN')){
       this.access_token = res.access_token;
       this.cookie.set('ACCESS_TOKEN',this.access_token,{ secure: true, expires: new Date(Date.now() + 1000 * 60 * 15) });
-    }
-    if(!this.refresh_token){
-      this.refresh_token = res.refresh_token;
-      this.cookie.set('REFRESH_TOKEN',this.refresh_token, { secure: true });  
-    }
+    }    
   }
 }
