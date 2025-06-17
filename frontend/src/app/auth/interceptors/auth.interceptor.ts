@@ -8,11 +8,9 @@ let isRefreshing$ = new BehaviorSubject<boolean>(false);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService)
-  const cookie = inject(CookieService)
   const access_token = authService.access_token;
   
   if(!access_token){ 
-    console.log('no access_token');
     return next(req)
   }
 
@@ -24,6 +22,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   .pipe(
     catchError((err) =>{
       if(err.status === 401){
+        console.log('refreshing token')
         return refresh(authService, req, next);
       }
       return throwError(() => err);
