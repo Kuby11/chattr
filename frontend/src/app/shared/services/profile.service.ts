@@ -14,4 +14,7 @@ export class ProfileService {
     return this.http.patch<Partial<Profile>>(`${API_URL}/profile/update/${id}`, { ...payload })
   }
 
+  getAllProfiles(){
+    return this.http.get<Profile[]>(`${API_URL}/profile/all`)
+  }
 }
