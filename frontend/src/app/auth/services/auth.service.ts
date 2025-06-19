@@ -12,13 +12,13 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly cookie = inject(CookieService);
   private readonly router = inject(Router);
-  private readonly API_URL = 'http://localhost:3000';
   private readonly destroyRef = inject(DestroyRef);
+  private readonly API_URL = 'http://localhost:3000';
   private readonly subscription?: Subscription
 
   errorMessage: string | null = null
-  access_token: string | undefined = undefined;
-  refresh_token: string | undefined = undefined;
+  access_token = this.cookie.get('ACCESS_TOKEN');
+  refresh_token = this.cookie.get('REFRESH_TOKEN');
 
   constructor() {
     //todo improve token refreshing
@@ -26,10 +26,6 @@ export class AuthService {
     this.subscription = interval(1000 * 60 * 3)
     .subscribe(() => {
       if(this.isAuth()){
-        if(!this.refresh_token){
-          this.cookie.delete('REFRESH_TOKEN')
-        }
-        console.log('triggered')
         this.refreshToken()
         .subscribe()
       }
@@ -41,9 +37,8 @@ export class AuthService {
   }
 
   isAuth(): boolean {
-    if(!this.access_token){
-      this.access_token = this.cookie.get('ACCESS_TOKEN');
-      this.refresh_token = this.cookie.get('REFRESH_TOKEN');
+    if(!this.access_token) {
+      return !!this.cookie.get('ACCESS_TOKEN')
     }
     return !!this.access_token
   }
@@ -92,7 +87,6 @@ export class AuthService {
       })
     )
     .subscribe(()=>{
-      this.access_token = undefined;      
       this.cookie.delete('ACCESS_TOKEN');
       this.router.navigate(['/auth']);
     })
@@ -116,9 +110,6 @@ export class AuthService {
   }
 
   private saveTokens(res: TokenResponse){
-    if(!this.cookie.get('ACCESS_TOKEN')){
-      this.access_token = res.access_token;
-      this.cookie.set('ACCESS_TOKEN',this.access_token,{ secure: true, expires: new Date(Date.now() + 1000 * 60 * 15) });
-    }    
+    this.cookie.set('ACCESS_TOKEN',res.access_token,{ secure: true, expires: new Date(Date.now() + 1000 * 60 * 15) });
   }
 }
