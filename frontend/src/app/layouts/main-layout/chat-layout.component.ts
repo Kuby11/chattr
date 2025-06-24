@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../widgets/sidebar/sidebar.component';
 import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
-import { currentPageService } from './services';
+import { currentPageService } from '../../shared/services';
 
 @Component({
   selector: 'app-chat-layout',

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { iconoirEmojiTalkingHappy } from '@ng-icons/iconoir'
-import { currentPageService } from '../../services';
+import { currentPageService } from '../../shared/services';
 
 @Component({
   selector: 'app-home-page',

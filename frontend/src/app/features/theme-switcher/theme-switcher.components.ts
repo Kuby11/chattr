@@ -5,7 +5,7 @@ import { provideIcons, NgIcon } from '@ng-icons/core'
 import { iconoirHalfMoon,iconoirSunLight } from '@ng-icons/iconoir'
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
-import { LocalStorageService } from '../../../shared/services/local-storage-service.service';
+import { LocalStorageService } from '../../shared/services/local-storage-service.service';
 
 @Component({
   selector: 'app-theme-switcher',

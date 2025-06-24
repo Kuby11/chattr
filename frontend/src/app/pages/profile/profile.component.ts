@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal,} from '@angular/core';
-import { currentPageService } from '../../services';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal,} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Profile, User } from '../../../../shared/interfaces';
-import { map, tap } from 'rxjs';
+import { Profile, User } from '../../shared/interfaces';
 import { HlmAvatarComponent, HlmAvatarFallbackDirective, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
 import { DatePipe } from '@angular/common';
-import { UserService } from '../../../../shared/services/user.service';
+import { UserService } from '../../shared/services/user.service';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { BrnDialogContentDirective, BrnDialogTriggerDirective } from '@spartan-ng/brain/dialog';
@@ -16,12 +14,12 @@ import {
 } from '@spartan-ng/ui-dialog-helm';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HlmFormFieldComponent, HlmHintDirective } from '@spartan-ng/ui-formfield-helm';
-import { HlmErrorDirective } from "../../../../../../libs/src/ui/ui-formfield-helm/src/lib/hlm-error.directive";
-import { ProfileService } from '../../../../shared/services/profile.service';
+import { HlmErrorDirective } from "../../../../libs/src/ui/ui-formfield-helm/src/lib/hlm-error.directive";
+import { ProfileService } from '../../shared/services/profile.service';
 import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../../../auth/services/auth.service';
+import { currentPageService } from '../../shared/services/current-page.service';
+import { AuthService } from '../../features/auth/services/auth.service';
 
 
 @Component({

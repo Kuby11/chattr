@@ -3,13 +3,13 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HlmFormFieldModule } from '@spartan-ng/ui-formfield-helm';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
-import { HideButton } from '../../../features/components/hide-button/hide-button.component';
+import { HideButton } from '../../features/hide-button/hide-button.component';
 import { RouterLink } from '@angular/router';
 
 
-import { AuthService } from '../../../auth/services/auth.service';
-import { FormType } from '../types';
-import { AuthResponseInterface } from '../../../auth/interfaces';
+import { FormType } from '../../layouts/auth-layout/types';
+import { AuthResponseInterface } from '../../features/auth/interfaces';
+import { AuthService } from '../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-login',

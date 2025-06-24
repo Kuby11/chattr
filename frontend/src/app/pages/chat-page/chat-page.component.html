@@ -1,5 +1,5 @@
 <div class="w-full h-full flex">
-	<div class="w-65 h-full border-r flex flex-col overflow-auto">
+	<div class="min-w-65 h-full border-r flex flex-col overflow-auto">
 		@for (profile of profiles(); track profile.userId) {
 			<div 
 				class="
@@ -38,5 +38,5 @@
 			}
 		}
 	</div>
-	<app-chat-widget></app-chat-widget>
+	<app-chat-widget class="flex-1"></app-chat-widget>
 </div>

@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { ChatWidgetComponent } from '../../../../widgets/chat-widget/chat-widget.component';
-import { currentPageService } from '../../services';
-import { Profile, User } from '../../../../shared/interfaces';
+import { ChatWidgetComponent } from '../../widgets/chat-widget/chat-widget.component';
+import { Profile, User } from '../../shared/interfaces';
 import { firstValueFrom } from 'rxjs';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { RouterLink } from '@angular/router';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
-import { ProfileService } from '../../../../shared/services/profile.service';
-import { FirstLetterPipe } from '../../../../shared/pipes/first-letter.pipe';
-import { ShortenUsernamePipe } from '../../../../shared/pipes/shorten-username.pipe';
+import { ProfileService } from '../../shared/services/profile.service';
+import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
+import { ShortenUsernamePipe } from '../../shared/pipes/shorten-username.pipe';
+import { currentPageService } from '../../shared/services';
 
 
 @Component({
