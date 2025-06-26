@@ -48,6 +48,9 @@
       ],
       "@spartan-ng/ui-dialog-helm": [
         ".\\libs/src/ui/ui-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-sheet-helm": [
+        ".\\libs/src/ui/ui-sheet-helm/src/index.ts"
       ]
     }
   },
