@@ -1,6 +1,3 @@
-:host {
-	display: block;
-	margin-bottom: -5rem;
-	height: 100%;
-	overflow: auto;
+.height {
+	min-height: calc(100dvh - 6.25rem);
 }
