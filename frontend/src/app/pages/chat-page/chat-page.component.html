@@ -1,42 +1,44 @@
-<div class="w-full h-full flex">
-	<div class="min-w-65 h-full border-r flex flex-col overflow-auto">
-		@for (profile of profiles(); track profile.userId) {
-			<div 
-				class="
-					text-foreground flex items-center gap-2 p-3 hover:cursor-pointer
-					not-first:border-t last:border-b relative hover:bg-accent transition-colors duration-200"
-			>
-				<a [routerLink]="'/profile/' + profile.userId">
-					<hlm-avatar variant="medium" class="flex-shrink-0">
-						<img src="" alt="user profile picture" hlmAvatarImage>
-						<span class="bg-primary text-accent text-xl" hlmAvatarFallback>{{ profile.displayName | firstLetter }}</span>
-					</hlm-avatar>
-				</a>
-				<div class="flex flex-col gap-1">
-					<h3 class="text-xl font-medium">
-						{{ profile.displayName | shortenUsername }}
-					</h3>
-					<p class="text-sm">last message...</p>
-					<span class="absolute right-3 text-sm">offline</span>
-				</div>
-			</div>
-		}
-		@if(isLoading()) {
-			@for (item of skeletonItems(); track $index) {
-				<div 
+<div class="w-full h-full">
+	<div class="w-full h-full flex">
+		<div class="min-w-65 h-full border-r flex flex-col overflow-auto mt-17">
+			@for (profile of profiles(); track profile.userId) {
+				<div
 					class="
-						text-foreground flex items-center gap-x-2 p-3 hover:cursor-pointer
-						not-first:border-t last:border-b relative"
+						text-foreground flex items-center gap-2 p-3 hover:cursor-pointer
+						not-first:border-t last:border-b relative hover:bg-accent transition-colors duration-200"
 				>
-					<hlm-skeleton class="rounded-full h-10 min-w-10"/>
-					<div class="flex flex-col h-full w-full">
-						<hlm-skeleton class="h-full w-full mb-3" />
-						<hlm-skeleton class="h-full w-full" />
-						<p class="text-sm"></p>
+					<a [routerLink]="'/profile/' + profile.userId">
+						<hlm-avatar variant="medium" class="flex-shrink-0">
+							<img src="" alt="user profile picture" hlmAvatarImage>
+							<span class="bg-primary text-accent text-xl" hlmAvatarFallback>{{ profile.displayName | firstLetter }}</span>
+						</hlm-avatar>
+					</a>
+					<div class="flex flex-col gap-1">
+						<h3 class="text-xl font-medium">
+							{{ profile.displayName | shortenUsername }}
+						</h3>
+						<p class="text-sm">last message...</p>
+						<span class="absolute right-3 text-sm">offline</span>
 					</div>
 				</div>
 			}
-		}
+			@if(isLoading()) {
+				@for (item of skeletonItems(); track $index) {
+					<div
+						class="
+							text-foreground flex items-center gap-x-2 p-3 hover:cursor-pointer
+							not-first:border-t last:border-b relative"
+					>
+						<hlm-skeleton class="rounded-full h-10 min-w-10"/>
+						<div class="flex flex-col h-full w-full">
+							<hlm-skeleton class="h-full w-full mb-3" />
+							<hlm-skeleton class="h-full w-full" />
+							<p class="text-sm"></p>
+						</div>
+					</div>
+				}
+			}
+		</div>
+		<app-chat-widget class="flex-1"/>
 	</div>
-	<app-chat-widget class="flex-1"></app-chat-widget>
 </div>
