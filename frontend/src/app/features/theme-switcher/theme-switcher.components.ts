@@ -1,6 +1,6 @@
 import { Component, inject, Inject, OnInit, PLATFORM_ID, signal, } from '@angular/core';
-import { BrnTooltipContentDirective } from '@spartan-ng/brain/tooltip';
-import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-tooltip-helm';
+
+
 import { provideIcons, NgIcon } from '@ng-icons/core'
 import { iconoirHalfMoon,iconoirSunLight } from '@ng-icons/iconoir'
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
@@ -11,9 +11,6 @@ import { LocalStorageService } from '../../shared/services';
   selector: 'app-theme-switcher',
   imports: [
     HlmButtonDirective,
-    BrnTooltipContentDirective,
-    HlmTooltipComponent,
-    HlmTooltipTriggerDirective,
     HlmIconDirective,
     HlmButtonDirective,
     NgIcon,
