@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { provideIcons, NgIcon } from '@ng-icons/core'
@@ -17,10 +17,11 @@ import { HlmSeparatorDirective } from '@spartan-ng/ui-separator-helm';
 import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { BrnTooltipContentDirective } from '@spartan-ng/brain/tooltip';
 import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-tooltip-helm';
-import { ThemeSwitcherComponent } from '../../features/components/theme-switcher/theme-switcher.components';
-import { UserService } from '../../shared/services/user.service';
-import { User } from '../../shared/interfaces';
-import { firstValueFrom } from 'rxjs';
+import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
+import {  Profile, SidebarItems, User } from '../../shared/interfaces';
+import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
+import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
+
 
 @Component({
   selector: 'app-sidebar',
@@ -36,6 +37,11 @@ import { firstValueFrom } from 'rxjs';
     HlmTooltipComponent,
     HlmTooltipTriggerDirective,
     ThemeSwitcherComponent,
+    HlmAvatarImageDirective, 
+    HlmAvatarComponent, 
+    HlmAvatarFallbackDirective,
+    FirstLetterPipe,
+    RouterLink,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
@@ -53,48 +59,12 @@ import { firstValueFrom } from 'rxjs';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidebarComponent {
-  private readonly userService = inject(UserService);
-  
-  currentUser = signal<User | null>(null)
+export class SidebarComponent implements OnInit {
+  currentProfile = input.required<Profile>()
+  currentUserId = input.required<string>()
+  sidebarItems = input<SidebarItems>()
 
-  constructor() {
-    effect(()=>{
-      this.sidebarCommunicationItems[0].route = `profile/${this.currentUser()?.id}`
-    })
-    firstValueFrom(this.userService.getMe())
-    .then(user => {
-      this.currentUser.set(user)
-    })
+  ngOnInit() {
+    console.log(this.sidebarItems());
   }
-
-  sidebarCommunicationItems = [
-    {
-      title: 'Profile',
-      route: `profile/${this.currentUser()?.id}`,
-      icon: 'iconoirProfileCircle',
-    },
-    {
-      title: 'Chats',
-      route: 'chats',
-      icon: 'iconoirForwardMessage',
-    },
-    {
-      title: 'Contacts',
-      route: 'contacts',
-      icon: 'iconoirUser',
-    },
-  ];
-  sidebarOtherItems = [
-    {
-      title: 'Auth',
-      route: 'auth',
-      icon: 'iconoirLogIn',
-    },
-    {
-      title: 'Archive',
-      route: 'archive',
-      icon: 'iconoirArchive',
-    },
-  ];
 }
