@@ -47,10 +47,12 @@ export const sheetVariants = cva(
 	},
 	template: `
 		<ng-content />
-		<button brnSheetClose hlm>
+		@if(hasCloseButton()){
+			<button brnSheetClose hlm>
 			<span class="sr-only">Close</span>
 			<ng-icon hlm size="sm" name="lucideX" />
 		</button>
+		}
 	`,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -60,6 +62,8 @@ export class HlmSheetContentComponent {
 	public state = this._stateProvider.state ?? signal('closed');
 	private readonly _renderer = inject(Renderer2);
 	private readonly _element = inject(ElementRef);
+
+	hasCloseButton = input.required<boolean>();
 
 	constructor() {
 		effect(() => {
