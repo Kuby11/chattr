@@ -20,6 +20,7 @@ import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
 import { currentPageService } from '../../shared/services/current-page.service';
 import { AuthService } from '../../features/auth/services/auth.service';
+import { currentUserStore } from '../../shared/stores/current-user.store';
 
 
 @Component({
@@ -55,6 +56,8 @@ export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService) 
   private readonly fb = inject(FormBuilder);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly currentUserStore = inject(currentUserStore);
+
 
   profileData = signal<Profile | null>(null);
   userData = signal<User | null>(null);
@@ -62,7 +65,7 @@ export class ProfileComponent implements OnInit {
   isCurrentUser = signal<boolean>(false);
   canEdit = signal<boolean>(false);
 
-  currentUserId = this.userService.currentUser?.id
+  currentUserId = this.currentUserStore.user().id;
   routeData = this.activatedRoute.data;
  
   ngOnInit() {
