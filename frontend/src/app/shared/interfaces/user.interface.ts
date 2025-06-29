@@ -9,7 +9,7 @@ export interface User {
 	isBlocked: boolean; 
 }
 
-enum UserRole {
+export enum UserRole {
 	'ADMIN',
 	'USER',
 }
