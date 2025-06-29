@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces';
 import { API_URL } from '../../constants';
-import { firstValueFrom } from 'rxjs';
+import { currentUserStore } from '../stores/current-user.store';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +10,11 @@ import { firstValueFrom } from 'rxjs';
 export class UserService {
   private readonly http = inject(HttpClient)
   private readonly URL = API_URL
-
-  currentUser: User | null = null 
+  private readonly currentUserStore = inject(currentUserStore) 
 
   constructor(){
     this.getMe().subscribe((user) => {
-      this.currentUser = user 
+      this.currentUserStore.setCurrentUser(user)
     })
   }
 
