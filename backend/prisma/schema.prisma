@@ -13,13 +13,15 @@ model User {
   username  String   @unique
   password  String
   email     String   @unique
-  role      Role     @default(USER)
+  role      UserRole @default(USER)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Chat      Chat[]
   profile   Profile?
+  friends   Friend[] @relation("UserFriends")
+  friendOf  Friend[] @relation("FriendOf")
   token     Token[]
 
   isBlocked Boolean  @default(false) @map("is_blocked")
@@ -43,10 +45,8 @@ model Chat {
   title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  messages  Message[]
+  // messages  Message[]
 
-  // sender    User     @relation(fields: [senderId], references: [id])
-  // senderId  String   @map("sender_id")
 
   @@map("chats")
 }
@@ -55,9 +55,12 @@ model Message {
   id        String   @id @default(cuid())
   content   String
   
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  chatId    String   @unique @map("chat_id")
+  // chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  // chatId    String   @unique @map("chat_id")
   
+  // sender    User     @relation(fields: [senderId], references: [id])
+  // senderId  String   @map("sender_id")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("messages")
@@ -74,7 +77,43 @@ model Token {
   @@map("tokens")
 }
 
-enum Role {
+enum UserRole {
   USER
   ADMIN
+
+  @@map("user_role")
+}
+
+model Friend {
+  id       String @id @default(cuid())
+  
+  user     User   @relation("UserFriends",fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @unique @map("user_id")
+
+  friend   User   @relation("FriendOf",fields: [friendId], references: [id], onDelete: Cascade)
+  friendId String @unique @map("friend_id")
+
+  createdAt DateTime @default(now())
+
+  @@map("friends")
+}
+
+model FriendRequest {
+  id       String @id @default(cuid())
+  status   FriendRequestStatus @default(PENDING)
+  sender   String @map("sender_id")
+  receiver String @map("receiver_id")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("friend_requests")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  
+  @@map("friend_request_status")
 }
