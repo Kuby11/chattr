@@ -1,17 +1,8 @@
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals'
-import { User, UserRole } from '../interfaces'
+import { User } from '.';
 
-const initialValue: { user: User } = {
-	user: {
-		id: '',
-		username: '',
-		email: '',
-		password: '',		
-		role: 'USER' as unknown as UserRole,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		isBlocked: false,
-	},
+const initialValue: { user: User | null } = {
+  user: null
 };
 
 export const currentUserStore = signalStore(

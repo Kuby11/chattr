@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal,} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Profile, User } from '../../shared/interfaces';
 import { HlmAvatarComponent, HlmAvatarFallbackDirective, HlmAvatarImageDirective } from '@spartan-ng/ui-avatar-helm';
 import { DatePipe } from '@angular/common';
-import { UserService } from '../../shared/services/user.service';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { BrnDialogContentDirective, BrnDialogTriggerDirective } from '@spartan-ng/brain/dialog';
@@ -15,12 +13,13 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HlmFormFieldComponent, HlmHintDirective } from '@spartan-ng/ui-formfield-helm';
 import { HlmErrorDirective } from "../../../../libs/src/ui/ui-formfield-helm/src/lib/hlm-error.directive";
-import { ProfileService } from '../../shared/services/profile.service';
 import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
 import { currentPageService } from '../../shared/services/current-page.service';
 import { AuthService } from '../../features/auth/services/auth.service';
-import { currentUserStore } from '../../shared/stores/current-user.store';
+import { currentUserStore } from '../../entities/user/current-user.store';
+import { ProfileService, Profile } from '../../entities/profile';
+import { UserService, User } from '../../entities/user';
 
 
 @Component({
@@ -58,14 +57,13 @@ export class ProfileComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly currentUserStore = inject(currentUserStore);
 
-
   profileData = signal<Profile | null>(null);
   userData = signal<User | null>(null);
 
   isCurrentUser = signal<boolean>(false);
   canEdit = signal<boolean>(false);
 
-  currentUserId = this.currentUserStore.user().id;
+  currentUserId = this.currentUserStore.user()?.id;
   routeData = this.activatedRoute.data;
  
   ngOnInit() {

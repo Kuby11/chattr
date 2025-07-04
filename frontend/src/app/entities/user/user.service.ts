@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../interfaces';
 import { API_URL } from '../../constants';
-import { currentUserStore } from '../stores/current-user.store';
+import { currentUserStore, User } from '.';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +12,7 @@ export class UserService {
   private readonly currentUserStore = inject(currentUserStore) 
 
   constructor(){
-    this.getMe().subscribe((user) => {
-      this.currentUserStore.setCurrentUser(user)
-    })
+    this.loadDataToStore()
   }
 
   getAllUsers() {
@@ -24,6 +21,12 @@ export class UserService {
 
   getMe() {
     return this.http.get<User>(`${API_URL}/user/me`)
+  }
+
+  loadDataToStore() {
+    this.getMe().subscribe((user) => {
+      this.currentUserStore.setCurrentUser(user)
+    })
   }
 
 }

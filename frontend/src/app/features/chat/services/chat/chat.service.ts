@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client';
-import { Message } from '../../../../shared/interfaces';
+import { Message } from '../../../../entities/message';
 
 @Injectable({
   providedIn: 'root',

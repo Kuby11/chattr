@@ -1,5 +1,5 @@
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals'
-import { Profile } from '../interfaces'
+import { Profile } from '.'
 
 const initialValue: { profile: Profile } = {
   profile: {

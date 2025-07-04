@@ -47,9 +47,11 @@ export class RegisterComponent {
     if (this.form.valid) {
       // @ts-ignore
       this.authService.register(this.form.value)
-        .subscribe((data)=> {
-          this.message.set(data as AuthResponseInterface);
-        })
+      .subscribe((data)=> {
+        this.message.set(data as AuthResponseInterface);
+      })
+      //@ts-ignore
+      this.authService.login(this.form.value).subscribe()
     }
   }
   form: FormType = this.fb.nonNullable.group({

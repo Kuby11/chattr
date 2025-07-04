@@ -3,7 +3,6 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../widgets/sidebar/sidebar.component';
 import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
-import { currentPageService, UserService } from '../../shared/services';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { iconoirArchive, iconoirEmojiTalkingHappy, iconoirForwardMessage, iconoirLogIn, iconoirMenu, iconoirPeopleTag, iconoirProfileCircle, iconoirSettings, iconoirUser } from '@ng-icons/iconoir';
@@ -16,16 +15,17 @@ import {
   HlmSheetHeaderComponent,
   HlmSheetTitleDirective,
 } from '@spartan-ng/ui-sheet-helm';
-import { SidebarItem, User } from '../../shared/interfaces';
-import { firstValueFrom } from 'rxjs';
+import { SidebarItem } from '../../shared/interfaces';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmSeparatorDirective } from '@spartan-ng/ui-separator-helm';
 import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
-import { currentProfileStore } from '../../shared/stores/current-profile.store';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
 import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
-import { currentUserStore } from '../../shared/stores/current-user.store';
+import { currentUserStore } from '../../entities/user/current-user.store';
+import { ProfileService, currentProfileStore } from '../../entities/profile';
+import { UserService } from '../../entities/user';
+import { currentPageService } from '../../shared/services';
 
 
 
@@ -45,8 +45,8 @@ import { currentUserStore } from '../../shared/stores/current-user.store';
     BrnSheetContentDirective,
     BrnSheetTriggerDirective,
     HlmSheetHeaderComponent,
-    HlmAvatarImageDirective, 
-    HlmAvatarComponent, 
+    HlmAvatarImageDirective,
+    HlmAvatarComponent,
     HlmAvatarFallbackDirective,
     HlmSeparatorDirective,
     BrnSeparatorComponent,
@@ -56,7 +56,7 @@ import { currentUserStore } from '../../shared/stores/current-user.store';
   templateUrl: './chat-layout.component.html',
   styleUrl: './chat-layout.component.css',
   providers: [
-    provideIcons({ 
+    provideIcons({
       iconoirMenu,
       iconoirLogIn,
       iconoirSettings,
@@ -66,25 +66,29 @@ import { currentUserStore } from '../../shared/stores/current-user.store';
       iconoirUser,
       iconoirArchive,
       iconoirEmojiTalkingHappy,
-    })
+    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatLayoutComponent implements OnInit {
   private readonly currentPageService = inject(currentPageService);
-    
-  currentUserStore = inject(currentUserStore)
-  currentProfileStore = inject(currentProfileStore)
+  private readonly ProfileService = inject(ProfileService);
+  private readonly UserService = inject(UserService);
+  private readonly currentUserStore = inject(currentUserStore);
+  private readonly currentProfileStore = inject(currentProfileStore);
 
+  currentUser = computed(() => this.currentUserStore.user());
+  currentProfile = computed(() => this.currentProfileStore.profile());
   currentPage = computed(() => this.currentPageService._currentPage());
 
   constructor() {
-    effect(() => {
+    this.ProfileService.loadDataToStore();
+    this.UserService.loadDataToStore();
+    effect(()=>{
       this.sidebarCommunicationItems[0].route = `profile/${
-        this.currentUserStore.user().id
+        this.currentUser()?.id
       }`;
-    });
-    console.log(this.currentProfileStore.profile().bio)
+    })
   }
 
   inputMessage = '';
@@ -97,7 +101,7 @@ export class ChatLayoutComponent implements OnInit {
   sidebarCommunicationItems: SidebarItem[] = [
     {
       title: 'Profile',
-      route: `profile/${this.currentUserStore.user().id}`,
+      route: `profile/${this.currentUser()?.id}`,
       icon: 'iconoirProfileCircle',
     },
     {

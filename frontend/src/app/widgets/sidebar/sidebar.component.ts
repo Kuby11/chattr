@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { provideIcons, NgIcon } from '@ng-icons/core'
@@ -18,9 +18,10 @@ import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { BrnTooltipContentDirective } from '@spartan-ng/brain/tooltip';
 import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-tooltip-helm';
 import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
-import {  Profile, SidebarItems, User } from '../../shared/interfaces';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
+import { Profile } from '../../entities/profile';
+import { SidebarItems } from '../../shared/interfaces';
 
 
 @Component({
@@ -59,12 +60,8 @@ import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
   currentProfile = input.required<Profile>()
   currentUserId = input.required<string>()
   sidebarItems = input<SidebarItems>()
-
-  ngOnInit() {
-    console.log(this.sidebarItems());
-  }
 }

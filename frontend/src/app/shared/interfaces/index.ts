@@ -1,4 +1,1 @@
-export * from './user.interface'
-export * from './profile.interface';
-export * from './message.interface';
 export * from './sidebar-item.interface';

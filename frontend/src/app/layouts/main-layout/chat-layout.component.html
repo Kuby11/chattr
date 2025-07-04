@@ -1,8 +1,8 @@
 <div class="flex h-dvh relative overflow-hidden">
 	@defer(hydrate on hover) {
 		<app-sidebar
-			[currentUserId]="currentUserStore.user().id"
-			[currentProfile]="currentProfileStore.profile()"
+			[currentUserId]="currentUser()!.id"
+			[currentProfile]="currentProfile()"
 			[sidebarItems]="sidebarItems"
 		/>
 	}
@@ -21,7 +21,7 @@
 							<div class="h-30 py-5 grid gap-3">
 								<hlm-avatar variant="large">
 									<img 
-										[src]="currentProfileStore.profile().avatar" 
+										[src]="currentProfile().avatar" 
 										alt="current user avatar" 
 										hlmAvatarImage
 									/>
@@ -29,10 +29,10 @@
 										class="text-white bg-destructive text-2xl" 
 										hlmAvatarFallback
 									>
-										{{ currentProfileStore.profile().displayName | firstLetter }}
+										{{ currentProfile().displayName | firstLetter }}
 									</span>
 								</hlm-avatar>
-								<h3>{{ currentProfileStore.profile().displayName }}</h3>
+								<h3>{{ currentProfile().displayName }}</h3>
 								<button class="absolute top-0 right-0 flex transition" type="button">
 									<app-theme-switcher/>
 								</button>

@@ -1,12 +1,14 @@
 <aside 
 	class="relative h-dvh border-border border-r transition-all duration-300 w-17 not-md:hidden"
 >
-	<a class="w-full flex gap-2 h-17 items-center justify-center" [routerLink]="'profile/' + currentUserId()">
-		<hlm-avatar>
-			<img [src]="currentProfile().avatar" alt="current user profile picture" hlmAvatarImage />
-			<span class="text-white bg-destructive" hlmAvatarFallback>{{  currentProfile().displayName | firstLetter }}</span>
-	 	</hlm-avatar>
-	</a>
+	@defer(hydrate on hover){	
+		<a class="w-full flex gap-2 h-17 items-center justify-center" [routerLink]="'profile/' + currentUserId()">
+			<hlm-avatar>
+				<img [src]="currentProfile().avatar" alt="current user profile picture" hlmAvatarImage />
+				<span class="text-white bg-destructive" hlmAvatarFallback>{{  currentProfile().displayName | firstLetter }}</span>
+			</hlm-avatar>
+		</a>
+	}
 	<brn-separator hlmSeparator class="flex shrink-0 mt-[-1px]"/>
 	<div class="height flex flex-col justify-between gap-10 p-3">
 		<div class="flex flex-col gap-1">

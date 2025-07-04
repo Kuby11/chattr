@@ -65,11 +65,9 @@ export class AuthService {
     return this.http
       .post<TokenResponse>(`${this.API_URL}/auth/register`, payload, { withCredentials: true })
       .pipe(
-        tap(() => {
-          this.login(payload)
-        }),
         catchError((err: HttpErrorResponse) =>{
           this.errorMessage = err.error.message
+          this.login(payload)
           
           return new Observable((subscriber) => {
             subscriber.next({ message: this.errorMessage, status: err.status, isError: true });
