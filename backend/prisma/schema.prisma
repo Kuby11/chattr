@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../src/__generated__/prisma"
+  output   = "../prisma/generated/client"
 }
 
 datasource db {
@@ -20,8 +20,13 @@ model User {
 
   // Chat      Chat[]
   profile   Profile?
-  friends   Friend[] @relation("UserFriends")
-  friendOf  Friend[] @relation("FriendOf")
+
+  friends   Friendship[] @relation("user_friends")
+  friendOf  Friendship[]  @relation("friend_of")
+  
+  friendRequestSender FriendRequest[] @relation("friend_requests_sender")
+  friendRequestReceiver FriendRequest[] @relation("friend_requests_receiver")
+  
   token     Token[]
 
   isBlocked Boolean  @default(false) @map("is_blocked")
@@ -84,30 +89,36 @@ enum UserRole {
   @@map("user_role")
 }
 
-model Friend {
+model Friendship {
   id       String @id @default(cuid())
   
-  user     User   @relation("UserFriends",fields: [userId], references: [id], onDelete: Cascade)
-  userId   String @unique @map("user_id")
+  user     User   @relation("user_friends",fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @map("user_id")
 
-  friend   User   @relation("FriendOf",fields: [friendId], references: [id], onDelete: Cascade)
-  friendId String @unique @map("friend_id")
+  friendOf   User   @relation("friend_of",fields: [friendOfId], references: [id], onDelete: Cascade)
+  friendOfId String @map("friend_of_id")
 
   createdAt DateTime @default(now())
 
   @@map("friends")
+  @@unique([userId, friendOfId])
 }
 
 model FriendRequest {
   id       String @id @default(cuid())
   status   FriendRequestStatus @default(PENDING)
-  sender   String @map("sender_id")
-  receiver String @map("receiver_id")
+
+  sender   User   @relation("friend_requests_sender",fields: [senderId], references: [id], onDelete: Cascade)
+  senderId   String @map("sender_id")
+
+  receiver User   @relation("friend_requests_receiver",fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String @map("receiver_id")
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("friend_requests")
+  @@unique([senderId, receiverId])
 }
 
 enum FriendRequestStatus {
