@@ -1,11 +1,11 @@
-import { Body,ClassSerializerInterceptor,Controller, Delete, Get, HttpStatus, Param, Post, Req, Res, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body,ClassSerializerInterceptor,Controller, HttpStatus, Post, Res, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { UserService } from 'src/user/user.service';
-import { User } from '@prisma/client';
+import { User } from '@prisma';
 import { Response } from 'express';
-import { Cookie, CurrentUser, Public, UserAgent } from 'src/libs/decorators';
+import { Cookie, Public, UserAgent } from 'src/libs/decorators';
 import { UserResponse } from 'src/user/responses';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -38,6 +38,7 @@ export class AuthController {
     return new UserResponse(user)
   }
 
+  @Public()
   @Post('refresh-token')
   async refresh(
     @Cookie('REFRESH_TOKEN') refresh_token: string,

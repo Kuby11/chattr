@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProfileDto } from './dto';
-import { Prisma, Profile } from '@prisma/client';
+import { Prisma, Profile } from '@prisma';
 import { JwtPayload } from 'src/auth/interfaces';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { Profile } from '@prisma/client';
+import { Profile } from '@prisma';
 import { CurrentUser } from 'src/libs/decorators';
 import { JwtPayload } from 'src/auth/interfaces';
 import { ProfileDto } from './dto';

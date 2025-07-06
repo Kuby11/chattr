@@ -1,7 +1,7 @@
-import { Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { ConflictException, Controller, Param, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/libs/decorators';
 import { FriendService } from './friend.service';
-import { User } from '@prisma/client';
+import { User } from '@prisma';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller("friend")
@@ -30,6 +30,8 @@ export class FriendController {
     return this.friendService
       .acceptFriendRequest(receiver.id, requestId)
       .catch((err) => {
+        if (err.code === "P2002")
+          throw new ConflictException("you already are friends with this user");
         throw err;
       });
   }
@@ -45,5 +47,27 @@ export class FriendController {
       .catch((err) => {
         throw err;
       });
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("cancel-friend-request/:requestId")
+  async cancelFriendRequest(
+    @CurrentUser() sender: User,
+    @Param("requestId") requestId: string
+  ) {
+    return this.friendService
+     .cancelFriendRequest(sender.id, requestId)
+     .catch((err) => {
+        throw err;
+      });
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("test/:receiverId")
+  async test(
+    @CurrentUser() sender: User,
+    @Param("receiverId") receiverId: string
+  ) {
+    return this.friendService.test(receiverId, sender.id);
   }
 }

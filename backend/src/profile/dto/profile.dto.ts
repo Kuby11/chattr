@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User } from "@prisma";
 import { IsOptional, IsString, Length } from "class-validator";
 
 export class ProfileDto {

@@ -6,7 +6,7 @@ import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { createId } from '@paralleldrive/cuid2';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Token, User } from '@prisma/client';
+import { Token, User } from '@prisma';
 import { Tokens } from './interfaces/token.interface';
 import { stringToMs } from 'src/libs/utils';
 import { Response } from 'express';
