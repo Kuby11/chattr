@@ -51,7 +51,10 @@
       ],
       "@spartan-ng/ui-sheet-helm": [
         ".\\libs/src/ui/ui-sheet-helm/src/index.ts"
-      ]
+      ],
+      "@environment": [
+        "./src/environments.ts"
+      ],
     }
   },
   "angularCompilerOptions": {
