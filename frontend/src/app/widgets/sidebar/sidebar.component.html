@@ -3,9 +3,9 @@
 >
 	@defer(hydrate on hover){	
 		<a class="w-full flex gap-2 h-17 items-center justify-center" [routerLink]="'profile/' + currentUserId()">
-			<hlm-avatar>
+			<hlm-avatar >
 				<img [src]="currentProfile().avatar" alt="current user profile picture" hlmAvatarImage />
-				<span class="text-white bg-destructive" hlmAvatarFallback>{{  currentProfile().displayName | firstLetter }}</span>
+				<span class="text-white bg-destructive text-xl" hlmAvatarFallback>{{  currentProfile().displayName | firstLetter }}</span>
 			</hlm-avatar>
 		</a>
 	}
