@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { provideIcons, NgIcon } from '@ng-icons/core'
@@ -65,7 +65,7 @@ export class SidebarComponent {
   private readonly currentProfileStore = inject(currentProfileStore)
   private readonly currentUserStore = inject(currentUserStore)
 
-  currentProfile = this.currentProfileStore.profile()
+  currentProfile = computed(() => this.currentProfileStore.profile())
   currentUser = this.currentUserStore.user()
   sidebarItems = input<SidebarItems>()
 }
