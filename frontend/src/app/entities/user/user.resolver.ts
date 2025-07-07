@@ -1,7 +1,7 @@
 import { ResolveFn } from '@angular/router';
-import { API_URL } from '../../constants';
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { API_URL } from '@environment';
 
 export const userResolver: ResolveFn<any> = (route, state) => {
   const http = inject(HttpClient); 
