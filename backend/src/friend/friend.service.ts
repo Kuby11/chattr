@@ -42,6 +42,7 @@ export class FriendService {
 			where: {
 				id: requestId,
 				receiverId: receiverId,
+				status: "PENDING"
 			},
 			data: {
 				status: "ACCEPTED",
@@ -119,26 +120,83 @@ export class FriendService {
       where: {
         id: requestId,
         senderId: senderId,
-
 				status: "PENDING"
       },
     })
 		return "friend request canceled";
   }
 
-  async test(receiverId: string, senderId: string) {
-		return await this.prisma.friendship.createMany({
-			data: [
-				{
-					userId: senderId,
-					friendOfId: receiverId
-				},
-				{
-					userId: receiverId,
-					friendOfId: senderId
-				},
-			]
+	async removeFriend(userId: string, friendId: string) {
+		if (!friendId) throw new NotFoundException("friend not found");
+		if (!userId) throw new NotFoundException("user not found");
+		if(userId === friendId) throw new ForbiddenException("you can't remove yourself")
+
+		const friendRequest = await this.prisma.friendRequest.findFirst({
+			where: {
+				OR: [
+					{
+						senderId: userId,
+						receiverId: friendId
+					},
+					{
+						senderId: friendId,
+						receiverId: userId
+					}
+				]
+			}
 		})
+		if (!friendRequest) throw new NotFoundException("friend request not found");
+
+		await this.prisma.$transaction([
+			this.prisma.friendship.deleteMany({
+				where: {
+					OR: [
+						{
+							userId: userId,
+							friendOfId: friendId
+						},
+						{
+							userId: friendId,
+							friendOfId: userId
+						}
+					]
+				}
+			}),	
+			this.prisma.friendRequest.delete({
+				where: {
+					id: friendRequest.id,
+				},
+			})
+		])
 		
+		
+		return `user with Id ${friendId} removed from your friends list`;
+	}
+
+	async getMyFriends(userId: string) {
+		if (!userId) throw new NotFoundException("user not found");
+		return await this.prisma.friendship.findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        friendOf: {
+          select: {
+            email: true,
+						id: true,
+						username: true,
+						createdAt: true,
+            profile: {
+              select: {
+                avatar: true,
+								bio: true,
+								displayName: true,
+              },
+						}
+          },
+        },
+        createdAt: true,
+      },
+    }); 
 	}
 }

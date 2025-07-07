@@ -1,4 +1,4 @@
-import { ConflictException, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { ConflictException, Controller, ForbiddenException, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/libs/decorators';
 import { FriendService } from './friend.service';
 import { User } from '@prisma';
@@ -17,6 +17,10 @@ export class FriendController {
     return this.friendService
       .sendFriendRequest(sender.id, receiverId)
       .catch((err) => {
+        if (err.code === "P2003")
+          throw new NotFoundException(
+            "can not sent friend request to not existing user"
+          );
         throw err;
       });
   }
@@ -56,18 +60,37 @@ export class FriendController {
     @Param("requestId") requestId: string
   ) {
     return this.friendService
-     .cancelFriendRequest(sender.id, requestId)
-     .catch((err) => {
+      .cancelFriendRequest(sender.id, requestId)
+      .catch((err) => {
+        if (err.code === "P2025")
+          throw new ForbiddenException(
+            "you are not the sender of this request"
+          );
         throw err;
       });
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Post("test/:receiverId")
-  async test(
+  @Post("remove-friend/:friendId")
+  async removeFriend(
     @CurrentUser() sender: User,
-    @Param("receiverId") receiverId: string
+    @Param("friendId") friendId: string 
   ) {
-    return this.friendService.test(receiverId, sender.id);
+    return this.friendService
+      .removeFriend(sender.id, friendId)
+      .catch((err) => {
+        if (err.code === "P2025")
+          throw new ForbiddenException(
+            "you are not the sender of this request"
+          );
+        throw err;
+      });
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("my-friends")
+  async getMyFriends(@CurrentUser() user: User) {
+    return this.friendService.getMyFriends(user.id);
+  }
+
 }
