@@ -1,8 +1,6 @@
 <div class="flex h-dvh relative overflow-hidden">
 	@defer(hydrate on hover) {
 		<app-sidebar
-			[currentUserId]="currentUser()!.id"
-			[currentProfile]="currentProfile()"
 			[sidebarItems]="sidebarItems"
 		/>
 	}

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../widgets/sidebar/sidebar.component';
 import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
@@ -21,10 +21,7 @@ import { BrnSheetContentDirective, BrnSheetTriggerDirective } from '@spartan-ng/
 import {
   HlmSheetComponent,
   HlmSheetContentComponent,
-  HlmSheetDescriptionDirective,
-  HlmSheetFooterComponent,
   HlmSheetHeaderComponent,
-  HlmSheetTitleDirective,
 } from '@spartan-ng/ui-sheet-helm';
 import { SidebarItem } from '../../shared/interfaces';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
@@ -34,8 +31,7 @@ import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
 import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
 import { currentUserStore } from '../../entities/user/current-user.store';
-import { ProfileService, currentProfileStore } from '../../entities/profile';
-import { UserService } from '../../entities/user';
+import { currentProfileStore } from '../../entities/profile';
 import { currentPageService } from '../../shared/services';
 
 
@@ -84,27 +80,26 @@ import { currentPageService } from '../../shared/services';
 })
 export class ChatLayoutComponent implements OnInit {
   private readonly currentPageService = inject(currentPageService);
-  private readonly ProfileService = inject(ProfileService);
-  private readonly UserService = inject(UserService);
   private readonly currentUserStore = inject(currentUserStore);
   private readonly currentProfileStore = inject(currentProfileStore);
 
-  currentUser = computed(() => this.currentUserStore.user());
-  currentProfile = computed(() => this.currentProfileStore.profile());
+  currentUser = this.currentUserStore.user()
+  currentProfile = computed(() =>this.currentProfileStore.profile())
   currentPage = computed(() => this.currentPageService._currentPage());
-
-  constructor() {
-    this.ProfileService.loadDataToStore();
-    this.UserService.loadDataToStore();
-    effect(()=>{
-      this.sidebarCommunicationItems[0].route = `profile/${
-        this.currentUser()?.id
-      }`;
-    })
-  }
 
   inputMessage = '';
   inputDescription = '';
+
+  constructor() {
+    this.currentProfileStore.loadProfile()
+    this.currentUserStore.loadCurrentUser()
+    effect(() => {
+      this.sidebarCommunicationItems[0].route = `profile/${
+        this.currentUserStore.user()?.id
+      }`;
+    });
+  }
+
 
   ngOnInit() {
     this.currentPageService.setPage('home');
@@ -113,7 +108,7 @@ export class ChatLayoutComponent implements OnInit {
   sidebarCommunicationItems: SidebarItem[] = [
     {
       title: 'Profile',
-      route: `profile/${this.currentUser()?.id}`,
+      route: `profile/${this.currentUserStore.user()?.id}`,
       icon: 'iconoirProfileCircle',
     },
     {
@@ -130,7 +125,7 @@ export class ChatLayoutComponent implements OnInit {
       title: 'friends',
       route: 'friends',
       icon: 'iconoirCommunity',
-    }
+    },
   ];
 
   sidebarOtherItems: SidebarItem[] = [

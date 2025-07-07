@@ -11,22 +11,12 @@ export class UserService {
   private readonly URL = API_URL
   private readonly currentUserStore = inject(currentUserStore) 
 
-  constructor(){
-    this.loadDataToStore()
-  }
-
   getAllUsers() {
     return this.http.get<User[]>(`${this.URL}/user/all`)
   }
 
   getMe() {
     return this.http.get<User>(`${API_URL}/user/me`)
-  }
-
-  loadDataToStore() {
-    this.getMe().subscribe((user) => {
-      this.currentUserStore.setCurrentUser(user)
-    })
   }
 
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { provideIcons, NgIcon } from '@ng-icons/core'
@@ -20,8 +20,9 @@ import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-
 import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
-import { Profile } from '../../entities/profile';
+import { currentProfileStore, Profile } from '../../entities/profile';
 import { SidebarItems } from '../../shared/interfaces';
+import { currentUserStore } from '../../entities/user';
 
 
 @Component({
@@ -61,7 +62,10 @@ import { SidebarItems } from '../../shared/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  currentProfile = input.required<Profile>()
-  currentUserId = input.required<string>()
+  private readonly currentProfileStore = inject(currentProfileStore)
+  private readonly currentUserStore = inject(currentUserStore)
+
+  currentProfile = this.currentProfileStore.profile()
+  currentUser = this.currentUserStore.user()
   sidebarItems = input<SidebarItems>()
 }
