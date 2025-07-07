@@ -5,7 +5,18 @@ import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { iconoirArchive, iconoirEmojiTalkingHappy, iconoirForwardMessage, iconoirLogIn, iconoirMenu, iconoirPeopleTag, iconoirProfileCircle, iconoirSettings, iconoirUser } from '@ng-icons/iconoir';
+import { 
+  iconoirArchive, 
+  iconoirEmojiTalkingHappy, 
+  iconoirForwardMessage, 
+  iconoirLogIn, 
+  iconoirMenu, 
+  iconoirPeopleTag, 
+  iconoirProfileCircle, 
+  iconoirSettings, 
+  iconoirUser,
+  iconoirCommunity
+} from '@ng-icons/iconoir';
 import { BrnSheetContentDirective, BrnSheetTriggerDirective } from '@spartan-ng/brain/sheet';
 import {
   HlmSheetComponent,
@@ -66,6 +77,7 @@ import { currentPageService } from '../../shared/services';
       iconoirUser,
       iconoirArchive,
       iconoirEmojiTalkingHappy,
+      iconoirCommunity,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -114,6 +126,11 @@ export class ChatLayoutComponent implements OnInit {
       route: 'contacts',
       icon: 'iconoirUser',
     },
+    {
+      title: 'friends',
+      route: 'friends',
+      icon: 'iconoirCommunity',
+    }
   ];
 
   sidebarOtherItems: SidebarItem[] = [
