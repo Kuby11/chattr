@@ -37,7 +37,6 @@ export class FriendPageComponent {
   friendsStore = inject(friendsStore);
   currentPage = inject(currentPageService);
 
-  // friends = computed(() => this.friendsStore.friends());
   isLoading = computed(() => !this.friendsStore.friends());
   search = signal<string>('');
 
