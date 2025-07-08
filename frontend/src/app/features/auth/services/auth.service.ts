@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DestroyRef, inject, Injectable, OnInit } from '@angular/core';
 import { AuthInterface, TokenResponse } from '../interfaces';
-import { catchError, delay, interval, map, Observable, Subscription, tap, throwError } from 'rxjs';
+import { catchError, interval, Observable, Subscription, tap, throwError } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 
@@ -85,6 +85,7 @@ export class AuthService {
       })
     )
     .subscribe(()=>{
+      console.log('logout')
       this.cookie.delete('ACCESS_TOKEN');
       this.router.navigate(['/auth']);
     })
