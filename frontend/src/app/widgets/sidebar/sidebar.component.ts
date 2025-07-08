@@ -62,10 +62,12 @@ import { currentUserStore } from '../../entities/user';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  private readonly currentProfileStore = inject(currentProfileStore)
-  private readonly currentUserStore = inject(currentUserStore)
-
-  currentProfile = computed(() => this.currentProfileStore.profile())
-  currentUser = this.currentUserStore.user()
+  currentProfileStore = inject(currentProfileStore)
+  currentUserStore = inject(currentUserStore)
   sidebarItems = input<SidebarItems>()
+  
+  constructor(){
+    this.currentUserStore.loadCurrentUser()
+  }
+
 }
