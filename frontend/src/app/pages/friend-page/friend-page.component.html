@@ -1,0 +1,51 @@
+<div class="p-4 h-dvh overflow-auto">
+	<section class="mt-17 grid gap-2">
+		<div class="grid mb-4">
+			<h2 class="p-2 text-2xl font-medium mb-3">
+				your friends
+				@if(friendsStore.friends()?.length){<span class="font-normal text-xl text-secondary-foreground/50">({{ friendsStore.friends()?.length}})</span>}
+			</h2>
+			<div class="w-full relative">
+				<input 
+					type="text" 
+					[(ngModel)]="search"
+					hlmInput 
+					class="w-full py-6 px-12 hover:shadow-md shadow-accent" 
+					placeholder="search friendsStore.friends"
+				>
+				<ng-icon hlm name="iconoirSearch" class="absolute top-1/2 left-4 -translate-y-1/2 "/>
+			</div>
+		</div>
+		<div class="grid gap-2 md:gap-4">
+			@for (friend of friendsStore.friends() | searchFilter: search(); track friend.friendOf.id) {
+				@defer(hydrate on hover){
+					<article 
+						class="w-full flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
+						hover:scale-[100.5%] hover:bg-accent/25 hover:shadow shadow-accent"
+					>
+						<a [routerLink]="'/profile/' + friend.friendOf.id">
+							<hlm-avatar variant="medium">
+								<img [src]="friend.friendOf.profile.avatar" alt="friend avatar" hlmAvatarImage />
+								<span class="text-white bg-destructive" hlmAvatarFallback>{{  friend.friendOf.profile.displayName | firstLetter }}</span>span>
+							</hlm-avatar>
+						</a>
+						<div class="grid gap-1">
+							<h3 class="text-xl font-medium">{{friend.friendOf.profile.displayName}}</h3>
+							<span class="text-sm">{{'#' + friend.friendOf.username}}</span>
+						</div>
+					</article>
+				}
+			}
+			@if(isLoading()){
+				@for (item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10]; track $index) {
+					<article class="w-full flex items-center gap-4 border p-5 sm:p-6 rounded-xl">
+						<hlm-skeleton class="h-10 w-10 rounded-full "/>
+						<div class="">
+							<hlm-skeleton class="h-4 w-40"/>
+						</div>
+					</article>
+				}
+			}
+		</div>
+	</section>
+</div>
