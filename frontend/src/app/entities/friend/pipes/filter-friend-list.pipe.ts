@@ -1,10 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Friend } from '../../entities/friend';
+import { Friend } from '..';
 
 @Pipe({
-  name: 'searchFilter'
+  name: 'filterFriendList'
 })
-export class SearchFilterPipe implements PipeTransform {
+export class filterFriendListPipe implements PipeTransform {
   transform(term: Friend[] | undefined, search: string) {
 		return term?.filter(term => term.friendOf.username.toLowerCase().includes(search));
 	}
