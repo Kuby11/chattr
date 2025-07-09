@@ -2,7 +2,6 @@ import { Body,ClassSerializerInterceptor,Controller, HttpStatus, Post, Res, Unau
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { UserService } from 'src/user/user.service';
 import { User } from '@prisma';
 import { Response } from 'express';
 import { Cookie, Public, UserAgent } from 'src/libs/decorators';
@@ -13,7 +12,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService
   ) {}
 
   @Public()
