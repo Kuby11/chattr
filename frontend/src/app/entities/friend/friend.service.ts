@@ -10,6 +10,10 @@ export class FriendService {
   private readonly http = inject(HttpClient);
 
   getCurrentFriends() {
-    return this.http.get<Friend[]>(`${API_URL}/friend/my-friends`)
+    return this.http.get<Friend[]>(`${API_URL}/friend/friends`)
+  }
+
+  removeFriend(friendId: string) {
+    return this.http.delete(`${API_URL}/friend/${friendId}`)
   }
 }
