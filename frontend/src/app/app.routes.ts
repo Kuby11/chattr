@@ -34,6 +34,10 @@ export const routes: Routes = [
       {
         path: "friends",
         loadComponent: () => import('./pages/friend-page/friend-page.component').then(m => m.FriendPageComponent)
+      },
+      {
+        path: "add-friend",
+        loadComponent: () => import('./pages/add-friend-page/add-friend-page.component').then(m => m.AddFriendPageComponent)
       }
     ],
   },
