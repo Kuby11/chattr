@@ -17,4 +17,8 @@ export class UserService {
     return this.http.get<User>(`${API_URL}/user/me`)
   }
 
+  findUsersByQuery(searchQuery: string){
+    return this.http.get<User[]>(`${API_URL}/user/find-many/${searchQuery}`)
+  }
+
 }
