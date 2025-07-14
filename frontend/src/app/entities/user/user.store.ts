@@ -12,7 +12,7 @@ const initialValue: UserStore  = {
 	users: undefined
 };
 
-export const UserStore = signalStore(
+export const userStore = signalStore(
 	{ providedIn: 'root' },
 	withState(initialValue),
 	withMethods(state => {

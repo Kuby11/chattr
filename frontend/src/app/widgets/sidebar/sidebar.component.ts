@@ -20,9 +20,9 @@ import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-
 import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
-import { currentProfileStore, Profile } from '../../entities/profile';
+import { profileStore } from '../../entities/profile';
 import { SidebarItems } from '../../shared/interfaces';
-import { currentUserStore } from '../../entities/user';
+import { userStore } from '../../entities/user';
 
 
 @Component({
@@ -62,12 +62,12 @@ import { currentUserStore } from '../../entities/user';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  currentProfileStore = inject(currentProfileStore)
-  currentUserStore = inject(currentUserStore)
+  profileStore = inject(profileStore)
+  userStore = inject(userStore)
   sidebarItems = input<SidebarItems>()
   
   constructor(){
-    this.currentUserStore.loadCurrentUser()
+    this.userStore.loadCurrentUser()
   }
 
 }

@@ -30,9 +30,9 @@ import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
 import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
-import { currentUserStore } from '../../entities/user/current-user.store';
-import { currentProfileStore } from '../../entities/profile';
+import { profileStore } from '../../entities/profile';
 import { currentPageService } from '../../shared/services';
+import { userStore } from '../../entities/user';
 
 
 
@@ -80,22 +80,20 @@ import { currentPageService } from '../../shared/services';
 })
 export class ChatLayoutComponent implements OnInit {
   private readonly currentPageService = inject(currentPageService);
-  private readonly currentUserStore = inject(currentUserStore);
-  private readonly currentProfileStore = inject(currentProfileStore);
-
-  currentUser = this.currentUserStore.user()
-  currentProfile = computed(() =>this.currentProfileStore.profile())
+  
+  userStore = inject(userStore);
+  profileStore = inject(profileStore);
   currentPage = computed(() => this.currentPageService._currentPage());
 
   inputMessage = '';
   inputDescription = '';
 
   constructor() {
-    this.currentProfileStore.loadProfile()
-    this.currentUserStore.loadCurrentUser()
+    this.profileStore.loadProfile()
+    this.userStore.loadCurrentUser()
     effect(() => {
       this.sidebarCommunicationItems[0].route = `profile/${
-        this.currentUserStore.user()?.id
+        this.userStore.currentUser()?.id
       }`;
     });
   }
@@ -108,7 +106,7 @@ export class ChatLayoutComponent implements OnInit {
   sidebarCommunicationItems: SidebarItem[] = [
     {
       title: 'Profile',
-      route: `profile/${this.currentUserStore.user()?.id}`,
+      route: `profile/${this.userStore.currentUser()?.id}`,
       icon: 'iconoirProfileCircle',
     },
     {

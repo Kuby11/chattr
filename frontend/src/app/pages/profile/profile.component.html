@@ -17,8 +17,8 @@
 		<div class="grid md:flex gap-10 mt-10 md:px-10 sm:px-5">
 			<div class="flex flex-col gap-2 w-full">
 				<h2 class="text-3xl font-medium">{{  profileData()?.displayName }}</h2>
-				<h4>{{  '@' + userData()?.username }}</h4>
-				<h3>{{ 'joined at: ' + (userData()?.createdAt | date:'mediumDate') }}</h3>
+				<h4>{{  '@' + userStore.currentUser()?.username }}</h4>
+				<h3>{{ 'joined at: ' + (userStore.currentUser()?.createdAt | date:'mediumDate') }}</h3>
 				@if (isCurrentUser()) {
 					@defer (hydrate on hover) {
 					<div class="flex gap-2 items-center not-sm:justify-between not-sm:*:w-full not-sm:*:**:w-full">

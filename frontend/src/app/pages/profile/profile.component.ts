@@ -17,9 +17,8 @@ import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
 import { currentPageService } from '../../shared/services/current-page.service';
 import { AuthService } from '../../features/auth/services/auth.service';
-import { currentUserStore } from '../../entities/user/current-user.store';
 import { ProfileService, Profile } from '../../entities/profile';
-import { UserService, User } from '../../entities/user';
+import { UserService, userStore } from '../../entities/user';
 
 
 @Component({
@@ -55,16 +54,14 @@ export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService) 
   private readonly fb = inject(FormBuilder);
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly currentUserStore = inject(currentUserStore);
-
+  
+  userStore = inject(userStore);  
   profileData = signal<Profile | null>(null);
-  userData = signal<User | null>(null);
-
+  routeData = this.activatedRoute.data;
+  
+  currentUserId = this.userStore.currentUser()?.id;
   isCurrentUser = signal<boolean>(false);
   canEdit = signal<boolean>(false);
-
-  currentUserId = this.currentUserStore.user()?.id;
-  routeData = this.activatedRoute.data;
  
   ngOnInit() {
     this.loadData()
@@ -89,7 +86,7 @@ export class ProfileComponent implements OnInit {
       }
     })
       
-    this.currentPageService.setPage(this.userData()?.username + '`s profile');
+    this.currentPageService.setPage(this.userStore.currentUser()?.username + '`s profile');
   }
 
   form = this.fb.group({
@@ -103,7 +100,7 @@ export class ProfileComponent implements OnInit {
   onSubmit() {
     if(this.canEdit()){
       this.profileService
-        .updateProfile(this.userData()!.id, this.form.value as Profile)
+        .updateProfile(this.userStore.currentUser()!.id, this.form.value as Profile)
         .subscribe();
       if (!this.form.errors) {
         toast.success('successfully edited profile!', {
@@ -124,7 +121,7 @@ export class ProfileComponent implements OnInit {
     this.routeData
     .subscribe((data: any) => {
       this.profileData.set(data['profile']);
-      this.userData.set(data['user']);
+      // this.userStore.currentUser.set(data['user']);
 
       this.form.controls.displayName.setValue((this.profileData())?.displayName);
       this.form.controls.bio.setValue(this.profileData()?.bio);
@@ -133,7 +130,7 @@ export class ProfileComponent implements OnInit {
     this.userService
     .getMe()
     .subscribe((data)=>{
-      if (data.id === this.userData()!.id) {
+      if (data.id === this.userStore.currentUser()!.id) {
         this.isCurrentUser.set(true);
       }
     });
