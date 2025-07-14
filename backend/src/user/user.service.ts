@@ -26,6 +26,21 @@ export class UserService {
     }
     return user;
   }
+  async findMany(searchQuery: string): Promise<User[]> {
+    const user = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          { id: { contains: searchQuery, mode: "default"} },
+          { username: { contains: searchQuery, mode: "insensitive" } },
+          { profile: { displayName: { contains: searchQuery, mode: "insensitive" } } },
+        ],
+      },
+    });
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+    return user;
+  }
 
   async findUserById(userId: string): Promise<User>{
 		const user = await this.prisma.user.findFirst({
@@ -85,7 +100,7 @@ export class UserService {
     });
   }
 
-  async findAllUsers(): Promise<User[]>{
+  async getAllUsers(): Promise<User[]>{
     return await this.prisma.user.findMany();
   }
 }

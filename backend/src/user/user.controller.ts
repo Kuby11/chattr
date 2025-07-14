@@ -25,7 +25,7 @@ export class UserController {
 
   @Get('all')
   async getAllUsers(){
-    return await this.userService.findAllUsers();
+    return await this.userService.getAllUsers();
   }
 
   @Get('find/:id')
@@ -33,5 +33,9 @@ export class UserController {
     return await this.userService.findUserById(id);
   }
 
+  @Get('find-many/:query')
+  async findMany(@Param("query") query: string){
+    return await this.userService.findMany(query)
+  }
 
 }
