@@ -1,0 +1,29 @@
+@import 'tailwindcss';
+
+.ttr-h1 {
+	@apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+}
+
+.ttr-h2 {
+	@apply scroll-m-20 text-3xl font-semibold tracking-tight transition-colors;
+}
+
+.ttr-h3 {
+	@apply scroll-m-20 text-2xl font-semibold tracking-tight;
+}
+
+.ttr-h4 {
+	@apply scroll-m-20 text-xl font-semibold tracking-tight;
+}
+
+.ttr-large {
+	@apply text-lg font-semibold;
+}
+
+.ttr-small {
+	@apply text-sm font-medium leading-none;
+}
+
+.ttr-muted {
+	@apply text-sm text-muted-foreground;
+}
