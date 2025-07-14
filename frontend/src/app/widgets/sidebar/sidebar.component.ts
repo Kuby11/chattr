@@ -68,6 +68,7 @@ export class SidebarComponent {
   
   constructor(){
     this.userStore.loadCurrentUser()
+    this.profileStore.currentProfile()
   }
 
 }

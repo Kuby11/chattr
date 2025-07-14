@@ -23,7 +23,7 @@ export const profileStore = signalStore(
     const api = inject(ProfileService)
 
     return {
-      loadProfile: () => {
+      loadCurrentProfile: () => {
         api.getCurrentProfile()
         .subscribe((currentProfile: Profile) => {
           patchState(state, { currentProfile })

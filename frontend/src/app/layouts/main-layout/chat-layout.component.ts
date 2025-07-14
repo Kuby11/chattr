@@ -89,7 +89,7 @@ export class ChatLayoutComponent implements OnInit {
   inputDescription = '';
 
   constructor() {
-    this.profileStore.loadProfile()
+    this.profileStore.loadCurrentProfile()
     this.userStore.loadCurrentUser()
     effect(() => {
       this.sidebarCommunicationItems[0].route = `profile/${

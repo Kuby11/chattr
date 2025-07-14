@@ -2,10 +2,10 @@
 	class="relative h-dvh border-border border-r transition-all duration-300 w-17 not-md:hidden"
 >
 	@defer(hydrate on hover){	
-		<a class="w-full flex gap-2 h-17 items-center justify-center" [routerLink]="'profile/' + currentUserStore.user()?.id">
+		<a class="w-full flex gap-2 h-17 items-center justify-center" [routerLink]="'profile/' + userStore.currentUser()?.id">
 			<hlm-avatar >
-				<img [src]="currentProfileStore.profile().avatar" alt="current user profile picture" hlmAvatarImage />
-				<span class="text-white bg-destructive text-xl" hlmAvatarFallback>{{  currentProfileStore.profile().displayName | firstLetter }}</span>
+				<img [src]="profileStore.currentProfile().avatar" alt="current user profile picture" hlmAvatarImage />
+				<span class="text-white bg-destructive text-xl" hlmAvatarFallback>{{  profileStore.currentProfile().displayName | firstLetter }}</span>
 			</hlm-avatar>
 		</a>
 	}
