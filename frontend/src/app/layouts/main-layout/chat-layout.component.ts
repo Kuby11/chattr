@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit } 
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../widgets/sidebar/sidebar.component';
 import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
-import { toast } from 'ngx-sonner';
+import { NgxSonnerToaster, toast } from 'ngx-sonner';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { 
@@ -29,9 +29,9 @@ import { HlmSeparatorDirective } from '@spartan-ng/ui-separator-helm';
 import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
-import { ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
+import { ThemeModes, ThemeSwitcherComponent } from '../../features/theme-switcher/theme-switcher.components';
 import { profileStore } from '../../entities/profile';
-import { currentPageService } from '../../shared/services';
+import { currentPageService, LocalStorageService } from '../../shared/services';
 import { userStore } from '../../entities/user';
 
 
@@ -80,6 +80,7 @@ import { userStore } from '../../entities/user';
 })
 export class ChatLayoutComponent implements OnInit {
   private readonly currentPageService = inject(currentPageService);
+  appTheme = inject(LocalStorageService).getItem('theme') as ThemeModes
   
   userStore = inject(userStore);
   profileStore = inject(profileStore);
