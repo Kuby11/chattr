@@ -7,6 +7,8 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { LocalStorageService } from '../../shared/services';
 
+export type ThemeModes = 'light' | 'dark' | 'system'
+
 @Component({
   selector: 'app-theme-switcher',
   imports: [
@@ -39,7 +41,7 @@ export class ThemeSwitcherComponent implements OnInit {
     }
   }
 
-  themeState = signal<'light' | 'dark'>('light');
+  themeState = signal<ThemeModes>('light');
   buttonIcon = signal('iconoirSunLight');
 
   enableDarkMode = () => {
