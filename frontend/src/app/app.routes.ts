@@ -8,7 +8,7 @@ import { authPageGuard } from './features/auth/guards/auth-page.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./layouts/main-layout/chat-layout.component').then(m => m.ChatLayoutComponent),
+    loadComponent: () => import('./layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
     canActivate: [authGuard],
     children: [
       {
@@ -32,12 +32,16 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/chat-page/chat-page.component').then(m => m.ChatPageComponent),
       },
       {
-        path: "friends",
+        path: 'friends',
         loadComponent: () => import('./pages/friend-page/friend-page.component').then(m => m.FriendPageComponent)
       },
       {
-        path: "add-friend",
-        loadComponent: () => import('./pages/add-friend-page/add-friend-page.component').then(m => m.AddFriendPageComponent)
+        path: 'find-user',
+        loadComponent: () => import('./pages/find-user-page/find-user-page.component').then(m => m.FindUserPageComponent)
+      },
+      {
+        path: 'friend-requests',
+        loadComponent: () => import('./pages/friend-request-page/friend-request-page.component').then(m => m.FriendRequestPageComponent)
       }
     ],
   },
