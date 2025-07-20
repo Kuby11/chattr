@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { friendsStore } from '../../entities/friend/friend.store';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
@@ -10,8 +10,6 @@ import { HlmIconDirective } from '@spartan-ng/ui-icon-helm';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { iconoirSearch, iconoirUserXmark } from '@ng-icons/iconoir';
 import { FormsModule, } from '@angular/forms';
-import { BrnTooltipContentDirective } from '@spartan-ng/brain/tooltip';
-import { HlmTooltipComponent, HlmTooltipTriggerDirective } from '@spartan-ng/ui-tooltip-helm';
 import { BrnAlertDialogContentDirective, BrnAlertDialogTriggerDirective } from '@spartan-ng/brain/alert-dialog';
 import {
   HlmAlertDialogActionButtonDirective,
@@ -22,7 +20,7 @@ import {
   HlmAlertDialogHeaderComponent,
   HlmAlertDialogTitleDirective,
 } from '@spartan-ng/ui-alertdialog-helm';
-import { filterFriendListPipe, Friend, FriendService, SortFriendListPipe } from '../../entities/friend';
+import { filterFriendListPipe, SortFriendListPipe } from '../../entities/friend';
 import { DatePipe } from '@angular/common';
 import {
   BrnPopoverCloseDirective,
@@ -32,6 +30,7 @@ import {
 } from '@spartan-ng/brain/popover';
 import { HlmPopoverCloseDirective, HlmPopoverContentDirective } from '@spartan-ng/ui-popover-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+import { IconButtonComponent } from '../../shared/ui/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-friend-page',
@@ -46,9 +45,6 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
     FormsModule,
     NgIcon,
     filterFriendListPipe,
-    HlmTooltipComponent,
-    HlmTooltipTriggerDirective,
-    BrnTooltipContentDirective,
     HlmAlertDialogActionButtonDirective,
     HlmAlertDialogCancelButtonDirective,
     HlmAlertDialogComponent,
@@ -64,6 +60,7 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
     HlmPopoverContentDirective,
     HlmButtonDirective,
     FirstLetterPipe,
+    IconButtonComponent,
     DatePipe,
     RouterLink,
     SortFriendListPipe,
