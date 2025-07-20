@@ -1,0 +1,73 @@
+<div class="relative first:mt-17 p-4 h-dvh overflow-auto">
+	<section class="w-full grid pt-20 justify-center justify-items-center gap-4">
+		<h3 class="ttr-h3">Find a user</h3>
+		<form class="sm:flex grid sm:gap-2 gap-6" (ngSubmit)="onSubmit(form)" #form="ngForm">
+			<hlm-form-field>
+				<div class="w-fit relative">
+					<input
+						type="text"
+						hlmInput
+						ngModel
+						required
+						name="searchQuery"
+						class="sm:w-120 w-full py-6 px-12 sm:placeholder:text-base placeholder:text-sm hover:shadow-md shadow-accent"
+						placeholder="find friend by id,username"
+					>
+					<span class="text-foreground/50">
+						<ng-icon hlm name="iconoirSearch" class="absolute top-1/2 left-4 -translate-y-1/2 "/>
+					</span>
+				</div>
+				<hlm-error>please enter something!</hlm-error>
+				<hlm-hint>who would you like to find?</hlm-hint>
+			</hlm-form-field>
+			<button hlmBtn [disabled]="userStore.isLoading()" type="submit" class="sm:py-6">submit</button>
+		</form>
+	</section>
+	<section class="mt-10 w-full grid gap-4 justify-items-center">
+		@if (userStore.users()!.length > 0 && !userStore.isLoading()) {
+			<h3 class="text-2xl font-medium">found users</h3>
+		}
+		<div class="w-full grid xl:grid-cols-3 sm:grid-cols-2 gap-2 md:gap-4">
+			@if(!userStore.isLoading()){
+				@for (user of userStore.users(); track user.id; let i = $index) {
+					@defer(hydrate on hover){
+						@let isFriend = friendStore.isFriend(user.id);
+
+						<article 
+							class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
+							hover:scale-[100.5%] hover:bg-accent/25"
+						>
+							<a [routerLink]="'/profile/' + user.id">
+								<hlm-avatar variant="medium">
+									<img [src]="user.profile?.avatar" alt="friend avatar" hlmAvatarImage />
+									<span class="text-white bg-destructive" hlmAvatarFallback>{{  user.profile!.displayName | firstLetter }}</span>span>
+								</hlm-avatar>
+							</a>
+							<div class="grid flex-1 gap-1">
+								<h3 class="text-xl font-medium">{{ user.profile!.displayName }}</h3>
+								<span class="text-sm">{{'#' + user.username}}</span>
+							</div>
+							@if(isFriend){
+								<div class="flex-1 ">
+									<span class="ttr-muted">your friend</span>
+								</div>
+							}
+							<div class="w-fit flex items-center justify-end">
+								<app-icon-button 
+									(click)="sendFriendRequest(user.id); disableButton(i)"
+									tooltipContent="add friend"
+									[variant]="isFriend || !disabledButtons()[i] ? 'disabled' : 'default'"
+								>
+									<ng-icon hlm name="iconoirUserPlus"/>
+								</app-icon-button>
+							</div>
+						</article>
+					}
+				}
+			}
+		</div>
+		@if(userStore.isLoading()){
+			<app-loader />
+		}
+	</section>
+</div>
