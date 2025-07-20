@@ -1,15 +1,18 @@
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals'
 import { User, UserService } from '.';
 import { inject } from '@angular/core';
+import { tap } from 'rxjs';
 
 interface UserStore { 
-	currentUser: User | undefined,
-	users: User[] | undefined,
+	currentUser: User | null
+	users: User[],
+	isLoading: boolean
 }
 
 const initialValue: UserStore  = {
-  currentUser: undefined,
-	users: undefined
+  currentUser: null,
+	users: [],
+	isLoading: false
 };
 
 export const userStore = signalStore(
@@ -19,18 +22,21 @@ export const userStore = signalStore(
 		const api = inject(UserService)
 		return {			
 			loadCurrentUser: () => {
+				patchState(state, { isLoading: true })
 				api.getMe()
 				.subscribe((currentUser: User) => {
-					patchState(state, { currentUser })
+					patchState(state, { currentUser, isLoading: false })
 				})
 			},
 			setCurrentUser: (currentUser: User ) => patchState(state, { currentUser }),
 			resetCurrentUser: () => patchState(state, initialValue),
+
 			findUsers: (searchQuery: string) => {
+				patchState(state, { isLoading: true }) 
 				api.findUsersByQuery(searchQuery)
-				.subscribe((usersRes) => {
-					const users = usersRes
-					patchState(state, { users })
+				.subscribe((users) => {
+					patchState(state, { users, isLoading: false })
+					console.log(state.users())
 				})
 			},
 		}
