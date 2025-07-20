@@ -11,7 +11,8 @@ import {
   iconoirPeopleTag,
   iconoirUser,
   iconoirArchive, 
-  iconoirEmojiTalkingHappy
+  iconoirEmojiTalkingHappy,
+  iconoirSearch
 } from '@ng-icons/iconoir'
 import { HlmSeparatorDirective } from '@spartan-ng/ui-separator-helm';
 import { BrnSeparatorComponent } from '@spartan-ng/brain/separator';
@@ -57,6 +58,7 @@ import { userStore } from '../../entities/user';
       iconoirUser,
       iconoirArchive,
       iconoirEmojiTalkingHappy,
+      iconoirSearch
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
