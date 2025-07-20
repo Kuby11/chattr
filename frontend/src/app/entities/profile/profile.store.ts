@@ -3,7 +3,8 @@ import { Profile, ProfileService } from '.'
 import { inject } from '@angular/core';
 
 interface ProfileStore { 
-  currentProfile: Profile 
+  currentProfile: Profile,
+  profiles: Profile[]
 }
 
 const initialValue: ProfileStore = {
@@ -13,7 +14,8 @@ const initialValue: ProfileStore = {
     avatar: '',
     userId: '',
     bio: ''
-  }
+  },
+  profiles: []
 };
 
 export const profileStore = signalStore(
@@ -30,7 +32,14 @@ export const profileStore = signalStore(
         })
       },
       setCurrentProfile: (currentProfile: Profile ) => patchState(state, { currentProfile }),
-      resetCurrentProfile: () => patchState(state, initialValue)
+      resetCurrentProfile: () => patchState(state, initialValue),
+
+      findProfiles: (searchQuery: string) => {
+				api.findProfilesByQuery(searchQuery)
+				.subscribe((profiles) => {
+					patchState(state, { profiles })
+				})
+			},
     }
 	})
 )

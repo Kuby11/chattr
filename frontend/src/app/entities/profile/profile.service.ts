@@ -20,5 +20,9 @@ export class ProfileService {
   getCurrentProfile(){
     return this.http.get<Profile>(`${API_URL}/profile/me`)
   }
+
+  findProfilesByQuery(searchQuery: string){
+    return this.http.get<Profile[]>(`${API_URL}/profiles/find-many/${searchQuery}`)
+  }
   
 }
