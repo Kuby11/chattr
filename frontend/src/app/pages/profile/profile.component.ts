@@ -39,7 +39,6 @@ import { UserService, userStore } from '../../entities/user';
     HlmInputDirective,
     HlmHintDirective,
     HlmErrorDirective,
-    HlmToasterComponent,
     DatePipe,
   ],
   templateUrl: './profile.component.html',
