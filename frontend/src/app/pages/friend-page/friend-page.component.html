@@ -1,12 +1,12 @@
-<div class=" p-4 h-dvh overflow-auto">
+<div class="p-4 h-dvh overflow-auto">
 	<section class="grid gap-2 mt-17">
 				<div class="grid mb-4">
 					<div class="flex items-center mb-2">
 						<h2 class="p-2 not-sm:flex-1 not-sm:justify-end sm:inline flex items-center sm:text-2xl text-xl font-medium">
 							friends
-							@if(friendsStore.friends()?.length){<span class="font-normal text-xl text-secondary-foreground/50">({{ friendsStore.friends()?.length}})</span>}
+							@if(friendsStore.friends().length){<span class="font-normal text-xl text-secondary-foreground/50">({{ friendsStore.friends().length}})</span>}
 						</h2>
-						<a routerLink="/add-friend" class="text-primary font-normal text-xl ml-2 cursor-pointer">add friend</a>
+						<a routerLink="//find-user" class="text-primary font-normal text-xl ml-2 cursor-pointer">add friend</a>
 					</div>
 					<div class="w-full grid sm:flex items-center gap-3">
 						<div class="w-full sm:w-1/2 md:w-1/3 relative">
@@ -39,7 +39,7 @@
 									<button type="button" hlmBtn variant="ghost" (click)="sortQuery.set('first')">first</button>
 								</div>
 							</brn-popover>
-							<div hlmBtn variant="outline" class="sm:h-full w-full sm:w-fit">friend requests</div>
+							<div routerLink="/friend-requests" hlmBtn variant="outline" class="sm:h-full w-full sm:w-fit">friend requests</div>
 						</div>
 					</div>
 				</div>
@@ -47,7 +47,6 @@
 					@for (friend of friendsStore.friends() | filterFriendList: searchQuery() | sortFriendList: sortQuery() ; track friend.friendOf.id) {
 						@defer(hydrate on hover){
 							<article 
-								#friendEl
 								class="w-full flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
 								hover:scale-[100.5%] hover:bg-accent/25 animate-out"
 							>
@@ -64,17 +63,11 @@
 								<time class="justify-self-end text-sm md:text-base">friends since {{ friend.createdAt | date:'dd.MM.yyyy' }}</time>
 								<div class="w-fit flex items-center justify-end">
 									<hlm-alert-dialog>
-										<hlm-tooltip>
-											<button
-												hlmTooltipTrigger 
-												brnAlertDialogTrigger
-												aria-describedby="remove friend" 
-												class="text-destructive flex sm:p-2 rounded-xl transition hover:bg-destructive/20"
-											>
+										<button class="contents" brnAlertDialogTrigger>
+											<app-icon-button brnAlertDialogTrigger variant="destructive" tooltipContent="remove friend">
 												<ng-icon hlm name="iconoirUserXmark"/>
-											</button>
-											<span *brnTooltipContent class="text-destructive">remove friend</span>
-										</hlm-tooltip>
+											</app-icon-button>
+										</button>
 										<hlm-alert-dialog-content *brnAlertDialogContent="let ctx">
 											<hlm-alert-dialog-header>
 												<h3 
