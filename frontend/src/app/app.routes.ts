@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { userResolver } from './entities/user/user.resolver';
 import { profileResolver } from './entities/profile/profile.resolver';
-import { authGuard } from './features/auth/guards/auth.guard';
-import { authPageGuard } from './features/auth/guards/auth-page.guard';
+import { authGuard } from './core/auth/guards/auth.guard';
 
 
 export const routes: Routes = [
@@ -48,7 +47,6 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadComponent: () => import('./layouts/auth-layout/auth-layout.component').then(m => m.AuthLayoutComponent),
-    canActivate: [authPageGuard],
     children: [
       {
         path: '',

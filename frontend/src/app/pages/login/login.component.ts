@@ -8,8 +8,8 @@ import { RouterLink } from '@angular/router';
 
 
 import { FormType } from '../../layouts/auth-layout/types';
-import { AuthResponseInterface } from '../../features/auth/interfaces';
-import { AuthService } from '../../features/auth/services/auth.service';
+import { AuthResponseInterface } from '../../core/auth/interfaces';
+import { AuthService } from '../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-login',

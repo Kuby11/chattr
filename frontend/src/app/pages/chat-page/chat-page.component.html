@@ -1,13 +1,14 @@
 <div class="w-full h-full">
 	<div class="w-full h-full flex">
 		<div class="min-w-65 h-full border-r flex flex-col overflow-auto mt-17">
-			@for (profile of profiles(); track profile.userId) {
+			@for (friend of friendStore.friends(); track friend.friendOf.id) {
+				@let profile = friend.friendOf.profile;
 				<div
 					class="
 						text-foreground flex items-center gap-2 p-3 hover:cursor-pointer
 						not-first:border-t last:border-b relative hover:bg-accent transition-colors duration-200"
 				>
-					<a [routerLink]="'/profile/' + profile.userId">
+					<a [routerLink]="'/profile/' + friend.friendOf.id">
 						<hlm-avatar variant="medium" class="flex-shrink-0">
 							<img src="" alt="user profile picture" hlmAvatarImage>
 							<span class="bg-primary text-accent text-xl" hlmAvatarFallback>{{ profile.displayName | firstLetter }}</span>
@@ -22,7 +23,7 @@
 					</div>
 				</div>
 			}
-			@if(isLoading()) {
+			@if(friendStore.isLoading()) {
 				@for (item of skeletonItems(); track $index) {
 					<div
 						class="

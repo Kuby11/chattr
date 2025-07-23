@@ -15,7 +15,7 @@ import { HlmFormFieldComponent, HlmHintDirective } from '@spartan-ng/ui-formfiel
 import { HlmErrorDirective } from "../../../../libs/src/ui/ui-formfield-helm/src/lib/hlm-error.directive";
 import { toast } from 'ngx-sonner';
 import { currentPageService } from '../../shared/services/current-page.service';
-import { AuthService } from '../../features/auth/services/auth.service';
+import { AuthService } from '../../core/auth/services/auth.service';
 import { ProfileService, Profile } from '../../entities/profile';
 import { User, UserService, userStore } from '../../entities/user';
 import { friendsStore } from '../../entities/friend/friend.store';

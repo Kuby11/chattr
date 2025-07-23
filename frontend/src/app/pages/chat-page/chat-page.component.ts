@@ -7,7 +7,7 @@ import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
 import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
 import { ShortenUsernamePipe } from '../../shared/pipes/shorten-username.pipe';
 import { currentPageService } from '../../shared/services';
-import { ProfileService, Profile } from '../../entities/profile';
+import { friendsStore } from '../../entities/friend/friend.store';
 
 
 @Component({
@@ -28,22 +28,13 @@ import { ProfileService, Profile } from '../../entities/profile';
 })
 export class ChatPageComponent implements OnInit {
   private readonly pageService = inject(currentPageService);
-  private readonly profileService = inject(ProfileService);
+  
+  friendStore = inject(friendsStore)
 
-  profiles = signal<Profile[]>([]);
   skeletonItems = signal<number[]>(Array(20).fill(0))
-  isLoading = signal<boolean>(true);
 
   ngOnInit() {
-    this.loadUsers();
+    this.friendStore.loadMyFriends()
     this.pageService.setPage('chat');
-  }
-
-  private async loadUsers() {
-    const response = await firstValueFrom(this.profileService.getAllProfiles());
-    if (response) {
-      this.isLoading.set(false);
-    }
-    this.profiles.set(response)
   }
 }

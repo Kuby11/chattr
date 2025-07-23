@@ -4,7 +4,7 @@ import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withVi
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay, withIncrementalHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor } from './features/auth/interceptors';
+import { authInterceptor } from './core/auth/interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [
