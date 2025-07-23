@@ -36,9 +36,9 @@ export const userStore = signalStore(
 				api.findUsersByQuery(searchQuery)
 				.subscribe((users) => {
 					patchState(state, { users, isLoading: false })
-					console.log(state.users())
 				})
 			},
+
 		}
 	})
 )
