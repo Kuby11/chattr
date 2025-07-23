@@ -14,6 +14,10 @@ export class FriendService {
     return this.http.get<Friend[]>(`${API_URL}/friend/friends`)
   }
 
+  getUserFriends(id: string) {
+    return this.http.get<Friend[]>(`${API_URL}/friend/friends/${id}`)
+  }
+
   getFriendRequests(){
     return this.http.get<FriendRequest[]>(`${API_URL}/friend/friend-requests`)
   }
