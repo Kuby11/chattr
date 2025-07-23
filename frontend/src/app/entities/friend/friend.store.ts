@@ -22,7 +22,16 @@ export const friendsStore = signalStore(
 		const api = inject(FriendService)
 		
 		return {
-			loadFriends: () => {
+			loadFriends: (id: string) => {
+				let friends: undefined | Friend[] = undefined
+				api.getUserFriends(id)
+				.subscribe((friendRes: Friend[])=>{
+					friends = friendRes
+					patchState(state, { friends })
+				})
+			},
+
+			loadMyFriends: () => {
 				let friends: undefined | Friend[] = undefined
 				api.getFriends()
 				.subscribe((friendRes: Friend[])=>{
@@ -30,6 +39,7 @@ export const friendsStore = signalStore(
 					patchState(state, { friends })
 				})
 			},
+	
 			removeFriend(friendId: string){
 				const friends = state.friends()?.filter(item => item.friendOf.id !== friendId)
 				api.removeFriend(friendId)
@@ -44,7 +54,7 @@ export const friendsStore = signalStore(
 
 			isFriend(id: string){
 				if(state.friends()?.length === 0) {
-					this.loadFriends()
+					this.loadMyFriends()
 				}
 				return state.friends()?.find((friend) => friend.friendOf.id === id)
 			},
