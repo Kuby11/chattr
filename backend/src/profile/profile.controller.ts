@@ -37,4 +37,9 @@ export class ProfileController {
   ) {
     return this.profileService.updateProfile(id, payload)
   }
+
+  @Get('find-many/:query')
+  async findMany(@Param("query") query: string){
+    return await this.profileService.findManyProfiles(query)
+  }
 }

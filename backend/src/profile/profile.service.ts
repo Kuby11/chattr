@@ -54,6 +54,21 @@ export class ProfileService {
 		return await this.prisma.profile.findMany()
 	}
 
+	async findManyProfiles(searchQuery: string): Promise<Profile[]> {
+    const profiles = await this.prisma.profile.findMany({
+      where: {
+        OR: [
+          { user: { username : { contains: searchQuery, mode: "insensitive" } } },
+					{ displayName: { contains: searchQuery, mode: "insensitive" } },
+        ],
+      },
+    });
+    if (!profiles) {
+      throw new NotFoundException("profile not found");
+    }
+    return profiles;
+  }
+
 	async getCurrentProfile(user: JwtPayload){
 		return await this.prisma.profile.findFirst({
 			where: {
