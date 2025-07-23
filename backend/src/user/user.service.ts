@@ -30,11 +30,13 @@ export class UserService {
     const user = await this.prisma.user.findMany({
       where: {
         OR: [
-          { id: { contains: searchQuery, mode: "default"} },
           { username: { contains: searchQuery, mode: "insensitive" } },
           { profile: { displayName: { contains: searchQuery, mode: "insensitive" } } },
         ],
       },
+      include: {
+        profile: true
+      }
     });
     if (!user) {
       throw new NotFoundException("User not found");
