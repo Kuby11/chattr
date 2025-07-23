@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { friendsStore } from '../../entities/friend/friend.store';
-import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
-import { FirstLetterPipe } from '../../shared/pipes/first-letter.pipe';
 import { currentPageService } from '../../shared/services';
 import { RouterLink } from '@angular/router';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
@@ -23,12 +21,11 @@ import {
 import { filterFriendListPipe, SortFriendListPipe } from '../../entities/friend';
 import { DatePipe } from '@angular/common';
 import {
-  BrnPopoverCloseDirective,
   BrnPopoverComponent,
   BrnPopoverContentDirective,
   BrnPopoverTriggerDirective,
 } from '@spartan-ng/brain/popover';
-import { HlmPopoverCloseDirective, HlmPopoverContentDirective } from '@spartan-ng/ui-popover-helm';
+import { HlmPopoverContentDirective } from '@spartan-ng/ui-popover-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { IconButtonComponent } from '../../shared/ui/icon-button/icon-button.component';
 import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
@@ -37,9 +34,6 @@ import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
   selector: 'app-friend-page',
   imports: [
     RouterLink,
-    HlmAvatarImageDirective,
-    HlmAvatarComponent,
-    HlmAvatarFallbackDirective,
     HlmSkeletonComponent,
     HlmInputDirective,
     HlmIconDirective,
@@ -60,7 +54,6 @@ import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
     BrnPopoverTriggerDirective,
     HlmPopoverContentDirective,
     HlmButtonDirective,
-    FirstLetterPipe,
     AvatarComponent,
     IconButtonComponent,
     DatePipe,
