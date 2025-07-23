@@ -50,12 +50,11 @@
 								class="w-full flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
 								hover:scale-[100.5%] hover:bg-accent/25 animate-out"
 							>
-								<a [routerLink]="'/profile/' + friend.friendOf.id">
-									<hlm-avatar variant="medium">
-										<img [src]="friend.friendOf.profile.avatar" alt="friend avatar" hlmAvatarImage />
-										<span class="text-white bg-destructive" hlmAvatarFallback>{{  friend.friendOf.profile.displayName | firstLetter }}</span>span>
-									</hlm-avatar>
-								</a>
+								<app-avatar 
+									[routerLink]="'/profile/' + friend.friendOf.id"
+									[avatarUrl]="friend.friendOf.profile.avatar"
+									[fallback]="friend.friendOf.profile.displayName"
+								/>
 								<div class="grid flex-1 gap-1">
 									<h3 class="text-xl font-medium">{{ friend.friendOf.profile.displayName }}</h3>
 									<span class="text-sm">{{'#' + friend.friendOf.username}}</span>

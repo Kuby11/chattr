@@ -31,6 +31,7 @@ import {
 import { HlmPopoverCloseDirective, HlmPopoverContentDirective } from '@spartan-ng/ui-popover-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { IconButtonComponent } from '../../shared/ui/icon-button/icon-button.component';
+import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
 
 @Component({
   selector: 'app-friend-page',
@@ -60,6 +61,7 @@ import { IconButtonComponent } from '../../shared/ui/icon-button/icon-button.com
     HlmPopoverContentDirective,
     HlmButtonDirective,
     FirstLetterPipe,
+    AvatarComponent,
     IconButtonComponent,
     DatePipe,
     RouterLink,
