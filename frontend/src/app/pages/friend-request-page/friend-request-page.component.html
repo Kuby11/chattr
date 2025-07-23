@@ -2,73 +2,75 @@
 	<div class="mt-17">
 		<h3 class="ttr-h4">your friend requests</h3>
 	</div>
-	<div class="grid justify-self-center sm:flex sm:gap-2 sm:p-1 p-1 rounded w-fit bg-accent">
-		<label class="flex justify-center sm:p-1 sm:w-fit w-full cursor-pointer">
-			<input type="radio" name="radio" checked class="peer hidden" (click)="currentTab.set('sentToYou')">
-			<span class="flex justify-center px-4 py-2 transition peer-checked:bg-background rounded w-full h-full">requests sent to you</span>
-		</label>
-		<label class="flex items-center sm:p-1 sm:w-fit w-full cursor-pointer">
-			
-			<input type="radio" name="radio" class="peer hidden" (click)="currentTab.set('sentByYou')">
-			<span class="flex justify-center px-4 py-2 transition peer-checked:bg-background rounded w-full h-full">requests sent by you</span>
-		</label>
-	</div>
-	<section class="relative w-full grid xl:grid-cols-3 sm:grid-cols-2 gap-2 md:gap-4">
-		@if(currentTab() === 'sentToYou'){
-			@for (request of requestsSentToUser(); track request.id; let i = $index) {
-				@defer(hydrate on hover){
-					<article 
-						class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
-						hover:scale-[100.5%] hover:bg-accent/25"
-					>
-						<div class="flex flex-1 md:flex-col justify-start">
-							<p>
-								request sent by 
-								<a hlmBtn variant="link" class="text-base md:px-2">#{{ request.receiver.username }}</a>
-							</p>
-						</div>
-						<div class="flex gap-2">
-							<app-icon-button (click)="acceptFriendRequest(request.id)" tooltipContent="accept request">
-								<ng-icon hlm name="iconoirUserPlus" /> 
-							</app-icon-button>
-							<app-icon-button tooltipContent="decline request" variant="destructive">
-								<ng-icon hlm name="iconoirUserXmark" /> 
-							</app-icon-button>
-						</div>
-					</article>
+	<hlm-tabs tab="sentByYou" class="w-full">
+		<hlm-tabs-list class="grid sm:w-fit w-full grid-cols-2" aria-label="tabs example">
+			<button hlmTabsTrigger="sentByYou" class="text-xs sm:text-sm">requests sent to you</button>
+			<button hlmTabsTrigger="sentToYou" class="text-xs sm:text-sm">requests sent by you</button>
+		</hlm-tabs-list>
+		<div hlmTabsContent="sentByYou">
+			<section class="mt-10 relative w-full grid xl:grid-cols-3 sm:grid-cols-2 gap-2 md:gap-4" >
+				@for (request of requestsSentToUser(); track request.id; let i = $index) {
+					@defer(hydrate on hover){
+						<article 
+							class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
+							hover:scale-[100.5%] hover:bg-accent/25"
+						>
+							<div class="flex flex-1 md:flex-col justify-start">
+								<p>
+									request sent by 
+									<a hlmBtn variant="link" class="text-base md:px-2">#{{ request.receiver.username }}</a>
+								</p>
+							</div>
+							<div class="flex gap-2">
+								<app-icon-button (click)="acceptFriendRequest(request.id)" tooltipContent="accept request">
+									<ng-icon hlm name="iconoirUserPlus" /> 
+								</app-icon-button>
+								<app-icon-button tooltipContent="decline request" variant="destructive">
+									<ng-icon hlm name="iconoirUserXmark" /> 
+								</app-icon-button>
+							</div>
+						</article>
+					}
+				}@empty {
+					<p class="text-border absolute top-20 left-1/2 -translate-x-1/2 -translate-y-1/2">no requests...</p>
 				}
-			}@empty {
-				<p class="text-border absolute top-20 left-1/2 -translate-x-1/2 -translate-y-1/2">no requests...</p>
-			}
-		}
-		@if(currentTab() === 'sentByYou'){
-			@for (request of requestsSentByUser(); track request.id; let i = $index) {
-				@defer(hydrate on hover){
-					<article 
-						class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
-						hover:scale-[100.5%] hover:bg-accent/25"
-					>
-						<div class="flex flex-1 md:flex-col justify-start">
-							<p>
-								request sent to 
-								<a hlmBtn variant="link" class="text-base md:px-2">#{{ request.receiver.username }}</a>
-							</p>
-						</div>
-						<div class="flex gap-2">
-							<app-icon-button (click)="cancelFriendRequest(request.id)" variant="destructive" tooltipContent="decline request">
-								<ng-icon hlm name="iconoirUserXmark" /> 
-							</app-icon-button>
-						</div>
-					</article>
+				@if(friendStore.isLoading() && friendStore.friendRequests().length === 0){
+					@for(item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10]; track $index){
+						<hlm-skeleton class="h-20 w-full"/>
+					}
 				}
-			}@empty {
-				<p class="text-border absolute top-20 left-1/2 -translate-x-1/2 -translate-y-1/2">no requests...</p>
-			}
-		}
-		@if(friendStore.isLoading() && friendStore.friendRequests().length === 0){
-			@for(item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10]; track $index){
-				<hlm-skeleton class="h-20 w-full"/>
-			}
-		}
-	</section>
+			</section>
+		</div>
+		<div hlmTabsContent="sentToYou">
+			<section class="mt-6 relative w-full grid xl:grid-cols-3 sm:grid-cols-2 gap-2 md:gap-4" >
+				@for (request of requestsSentByUser(); track request.id; let i = $index) {
+					@defer(hydrate on hover){
+						<article 
+							class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
+							hover:scale-[100.5%] hover:bg-accent/25"
+						>
+							<div class="flex flex-1 md:flex-col justify-start">
+								<p>
+									request sent to 
+									<a hlmBtn variant="link" class="text-base md:px-2">#{{ request.receiver.username }}</a>
+								</p>
+							</div>
+							<div class="flex gap-2">
+								<app-icon-button (click)="cancelFriendRequest(request.id)" variant="destructive" tooltipContent="decline request">
+									<ng-icon hlm name="iconoirUserXmark" /> 
+								</app-icon-button>
+							</div>
+						</article>
+					}
+				}@empty {
+					<p class="text-border absolute top-20 left-1/2 -translate-x-1/2 -translate-y-1/2">no requests...</p>
+				}
+				@if(friendStore.isLoading() && friendStore.friendRequests().length === 0){
+					@for(item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10]; track $index){
+						<hlm-skeleton class="h-20 w-full"/>
+					}
+				}
+			</section>
+		</div>
+	</hlm-tabs>
 </div>

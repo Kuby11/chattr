@@ -8,6 +8,7 @@ import { IconButtonComponent } from '../../shared/ui/icon-button/icon-button.com
 import { toast } from 'ngx-sonner';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
 import { userStore } from '../../entities/user';
+import { HlmTabsComponent, HlmTabsContentDirective, HlmTabsListComponent, HlmTabsTriggerDirective } from '@spartan-ng/ui-tabs-helm';
 
 @Component({
   selector: 'app-friend-request-page',
@@ -16,6 +17,10 @@ import { userStore } from '../../entities/user';
     IconButtonComponent,
     HlmSkeletonComponent,
     HlmIconDirective,
+    HlmTabsComponent,
+    HlmTabsContentDirective,
+    HlmTabsListComponent,
+    HlmTabsTriggerDirective,
     NgIcon
   ],
   templateUrl: './friend-request-page.component.html',
@@ -30,8 +35,6 @@ import { userStore } from '../../entities/user';
 export class FriendRequestPageComponent {
   friendStore = inject(friendsStore)
   userStore = inject(userStore)
-
-  currentTab = signal<'sentToYou' | 'sentByYou'>('sentToYou')
 
   requestsSentToUser = computed(() =>
     this.friendStore.friendRequests()
