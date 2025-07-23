@@ -1,5 +1,6 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { FriendRequest } from '@prisma';
+import { FriendRequest, Friendship } from '@prisma';
+import { throwError } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -10,6 +11,16 @@ export class FriendService {
     senderId: string,
     receiverId: string
   ): Promise<FriendRequest> {
+		const friendship = await this.prisma.friendship.findFirst({
+			where: {
+				OR: [
+					{ friendOfId: senderId, userId: receiverId },
+					{ friendOfId: receiverId, userId: senderId },
+				]
+			}
+		})
+		if(friendship) throw new ConflictException("you are already friends with this user!")
+
     const findFriendRequest = await this.prisma.friendRequest.findFirst({
       where: {
         AND: [{ senderId: senderId }, { receiverId: receiverId }],
@@ -145,39 +156,42 @@ export class FriendService {
 				]
 			}
 		})
-		if (!friendRequest) throw new NotFoundException("friend request not found");
+		console.log(friendId)
+		if (!friendRequest) throw new NotFoundException("friend not found");
 
-		await this.prisma.$transaction([
-			this.prisma.friendship.deleteMany({
-				where: {
-					OR: [
-						{
-							userId: userId,
-							friendOfId: friendId
-						},
-						{
-							userId: friendId,
-							friendOfId: userId
-						}
-					]
-				}
-			}),	
-			this.prisma.friendRequest.delete({
-				where: {
-					id: friendRequest.id,
-				},
-			})
-		])
+		// await this.prisma.$transaction([
+		// 	this.prisma.friendship.deleteMany({
+		// 		where: {
+		// 			OR: [
+		// 				{
+		// 					userId: userId,
+		// 					friendOfId: friendId
+		// 				},
+		// 				{
+		// 					userId: friendId,
+		// 					friendOfId: userId
+		// 				}
+		// 			]
+		// 		}
+		// 	}),	
+		// 	this.prisma.friendRequest.delete({
+		// 		where: {
+		// 			id: friendRequest.id,
+		// 		},
+		// 	})
+		// ])
 		
-		
-		return `user with Id ${friendId} removed from your friends list`;
+				return { message: `user with Id ${friendId} removed from your friends list`};
 	}
 
-	async getMyFriends(userId: string) {
-		if (!userId) throw new NotFoundException("user not found");
+	async getFriends(userId: string) {
+		if (!userId) throw new NotFoundException("invalid id");
 		return await this.prisma.friendship.findMany({
       where: {
-        userId: userId,
+				OR: [
+					{ userId: userId },
+					{ friendOfId: userId }
+				]
       },
       select: {
         friendOf: {
@@ -198,5 +212,29 @@ export class FriendService {
         createdAt: true,
       },
     }); 
+	}
+
+	async getFriendRequests(userId: string){
+		if(!userId) throw new NotFoundException('invalid id')
+		return this.prisma.friendRequest.findMany({
+			where: {
+				OR: [
+					{ senderId: userId },
+					{ receiverId: userId }
+				]
+			},
+			include: {
+				receiver: {
+					omit: {
+						password: true
+					}
+				},
+				sender: {
+					omit: {
+						password: true
+					}
+				}
+			}
+		})
 	}
 }

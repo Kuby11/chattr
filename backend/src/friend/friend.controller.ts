@@ -1,4 +1,4 @@
-import { ConflictException, Controller, ForbiddenException, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
+import { ConflictException, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/libs/decorators';
 import { FriendService } from './friend.service';
 import { User } from '@prisma';
@@ -8,7 +8,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
-  @UseGuards(AuthGuard("jwt"))
   @Post("send-friend-request/:receiverId")
   async friendRequest(
     @CurrentUser() sender: User,
@@ -25,7 +24,6 @@ export class FriendController {
       });
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Post("accept-friend-request/:requestId")
   async acceptFriendRequest(
     @CurrentUser() receiver: User,
@@ -40,7 +38,6 @@ export class FriendController {
       });
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Post("decline-friend-request/:requestId")
   async declineFriendRequest(
     @CurrentUser() receiver: User,
@@ -53,8 +50,7 @@ export class FriendController {
       });
   }
 
-  @UseGuards(AuthGuard("jwt"))
-  @Post("cancel-friend-request/:requestId")
+  @Delete("friend-request/:requestId")
   async cancelFriendRequest(
     @CurrentUser() sender: User,
     @Param("requestId") requestId: string
@@ -70,8 +66,7 @@ export class FriendController {
       });
   }
 
-  @UseGuards(AuthGuard("jwt"))
-  @Post("remove-friend/:friendId")
+  @Delete(":friendId")
   async removeFriend(
     @CurrentUser() sender: User,
     @Param("friendId") friendId: string 
@@ -83,14 +78,22 @@ export class FriendController {
           throw new ForbiddenException(
             "you are not the sender of this request"
           );
-        throw err;
+        throw err; 
       });
   }
 
-  @UseGuards(AuthGuard("jwt"))
-  @Get("my-friends")
+  @Get("friends")
   async getMyFriends(@CurrentUser() user: User) {
-    return this.friendService.getMyFriends(user.id);
+    return this.friendService.getFriends(user.id);
   }
 
+  @Get('friends/:id')
+  async getUserFriends(@Param('id') id: string){
+    return this.friendService.getFriends(id)
+  }
+
+  @Get("friend-requests")
+  async getMyFriendRequests(@CurrentUser() user: User){
+    return this.friendService.getFriendRequests(user.id)
+  }
 }
