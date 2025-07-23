@@ -80,15 +80,15 @@ export class AuthService {
     return this.http
     .post(`${this.API_URL}/auth/logout`,{}, { withCredentials: true })
     .pipe(
+      tap(()=>{
+        console.log('logout')
+        this.cookie.delete('ACCESS_TOKEN');
+        this.router.navigate(['/auth']);
+      }),
       catchError((err: HttpErrorResponse) =>{
         return throwError(() => err.error);        
       })
     )
-    .subscribe(()=>{
-      console.log('logout')
-      this.cookie.delete('ACCESS_TOKEN');
-      this.router.navigate(['/auth']);
-    })
   }
 
   refreshToken(){
