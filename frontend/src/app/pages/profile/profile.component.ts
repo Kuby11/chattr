@@ -13,12 +13,12 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HlmFormFieldComponent, HlmHintDirective } from '@spartan-ng/ui-formfield-helm';
 import { HlmErrorDirective } from "../../../../libs/src/ui/ui-formfield-helm/src/lib/hlm-error.directive";
-import { HlmToasterComponent } from '@spartan-ng/ui-sonner-helm';
 import { toast } from 'ngx-sonner';
 import { currentPageService } from '../../shared/services/current-page.service';
 import { AuthService } from '../../features/auth/services/auth.service';
 import { ProfileService, Profile } from '../../entities/profile';
-import { UserService, userStore } from '../../entities/user';
+import { User, UserService, userStore } from '../../entities/user';
+import { friendsStore } from '../../entities/friend/friend.store';
 
 
 @Component({
@@ -54,30 +54,21 @@ export class ProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly activatedRoute = inject(ActivatedRoute);
   
-  userStore = inject(userStore);  
+  userStore = inject(userStore);
+  friendStore = inject(friendsStore)
   profileData = signal<Profile | null>(null);
   routeData = this.activatedRoute.data;
   
-  currentUserId = this.userStore.currentUser()?.id;
   isCurrentUser = signal<boolean>(false);
   canEdit = signal<boolean>(false);
  
   ngOnInit() {
     this.loadData()
-    
-    this.activatedRoute.params
-    .subscribe((paramData)=>{
-      const id = paramData['id'];
-      this.loadData()
-      if(this.currentUserId === id){
-        this.isCurrentUser.set(true);
-      }
-    })
       
     this.form.valueChanges.subscribe((data) => {
       if (
-        data.bio === this.profileData()?.bio &&
-        data.displayName === this.profileData()?.displayName
+        data.bio?.trim() === this.profileData()?.bio?.trim() &&
+        data.displayName?.trim() === this.profileData()?.displayName.trim()
       ) {
         this.canEdit.set(false);
       } else {
@@ -113,25 +104,24 @@ export class ProfileComponent implements OnInit {
   }
 
   logout(){
-    this.authService.logout()
+    this.authService.logout().subscribe()
   }
 
   private loadData(){
+    
     this.routeData
     .subscribe((data: any) => {
-      this.profileData.set(data['profile']);
-      // this.userStore.currentUser.set(data['user']);
+      const profile: Profile = data['profile']
+      const user: User = data['user']
+      
+      this.profileData.set(profile);
+      if(this.userStore.currentUser()?.id === user.id){
+        this.isCurrentUser.set(true)
+      }
+      this.friendStore.loadFriends(user.id)
 
       this.form.controls.displayName.setValue((this.profileData())?.displayName);
       this.form.controls.bio.setValue(this.profileData()?.bio);
-    });
-
-    this.userService
-    .getMe()
-    .subscribe((data)=>{
-      if (data.id === this.userStore.currentUser()!.id) {
-        this.isCurrentUser.set(true);
-      }
     });
   }
 }

@@ -1,5 +1,5 @@
 <div class="p-5 w-full h-full overflow-auto">
-	<div class="height w-full flex flex-col gap-5 md:border rounded-[0.75rem] md:p-5 mt-17">
+	<section class="height w-full flex flex-col gap-5 md:border rounded-[0.75rem] md:p-5 mt-17">
 		<div class="transition lg:min-h-80 sm:min-h-60 min-h-40 w-full bg-primary rounded-[0.75rem] relative">
 			<hlm-avatar 
 				variant="large" 
@@ -18,78 +18,78 @@
 			<div class="flex flex-col gap-2 w-full">
 				<h2 class="text-3xl font-medium">{{  profileData()?.displayName }}</h2>
 				<h4>{{  '@' + userStore.currentUser()?.username }}</h4>
-				<h3>{{ 'joined at: ' + (userStore.currentUser()?.createdAt | date:'mediumDate') }}</h3>
+				<time>joined at: {{ (userStore.currentUser()?.createdAt | date:'mediumDate') }}</time>
+				<span>friends: {{ friendStore.friends().length }}</span>
 				@if (isCurrentUser()) {
 					@defer (hydrate on hover) {
-					<div class="flex gap-2 items-center not-sm:justify-between not-sm:*:w-full not-sm:*:**:w-full">
-						<hlm-dialog >
-							<button brnDialogTrigger hlmBtn >logout</button>
-							<hlm-dialog-content class="rounded-xl" *brnDialogContent="let ctx">
-								<div class="pt-5 flex flex-col gap-5">
-									<h2 class="text-2xl font-medium">are you sure to logout?</h2>
-									<button hlmBtn  class="w-full" (click)="logout()">yes</button>
-								</div>
-							</hlm-dialog-content>
-						
-						</hlm-dialog>
-						<hlm-dialog>
-							<button brnDialogTrigger hlmBtn>Edit Profile</button>
-							<hlm-dialog-content class="rounded-xl" *brnDialogContent="let ctx">
-								<hlm-dialog-header>
-									<h3 brnDialogTitle hlm class="text-2xl font-semibold">Edit profile</h3>
-									<p brnDialogDescription hlm>Make changes to your profile here. Click save when you're done.</p>
-									<form
-										(ngSubmit)="onSubmit()"
-										[formGroup]="form"
-										class="flex flex-col gap-10 mt-5"
-									>
-										<div class="flex flex-col gap-5 w-full">
-											<h2 class="text-2xl font-medium">display name</h2>
-											<hlm-form-field>
-												<input
-													type="text"
-													placeholder="display name"
-													hlmInput
-													class="w-full"
-													formControlName="displayName"
-												>
-												<hlm-error>
-													{{
-														form.controls['displayName'].errors?.['minlength']
-														? 'display name must be at least 2 characters long'
-														: 'display name should not be more than 30 characters long'
-													}}
-												</hlm-error>
-												<hlm-hint>your display name</hlm-hint>
-											</hlm-form-field>
-										</div>
-										<div class="flex flex-col gap-5 w-full">
-											<h2 class="text-2xl font-medium">bio</h2>
-											<hlm-form-field>
-												<textarea
-													formControlName="bio"
-													hlmInput
-													placeholder="bio"
-													class="min-h-60 w-full"
-												>
-												</textarea>
-												<hlm-error>your bio must not be more than 400 characters long</hlm-error>
-												<hlm-hint>your bio</hlm-hint>
-											</hlm-form-field>
-										</div>
-										<button
-											hlmBtn
-											type="submit"
-											[variant]="canEdit() ? 'default' : 'outline'"
-											[disabled]="!canEdit()"
+						<div class="mt-2 flex gap-2 items-center not-sm:justify-between not-sm:*:w-full not-sm:*:**:w-full">
+							<hlm-dialog >
+								<button brnDialogTrigger hlmBtn >logout</button>
+								<hlm-dialog-content class="rounded-xl" *brnDialogContent="let ctx">
+									<div class="pt-5 flex flex-col gap-5">
+										<h2 class="text-2xl font-medium">are you sure to logout?</h2>
+										<button hlmBtn  class="w-full" (click)="logout()">yes</button>
+									</div>
+								</hlm-dialog-content>					
+							</hlm-dialog>
+							<hlm-dialog>
+								<button brnDialogTrigger hlmBtn>Edit Profile</button>
+								<hlm-dialog-content class="rounded-xl" *brnDialogContent="let ctx">
+									<hlm-dialog-header>
+										<h3 brnDialogTitle hlm class="text-2xl font-semibold">Edit profile</h3>
+										<p brnDialogDescription hlm>Make changes to your profile here. Click save when you're done.</p>
+										<form
+											(ngSubmit)="onSubmit()"
+											[formGroup]="form"
+											class="flex flex-col gap-10 mt-5"
 										>
-											Save changes
-										</button>
-									</form>
-								</hlm-dialog-header>
-							</hlm-dialog-content>
-						</hlm-dialog>
-					</div>
+											<div class="flex flex-col gap-5 w-full">
+												<h2 class="text-2xl font-medium">display name</h2>
+												<hlm-form-field>
+													<input
+														type="text"
+														placeholder="display name"
+														hlmInput
+														class="w-full"
+														formControlName="displayName"
+													>
+													<hlm-error>
+														{{
+															form.controls['displayName'].errors?.['minlength']
+															? 'display name must be at least 2 characters long'
+															: 'display name should not be more than 30 characters long'
+														}}
+													</hlm-error>
+													<hlm-hint>your display name</hlm-hint>
+												</hlm-form-field>
+											</div>
+											<div class="flex flex-col gap-5 w-full">
+												<h2 class="text-2xl font-medium">bio</h2>
+												<hlm-form-field>
+													<textarea
+														formControlName="bio"
+														hlmInput
+														placeholder="bio"
+														class="min-h-60 w-full"
+													>
+													</textarea>
+													<hlm-error>your bio must not be more than 400 characters long</hlm-error>
+													<hlm-hint>your bio</hlm-hint>
+												</hlm-form-field>
+											</div>
+											<button
+												hlmBtn
+												type="submit"
+												[variant]="canEdit() ? 'default' : 'outline'"
+												[disabled]="!canEdit()"
+											>
+												Save changes
+											</button>
+										</form>
+									</hlm-dialog-header>
+								</hlm-dialog-content>
+							</hlm-dialog>
+						</div>
 					}
 				}
 			</div>
@@ -107,5 +107,5 @@
 					</div>
 			</div>
 		</div>
-	</div>
+	</section>
 </div>
