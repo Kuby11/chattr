@@ -64,9 +64,15 @@ export class FindUserPageComponent {
   friendStore = inject(friendsStore)
   userStore = new userStore()
   disabledButtons = signal<boolean[]>([])
+  
+  isRequestSent(id: string): boolean{
+    return !!this.friendStore.friendRequests()
+      .find(req => req.receiverId === id && req.status === "PENDING")    
+  }
 
   constructor(){
     this.currentPageService.setPage('find user')
+    this.friendStore.getFriendRequests()
   }
 
   onSubmit(form: NgForm){
