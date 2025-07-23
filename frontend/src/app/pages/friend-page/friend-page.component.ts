@@ -80,7 +80,7 @@ export class FriendPageComponent {
   sortQuery = signal<string>('a-z')
   
   constructor() {
-    this.friendsStore.loadFriends();
+    this.friendsStore.loadMyFriends();
     this.currentPage.setPage('friends');
   }
   
