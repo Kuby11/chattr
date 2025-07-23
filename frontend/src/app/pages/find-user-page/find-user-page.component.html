@@ -57,12 +57,20 @@
 										<span class="ttr-muted select-none">your friend</span>
 									</div>
 								}
+								@if(isRequestSent(user.id)){
+									<div class="flex-1 ">
+										<span class="ttr-muted select-none">request sent</span>
+									</div>
+								}
 								<div class="w-fit flex items-center justify-end">
 									<app-icon-button
 										(click)="sendFriendRequest(user.id); disableButton(i)"
 										tooltipContent="add friend"
 										class="relative z-10"
-										[variant]="isFriend || disabledButtons()[i] ? 'disabled' : 'default'"
+										[variant]="
+											isFriend || disabledButtons()[i] || isRequestSent(user.id)
+											? 'disabled' 
+											: 'default'"
 									>
 										<ng-icon hlm name="iconoirUserPlus"/>
 									</app-icon-button>
