@@ -18,6 +18,10 @@ import { friendsStore } from '../../entities/friend/friend.store';
 import { IconButtonComponent } from '../../shared/ui/icon-button/icon-button.component';
 import { NavigateButtonComponent } from '../../shared/ui/navigate-button/navigate-button.component';
 import { currentPageService } from '../../shared/services';
+import { UserCardPopoverComponent } from '../../shared/ui/user-card-popover/user-card-popover.component';
+import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
+import { BrnPopoverCloseDirective, BrnPopoverComponent, BrnPopoverContentDirective, BrnPopoverTriggerDirective } from '@spartan-ng/brain/popover';
+import { HlmPopoverContentDirective } from '@spartan-ng/ui-popover-helm';
 
 
 @Component({
@@ -34,13 +38,11 @@ import { currentPageService } from '../../shared/services';
     HlmIconDirective,
     FormsModule,
     NgIcon,
-    HlmAvatarComponent,
-    HlmAvatarFallbackDirective,
-    HlmAvatarImageDirective,
-    FirstLetterPipe,
     HlmButtonDirective,
     LoaderComponent,
     IconButtonComponent,
+    UserCardPopoverComponent,
+    AvatarComponent,
     NgIcon,
   ],
   templateUrl: './find-user-page.component.html',

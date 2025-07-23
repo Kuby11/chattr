@@ -24,6 +24,7 @@
 		</form>
 	</section>
 	<section class="mt-10 w-full grid gap-4 justify-items-center">
+		
 		@if (userStore.users()!.length > 0 && !userStore.isLoading()) {
 			<h3 class="text-2xl font-medium">found users</h3>
 		}
@@ -33,35 +34,41 @@
 					@defer(hydrate on hover){
 						@let isFriend = friendStore.isFriend(user.id);
 
-						<article 
-							class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all 
-							hover:scale-[100.5%] hover:bg-accent/25"
+						<app-user-card-popover 
+							[profileData]="user.profile" 
+							[userData]="user"
 						>
-							<a [routerLink]="'/profile/' + user.id">
-								<hlm-avatar variant="medium">
-									<img [src]="user.profile?.avatar" alt="friend avatar" hlmAvatarImage />
-									<span class="text-white bg-destructive" hlmAvatarFallback>{{  user.profile!.displayName | firstLetter }}</span>span>
-								</hlm-avatar>
-							</a>
-							<div class="grid flex-1 gap-1">
-								<h3 class="text-xl font-medium">{{ user.profile!.displayName }}</h3>
-								<span class="text-sm">{{'#' + user.username}}</span>
-							</div>
-							@if(isFriend){
-								<div class="flex-1 ">
-									<span class="ttr-muted">your friend</span>
+							<article
+								class="flex items-center gap-4 border p-5 sm:p-6 rounded-xl transition-all
+								hover:scale-[100.5%] hover:bg-accent/25"
+							>
+		
+								<app-avatar 
+									[routerLink]="'/profile/' + user.id"
+									[avatarUrl]="user.profile?.avatar"
+									[fallback]="user.profile?.displayName"
+								/>
+								<div class="grid flex-1 gap-1">
+									<h3 class="text-xl font-medium">{{ user.profile!.displayName }}</h3>
+									<span class="text-sm">{{'#' + user.username}}</span>
 								</div>
-							}
-							<div class="w-fit flex items-center justify-end">
-								<app-icon-button 
-									(click)="sendFriendRequest(user.id); disableButton(i)"
-									tooltipContent="add friend"
-									[variant]="isFriend || !disabledButtons()[i] ? 'disabled' : 'default'"
-								>
-									<ng-icon hlm name="iconoirUserPlus"/>
-								</app-icon-button>
-							</div>
-						</article>
+								@if(isFriend){
+									<div class="flex-1 ">
+										<span class="ttr-muted select-none">your friend</span>
+									</div>
+								}
+								<div class="w-fit flex items-center justify-end">
+									<app-icon-button
+										(click)="sendFriendRequest(user.id); disableButton(i)"
+										tooltipContent="add friend"
+										class="relative z-10"
+										[variant]="isFriend || disabledButtons()[i] ? 'disabled' : 'default'"
+									>
+										<ng-icon hlm name="iconoirUserPlus"/>
+									</app-icon-button>
+								</div>
+							</article>
+						</app-user-card-popover>
 					}
 				}
 			}
