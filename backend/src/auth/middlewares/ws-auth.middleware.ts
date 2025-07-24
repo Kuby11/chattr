@@ -11,7 +11,8 @@ export const wsAuthMiddleware = (): WsMiddleware => {
 			WsJwtAuthGuard.validateUser(client)
 			next()
 		}catch(err){
-			next(err)
+			console.log(err)
+			next(new Error(err))
 		}
 	}
 } 

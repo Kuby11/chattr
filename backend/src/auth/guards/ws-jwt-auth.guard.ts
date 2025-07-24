@@ -27,8 +27,8 @@ export class WsJwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       throw new ForbiddenException('cant define users agent')
     }
     const token = client.handshake.auth.token.split(' ')[1]
-    console.log(token)
     const payload = verify(token, process.env.JWT_SECRET as string)
+    client.data.user = payload
     return payload
   }
 }
