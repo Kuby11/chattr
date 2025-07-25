@@ -188,10 +188,7 @@ export class FriendService {
 		if (!userId) throw new NotFoundException("invalid id");
 		return await this.prisma.friendship.findMany({
       where: {
-				OR: [
-					{ userId: userId },
-					{ friendOfId: userId }
-				]
+				userId: userId 
       },
       select: {
         friendOf: {

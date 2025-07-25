@@ -1,8 +1,8 @@
-import { signalStore, withState, withMethods, patchState, withComputed } from '@ngrx/signals'
+import { signalStore, withState, withMethods, patchState } from '@ngrx/signals'
 import { Friend } from './interfaces/friend.interface';
 import { inject } from '@angular/core';
 import { FriendService } from './friend.service';
-import { delay, filter, map, tap, throttle } from 'rxjs';
+import { delay, map, tap } from 'rxjs';
 import { FriendRequest } from './interfaces/friend-request.interface';
 
 const initialValue: { 
@@ -23,19 +23,15 @@ export const friendsStore = signalStore(
 		
 		return {
 			loadFriends: (id: string) => {
-				let friends: undefined | Friend[] = undefined
 				api.getUserFriends(id)
-				.subscribe((friendRes: Friend[])=>{
-					friends = friendRes
+				.subscribe((friends: Friend[])=>{
 					patchState(state, { friends })
 				})
 			},
 
 			loadMyFriends: () => {
-				let friends: undefined | Friend[] = undefined
 				api.getFriends()
-				.subscribe((friendRes: Friend[])=>{
-					friends = friendRes
+				.subscribe((friends: Friend[])=>{
 					patchState(state, { friends })
 				})
 			},
@@ -45,9 +41,7 @@ export const friendsStore = signalStore(
 				api.removeFriend(friendId)
 				.pipe(
 					delay(50),
-					tap(()=>{
-						patchState(state, { friends })
-					})
+					tap(()=> patchState(state, { friends }))
 				)
 				.subscribe(()=> patchState(state, { friends }))
 			},
