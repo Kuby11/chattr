@@ -18,8 +18,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Chat      Chat[]
-  profile   Profile?
+  memberOfChats   chatMember[]
+  profile         Profile?
 
   messages  Message[]
 
@@ -49,14 +49,39 @@ model Profile {
 
 model Chat {
   id        String   @id @default(cuid())
-  title     String? 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  chatName  String?  @map("chat_name") 
   isGroup   Boolean  @default(false)
+
+  members chatMember[]
+
   // messages  Message[]
 
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   @@map("chats")
+}
+
+model chatMember {
+  id     String @id @default(cuid())
+  
+  chat   Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId String
+  
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  role ChatRole @default(MEMBER)
+
+  @@map("chat_members")
+  @@unique([chatId, userId]) 
+}
+
+enum ChatRole {
+  MEMBER
+  ADMIN
+
+  @@map("chat_roles")
 }
 
 model Message {
