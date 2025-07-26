@@ -5,6 +5,7 @@ import { RoomModule } from './room/room.module';
 
 @Module({
 	providers: [MessageModule, PrismaService, RoomModule],
-	exports: [MessageModule],
+	exports: [MessageModule, RoomModule],
+	imports: [RoomModule, MessageModule]
 })
 export class ChatModule {}
