@@ -120,47 +120,27 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  username: 'username',
-  password: 'password',
-  email: 'email',
-  role: 'role',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  isBlocked: 'isBlocked'
-};
-
-exports.Prisma.ProfileScalarFieldEnum = {
-  id: 'id',
-  displayName: 'displayName',
-  bio: 'bio',
-  avatar: 'avatar',
-  userId: 'userId'
-};
-
-exports.Prisma.ChatScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  isGroup: 'isGroup'
-};
-
-exports.Prisma.MessageScalarFieldEnum = {
-  id: 'id',
-  content: 'content',
-  senderId: 'senderId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.TokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
   expiresAt: 'expiresAt',
   userId: 'userId',
   userAgent: 'userAgent'
+};
+
+exports.Prisma.ChatScalarFieldEnum = {
+  id: 'id',
+  chatName: 'chatName',
+  isGroup: 'isGroup',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ChatMemberScalarFieldEnum = {
+  id: 'id',
+  chatId: 'chatId',
+  userId: 'userId',
+  role: 'role'
 };
 
 exports.Prisma.FriendshipScalarFieldEnum = {
@@ -179,6 +159,33 @@ exports.Prisma.FriendRequestScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  senderId: 'senderId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProfileScalarFieldEnum = {
+  id: 'id',
+  displayName: 'displayName',
+  bio: 'bio',
+  avatar: 'avatar',
+  userId: 'userId'
+};
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  password: 'password',
+  email: 'email',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isBlocked: 'isBlocked'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -193,8 +200,8 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  USER: 'USER',
+exports.ChatRole = exports.$Enums.ChatRole = {
+  MEMBER: 'MEMBER',
   ADMIN: 'ADMIN'
 };
 
@@ -204,14 +211,20 @@ exports.FriendRequestStatus = exports.$Enums.FriendRequestStatus = {
   DECLINED: 'DECLINED'
 };
 
+exports.UserRole = exports.$Enums.UserRole = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+};
+
 exports.Prisma.ModelName = {
-  User: 'User',
-  Profile: 'Profile',
-  Chat: 'Chat',
-  Message: 'Message',
   Token: 'Token',
+  Chat: 'Chat',
+  chatMember: 'chatMember',
   Friendship: 'Friendship',
-  FriendRequest: 'FriendRequest'
+  FriendRequest: 'FriendRequest',
+  Message: 'Message',
+  Profile: 'Profile',
+  User: 'User'
 };
 
 /**
