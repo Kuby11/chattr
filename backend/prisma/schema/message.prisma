@@ -3,7 +3,7 @@ model Message {
   content   String
   
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  chatId    String   @unique @map("chat_id")
+  chatId    String   @map("chat_id")
   
   sender    User     @relation(fields: [senderId], references: [id])
   senderId  String   @map("sender_id")
