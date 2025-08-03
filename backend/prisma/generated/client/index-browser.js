@@ -162,6 +162,7 @@ exports.Prisma.FriendRequestScalarFieldEnum = {
 exports.Prisma.MessageScalarFieldEnum = {
   id: 'id',
   content: 'content',
+  chatId: 'chatId',
   senderId: 'senderId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
