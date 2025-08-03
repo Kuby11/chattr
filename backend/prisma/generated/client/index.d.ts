@@ -10990,17 +10990,17 @@ export namespace Prisma {
 
   export type MessageWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    chatId?: string
     AND?: MessageWhereInput | MessageWhereInput[]
     OR?: MessageWhereInput[]
     NOT?: MessageWhereInput | MessageWhereInput[]
     content?: StringFilter<"Message"> | string
+    chatId?: StringFilter<"Message"> | string
     senderId?: StringFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
     updatedAt?: DateTimeFilter<"Message"> | Date | string
     chat?: XOR<ChatScalarRelationFilter, ChatWhereInput>
     sender?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "chatId">
+  }, "id">
 
   export type MessageOrderByWithAggregationInput = {
     id?: SortOrder
