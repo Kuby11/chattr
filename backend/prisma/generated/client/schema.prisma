@@ -1,80 +1,3 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../prisma/generated/client"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id       String   @id @default(cuid())
-  username String   @unique
-  password String
-  email    String   @unique
-  role     UserRole @default(USER)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Chat      Chat[]
-  profile Profile?
-
-  messages Message[]
-
-  friends  Friendship[] @relation("user_friends")
-  friendOf Friendship[] @relation("friend_of")
-
-  friendRequestSender   FriendRequest[] @relation("friend_requests_sender")
-  friendRequestReceiver FriendRequest[] @relation("friend_requests_receiver")
-
-  token Token[]
-
-  isBlocked Boolean @default(false) @map("is_blocked")
-
-  @@map("users")
-}
-
-model Profile {
-  id          String  @id @default(cuid())
-  displayName String  @map("display_name")
-  bio         String?
-  avatar      String?
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique @map("user_id")
-
-  @@map("profiles")
-}
-
-model Chat {
-  id        String   @id @default(cuid())
-  title     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isGroup   Boolean  @default(false)
-  // messages  Message[]
-
-  @@map("chats")
-}
-
-model Message {
-  id      String @id @default(cuid())
-  content String
-
-  // chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  // chatId    String   @unique @map("chat_id")
-
-  sender   User   @relation(fields: [senderId], references: [id])
-  senderId String @map("sender_id")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("messages")
-}
-
 model Token {
   id        String   @id @default(cuid())
   token     String   @unique
@@ -86,11 +9,51 @@ model Token {
   @@map("tokens")
 }
 
-enum UserRole {
-  USER
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Chat {
+  id       String  @id @default(cuid())
+  chatName String? @map("chat_name")
+  isGroup  Boolean @default(false)
+
+  members chatMember[]
+
+  // messages  Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chats")
+}
+
+model chatMember {
+  id String @id @default(cuid())
+
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  role ChatRole @default(MEMBER)
+
+  @@unique([chatId, userId])
+  @@map("chat_members")
+}
+
+enum ChatRole {
+  MEMBER
   ADMIN
 
-  @@map("user_role")
+  @@map("chat_roles")
 }
 
 model Friendship {
@@ -131,4 +94,67 @@ enum FriendRequestStatus {
   DECLINED
 
   @@map("friend_request_status")
+}
+
+model Message {
+  id      String @id @default(cuid())
+  content String
+
+  // chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  // chatId    String   @unique @map("chat_id")
+
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String @map("sender_id")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("messages")
+}
+
+model Profile {
+  id          String  @id @default(cuid())
+  displayName String  @map("display_name")
+  bio         String?
+  avatar      String?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @map("user_id")
+
+  @@map("profiles")
+}
+
+model User {
+  id       String   @id @default(cuid())
+  username String   @unique
+  password String
+  email    String   @unique
+  role     UserRole @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberOfChats chatMember[]
+  profile       Profile?
+
+  messages Message[]
+
+  friends  Friendship[] @relation("user_friends")
+  friendOf Friendship[] @relation("friend_of")
+
+  friendRequestSender   FriendRequest[] @relation("friend_requests_sender")
+  friendRequestReceiver FriendRequest[] @relation("friend_requests_receiver")
+
+  token Token[]
+
+  isBlocked Boolean @default(false) @map("is_blocked")
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+
+  @@map("user_role")
 }

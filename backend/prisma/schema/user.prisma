@@ -1,0 +1,33 @@
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  email     String   @unique
+  role      UserRole @default(USER)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberOfChats   chatMember[]
+  profile         Profile?
+
+  messages  Message[]
+
+  friends   Friendship[] @relation("user_friends")
+  friendOf  Friendship[]  @relation("friend_of")
+  
+  friendRequestSender FriendRequest[] @relation("friend_requests_sender")
+  friendRequestReceiver FriendRequest[] @relation("friend_requests_receiver")
+  
+  token     Token[]
+
+  isBlocked Boolean  @default(false) @map("is_blocked")
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+
+  @@map("user_role")
+}

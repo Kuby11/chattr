@@ -1,0 +1,14 @@
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  
+  // chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  // chatId    String   @unique @map("chat_id")
+  
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String   @map("sender_id")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("messages")
+}

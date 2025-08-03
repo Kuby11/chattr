@@ -1,0 +1,39 @@
+model Friendship {
+  id       String @id @default(cuid())
+  
+  user     User   @relation("user_friends",fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @map("user_id")
+
+  friendOf   User   @relation("friend_of",fields: [friendOfId], references: [id], onDelete: Cascade)
+  friendOfId String @map("friend_of_id")
+
+  createdAt DateTime @default(now())
+
+  @@map("friends")
+  @@unique([userId, friendOfId])
+}
+
+model FriendRequest {
+  id       String @id @default(cuid())
+  status   FriendRequestStatus @default(PENDING)
+
+  sender   User   @relation("friend_requests_sender",fields: [senderId], references: [id], onDelete: Cascade)
+  senderId   String @map("sender_id")
+
+  receiver User   @relation("friend_requests_receiver",fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String @map("receiver_id")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("friend_requests")
+  @@unique([senderId, receiverId])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  
+  @@map("friend_request_status")
+}

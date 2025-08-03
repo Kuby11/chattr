@@ -1,0 +1,11 @@
+model Profile {
+  id          String  @id @default(cuid())
+  displayName String  @map("display_name")
+  bio         String?
+  avatar      String?
+  
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String  @unique @map("user_id")
+
+  @@map("profiles")
+}
