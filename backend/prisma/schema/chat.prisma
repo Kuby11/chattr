@@ -5,7 +5,7 @@ model Chat {
 
   members chatMember[]
 
-  // messages  Message[]
+  messages  Message[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
