@@ -38,7 +38,7 @@ import { userStore } from '../../entities/user';
 
 
 @Component({
-  selector: 'app-chat-layout',
+  selector: 'app-main-layout',
   imports: [
     RouterOutlet,
     RouterLink,
