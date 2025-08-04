@@ -2,9 +2,12 @@ import { Module } from '@nestjs/common';
 import { MessageModule } from './message/message.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomModule } from './room/room.module';
+import { RoomController } from './room/room.controller';
+import { UserService } from 'src/user/user.service';
+import { RoomService } from './room/room.service';
 
 @Module({
-	providers: [MessageModule, PrismaService, RoomModule],
+	providers: [PrismaService, RoomService, UserService],
 	exports: [MessageModule, RoomModule],
 	imports: [RoomModule, MessageModule]
 })
