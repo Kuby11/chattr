@@ -29,6 +29,12 @@ export const routes: Routes = [
       {
         path: 'chats',
         loadComponent: () => import('./pages/chat-page/chat-page.component').then(m => m.ChatPageComponent),
+        children: [
+          {
+            path: ':chatId',
+            loadComponent: () => import('./widgets/chat-widget/chat-widget.component').then(m => m.ChatWidgetComponent)
+          }
+        ]
       },
       {
         path: 'friends',
