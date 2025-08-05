@@ -3,7 +3,7 @@ import { hlm } from '@spartan-ng/brain/core';
 import { Profile } from '../../../entities/profile';
 import { User } from '../../../entities/user';
 import { AvatarComponent } from '../avatar/avatar.component';
-import { BrnPopoverCloseDirective, BrnPopoverComponent, BrnPopoverContentDirective, BrnPopoverTriggerDirective } from '@spartan-ng/brain/popover';
+import { BrnPopoverComponent, BrnPopoverContentDirective, BrnPopoverTriggerDirective } from '@spartan-ng/brain/popover';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmPopoverContentDirective } from '@spartan-ng/ui-popover-helm';
 import { RouterLink } from '@angular/router';
@@ -15,7 +15,6 @@ import { RouterLink } from '@angular/router';
     HlmButtonDirective,
     BrnPopoverComponent,
     BrnPopoverContentDirective,
-    BrnPopoverCloseDirective,
     RouterLink,
     HlmPopoverContentDirective,
     BrnPopoverTriggerDirective
