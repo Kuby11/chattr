@@ -19,25 +19,22 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 export class MessageInputComponent {
   private readonly messageService = inject(MessageService)
   private readonly roomStore = inject(roomStore)
-  private readonly messageInput = viewChild<ElementRef<HTMLElement>>('el')
-
-  chatOffset = computed(() => {
-    if(!this.messageInput()?.nativeElement){
-      return 0
-    }else{
-      return (this.messageInput()!.nativeElement.offsetHeight / 16) + 1
-    }
-  })
+  private readonly messageInputEl = viewChild<ElementRef<HTMLElement>>('el')
 
   currentRoomId = computed(() => this.roomStore.currentRoomId())
-
-  ngOnInit(){
-    console.log(this.chatOffset())
-  }
+  
+  chatOffset = computed(() => {
+    if(!this.messageInputEl()?.nativeElement){
+      return 0
+    }else{
+      return (this.messageInputEl()!.nativeElement.offsetHeight / 16) + 1
+    }
+  })
 
   onSubmit(form: NgForm){
     if(form.valid && form.value.messageContent){
       this.messageService.sendMessage(form.value.messageContent, this.currentRoomId()!)
+      form.value.messageContent = ''
     }
   }
 

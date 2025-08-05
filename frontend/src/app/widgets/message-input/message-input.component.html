@@ -1,9 +1,8 @@
 <article #el class="p-4 grid bg-background border-t w-full min-h-20">
 	<form class="grid gap-2" #form="ngForm" (ngSubmit)="onSubmit(form)">
 		<div class="flex gap-2">
-			<input hlmInput ngModel name="messageContent" type="text" placeholder="message">
+			<input hlmInput class="w-150" ngModel name="messageContent" type="text" placeholder="message">
 			<button hlmBtn type="submit">send</button>
 		</div>
 	</form>
-	<span>current room: {{ currentRoomId() }}</span>
 </article>
