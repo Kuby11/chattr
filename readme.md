@@ -21,4 +21,3 @@ backend:
 - JWT
 - passportJS
 
-### for now it only has authentication and authorization logic implemented, but soon will be added more features :) 
