@@ -70,7 +70,7 @@ export const friendsStore = signalStore(
 
 			declineFriendRequest(requestId: string){
 				const friendRequests = state.friendRequests().filter(request => request.id !== requestId) 
-				api.acceptFriendRequest(requestId)
+				api.declineFriendRequest(requestId)
 				.subscribe(()=> patchState(state, { friendRequests }))
 			},
 
