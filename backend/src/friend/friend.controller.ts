@@ -2,11 +2,14 @@ import { ConflictException, Controller, Delete, ForbiddenException, Get, NotFoun
 import { CurrentUser } from 'src/libs/decorators';
 import { FriendService } from './friend.service';
 import { User } from '@prisma';
-import { AuthGuard } from '@nestjs/passport';
+import { RoomService } from 'src/chat/room/room.service';
 
 @Controller("friend")
 export class FriendController {
-  constructor(private readonly friendService: FriendService) {}
+  constructor(
+    private readonly friendService: FriendService,
+    private readonly roomService: RoomService
+  ) {}
 
   @Post("send-friend-request/:receiverId")
   async friendRequest(
@@ -29,13 +32,16 @@ export class FriendController {
     @CurrentUser() receiver: User,
     @Param("requestId") requestId: string
   ) {
-    return this.friendService
+    const friendRequest = await this.friendService
       .acceptFriendRequest(receiver.id, requestId)
       .catch((err) => {
         if (err.code === "P2002")
           throw new ConflictException("you already are friends with this user");
         throw err;
       });
+    this.roomService.createRoom(receiver.id, friendRequest.senderId)
+
+    return friendRequest
   }
 
   @Post("decline-friend-request/:requestId")
@@ -77,8 +83,7 @@ export class FriendController {
         if (err.code === "P2025")
           throw new ForbiddenException(
             "you are not the sender of this request"
-          );
-        throw err; 
+        );else throw err;
       });
   }
 

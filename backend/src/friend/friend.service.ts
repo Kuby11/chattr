@@ -159,29 +159,29 @@ export class FriendService {
 		console.log(friendId)
 		if (!friendRequest) throw new NotFoundException("friend not found");
 
-		// await this.prisma.$transaction([
-		// 	this.prisma.friendship.deleteMany({
-		// 		where: {
-		// 			OR: [
-		// 				{
-		// 					userId: userId,
-		// 					friendOfId: friendId
-		// 				},
-		// 				{
-		// 					userId: friendId,
-		// 					friendOfId: userId
-		// 				}
-		// 			]
-		// 		}
-		// 	}),	
-		// 	this.prisma.friendRequest.delete({
-		// 		where: {
-		// 			id: friendRequest.id,
-		// 		},
-		// 	})
-		// ])
+		await this.prisma.$transaction([
+			this.prisma.friendship.deleteMany({
+				where: {
+					OR: [
+						{
+							userId: userId,
+							friendOfId: friendId
+						},
+						{
+							userId: friendId,
+							friendOfId: userId
+						}
+					]
+				}
+			}),	
+			this.prisma.friendRequest.delete({
+				where: {
+					id: friendRequest.id,
+				},
+			})
+		])
 		
-				return { message: `user with Id ${friendId} removed from your friends list`};
+		return { message: `user with Id ${friendId} removed from your friends list`};
 	}
 
 	async getFriends(userId: string) {
