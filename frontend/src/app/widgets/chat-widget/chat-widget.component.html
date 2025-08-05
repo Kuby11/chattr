@@ -1,11 +1,14 @@
-<section class="relative w-full h-full p-5 flex flex-col gap-2 overflow-auto">
-	<div class="w-full min-h-full mt-17">
-		@for (message of messagesRef(); track message.id ) {
-			<div class="flex gap-2">
-				<span >{{ message.content }}</span>
-			</div>
+<section class="relative w-full h-full p-5 flex flex-col gap-2">
+	<div class="w-full grid gap-2 min-h-fit mt-17">
+		@for (messageItem of messages(); track messageItem.message.id ) {
+			@let message = messageItem.message;
+			@let senderInfo = messageItem.senderData.senderInfo;
+			@let senderProfile = messageItem.senderData.senderProfile;
+			<app-message-bubble 
+				[messageData]="message"
+				[ProfileData]="senderProfile"
+				[senderData]="senderInfo"
+			/>
 		}
-	</div>
-	<div  class="relative w-full min-h-20 mb-5">
 	</div>
 </section>

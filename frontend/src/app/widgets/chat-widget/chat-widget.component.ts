@@ -1,40 +1,58 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
-import { ChatService } from '../../features/chat/services/chat/chat.service';
-import { io } from 'socket.io-client';
-import { Message } from '../../entities/message';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, linkedSignal, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { Message, MessageData, MessageService } from '../../entities/message';
+import { FormsModule, NgForm } from '@angular/forms';
+
+import { RoomService, roomStore } from '../../entities/room';
+
+import { ActivatedRoute, Params } from '@angular/router';
+import { MessageBubbleComponent } from '../message-bubble/message-bubble.component';
 
 @Component({
   selector: 'app-chat-widget',
-  imports: [],
+  imports: [
+    FormsModule,
+    MessageBubbleComponent,
+  ],
   templateUrl: './chat-widget.component.html',
   styleUrl: './chat-widget.component.css',
+  providers: [
+    MessageService,
+    RoomService
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatWidgetComponent implements OnInit {
-  private readonly chatService = inject(ChatService)
-  socket = io(`localhost:3000/message`);
-
-  messagesRef = signal<Message[]>([])
+export class ChatWidgetComponent implements OnInit, OnDestroy {
+  private readonly messageService = inject(MessageService)
+  private readonly route = inject(ActivatedRoute)
+  private readonly roomService = inject(RoomService)
+  private readonly roomStore = inject(roomStore)
   
+  currentRoomId = computed(() => this.roomStore.currentRoomId())
+  messages = computed<MessageData[]>(() => this.messageService.messages())
+
   ngOnInit(): void {
-    this.findAllMessages()
-    this.updateMessage()
-    console.log(this.messagesRef());
-
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('chatId')!
+      this.roomStore.setCurrentRoomId(id)
+      this.roomService.leaveRoom(this.currentRoomId())      
+      this.loadChatData()
+    })
+    this.roomService.HandleJoinRoom()
+    this.messageService.updateMessage(this.currentRoomId())
   }
 
-  private findAllMessages() {
-    this.socket.emit('findAllMessages', {}, (res: Message[]) => {
-      console.log(res);
-      this.messagesRef.set(res);
-    });
+  ngOnDestroy(): void {
+    this.roomService.leaveRoom(this.currentRoomId())
   }
 
-  updateMessage() {
-    this.socket.on('sendMessage', (res: Message) => {
-      this.messagesRef.update((messages) => [...messages, res]);
-      console.log(res);
-    });
+  onSubmit(form: NgForm){
+    if(form.valid && form.value.messageContent){
+      this.messageService.sendMessage(form.value.messageContent, this.currentRoomId()!)
+    }
   }
 
+  private loadChatData(){
+    this.roomService.joinRoom(this.currentRoomId()!)
+    this.messageService.findAllMessages(this.currentRoomId())
+  }
 }
