@@ -49,7 +49,7 @@ export class LoginComponent {
 
   form: FormType = this.fb.nonNullable.group({
     username: [
-      'saba',
+      '',
       [
         Validators.required, 
         Validators.minLength(3), 
@@ -58,9 +58,9 @@ export class LoginComponent {
       ],
     ],
     email: [
-      'saba@gmail.com',
+      '',
       [Validators.required, Validators.email, Validators.maxLength(258)],
     ],
-    password: ['sabasaba11', [Validators.required]],
+    password: ['', [Validators.required]],
   });
 }
