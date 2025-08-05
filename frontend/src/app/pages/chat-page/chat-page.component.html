@@ -1,27 +1,30 @@
 <div class="w-full h-full">
 	<div class="w-full h-full flex">
-		<div class="min-w-65 h-full border-r flex flex-col overflow-auto mt-17">
-			@for (friend of friendStore.friends(); track friend.friendOf.id) {
-				@let profile = friend.friendOf.profile;
-				<div
-					class="
+		<div class="min-w-65 h-full border-r flex flex-col overflow-auto scroll-smooth mt-17">
+			@for (chat of roomStore.rooms(); track chat.id) {
+				@let profile = getUserProfile(chat.members);
+				@if(!chat.isGroup){
+					<article
+						[routerLink]="[chat.id]"
+						class="
 						text-foreground flex items-center gap-2 p-3 hover:cursor-pointer
 						not-first:border-t last:border-b relative hover:bg-accent transition-colors duration-200"
-				>
-					<a [routerLink]="'/profile/' + friend.friendOf.id">
-						<hlm-avatar variant="medium" class="flex-shrink-0">
-							<img src="" alt="user profile picture" hlmAvatarImage>
-							<span class="bg-primary text-accent text-xl" hlmAvatarFallback>{{ profile.displayName | firstLetter }}</span>
-						</hlm-avatar>
-					</a>
-					<div class="flex flex-col gap-1">
-						<h3 class="text-xl font-medium">
-							{{ profile.displayName | shortenUsername }}
-						</h3>
-						<p class="text-sm">last message...</p>
-						<span class="absolute right-3 text-sm">offline</span>
-					</div>
-				</div>
+					>
+						<a [routerLink]="'/profile/' + profile.userId">
+							<app-avatar 
+								[avatarUrl]="profile.avatar" 
+								[fallback]="profile.displayName"
+							/>
+						</a>
+						<div class="flex flex-col gap-1">
+							<h3 class="text-xl font-medium">
+								{{ profile.displayName| shortenUsername }}
+							</h3>
+							<p class="text-sm">last message...</p>
+							<span class="absolute right-3 text-sm">offline</span>
+						</div>
+					</article>
+				}
 			}
 			@if(friendStore.isLoading()) {
 				@for (item of skeletonItems(); track $index) {
@@ -40,6 +43,13 @@
 				}
 			}
 		</div>
-		<app-chat-widget class="flex-1"/>
+		<div #chatEl class="overflow-x-hidden overflow-y-auto w-full snap-end">
+			<div 
+				[style.margin-bottom.rem]="chatOffset"
+			>
+				<router-outlet />
+			</div>
+			<app-message-input #el class="absolute bottom-0 w-full"/>
+		</div>
 	</div>
 </div>
