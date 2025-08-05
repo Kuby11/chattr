@@ -3,12 +3,12 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
 import { ShortenUsernamePipe } from '../../shared/pipes/shorten-username.pipe';
 import { currentPageService } from '../../shared/services';
-import { Member, RoomService, roomStore } from '../../entities/room';
+import { Member, roomStore } from '../../entities/room';
 import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
-import { MessageInputComponent } from '../../widgets/message-input/message-input.component';
 import { userStore } from '../../entities/user';
 import { Profile } from '../../entities/profile';
 import { friendsStore } from '../../entities/friend/friend.store';
+import { MessageInputComponent } from '../../entities/message/components/message-input/message-input.component';
 
 
 @Component({

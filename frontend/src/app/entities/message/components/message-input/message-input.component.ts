@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, model, output, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, viewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { MessageService } from '../../entities/message';
-import { roomStore } from '../../entities/room';
 import { HlmInputDirective } from '@spartan-ng/ui-input-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+import { MessageService } from '../..';
+import { roomStore } from '../../../room';
 
 @Component({
   selector: 'app-message-input',

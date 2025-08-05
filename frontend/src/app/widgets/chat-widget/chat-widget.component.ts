@@ -5,7 +5,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { RoomService, roomStore } from '../../entities/room';
 
 import { ActivatedRoute, Params } from '@angular/router';
-import { MessageBubbleComponent } from '../message-bubble/message-bubble.component';
+import { MessageBubbleComponent } from '../../entities/message/components/message-bubble/message-bubble.component';
 
 @Component({
   selector: 'app-chat-widget',

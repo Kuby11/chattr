@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { Message } from '../../entities/message';
-import { User, userStore } from '../../entities/user';
-import { Profile } from '../../entities/profile';
-import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { Message } from '../..';
+import { User, userStore } from '../../../user';
+import { Profile } from '../../../profile';
+import { AvatarComponent } from '../../../../shared/ui/avatar/avatar.component';
 
 @Component({
   selector: 'app-message-bubble',
