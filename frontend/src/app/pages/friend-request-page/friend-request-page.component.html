@@ -25,7 +25,7 @@
 								<app-icon-button (click)="acceptFriendRequest(request.id)" tooltipContent="accept request">
 									<ng-icon hlm name="iconoirUserPlus" /> 
 								</app-icon-button>
-								<app-icon-button tooltipContent="decline request" variant="destructive">
+								<app-icon-button (click)="declineFriendRequest(request.id)" tooltipContent="decline request" variant="destructive">
 									<ng-icon hlm name="iconoirUserXmark" /> 
 								</app-icon-button>
 							</div>
