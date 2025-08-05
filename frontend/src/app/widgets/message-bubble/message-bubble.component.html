@@ -1,4 +1,14 @@
-<article class="grid gap-0.5 bg-accent w-fit py-2 px-4 rounded-xl">
-	<p class="text-base font-semibold">{{ ProfileData().displayName }}</p>
-	<span >{{ messageData().content }}</span>
+<article class="relative flex bg-accent items-center gap-3 w-fit py-1 pl-2 pr-8 rounded-xl">
+	@if(isYour()){
+		<div class="absolute w-3 h-3 bg-primary rounded-full right-1 top-1"></div>
+	}
+	<app-avatar 
+		[avatarUrl]="ProfileData().avatar"
+		[fallback]="ProfileData().displayName"
+	/>
+	<div class="grid gap-0.5">
+		<p class="text-base font-semibold">{{ ProfileData().displayName }}</p>
+		<span >{{ messageData().content }}</span>
+	</div>
 </article>
+
