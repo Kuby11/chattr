@@ -32,13 +32,13 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      giphyKey: import.meta.env["GIPHY_KEY"] ?? "",
+      giphyKey: process.env.GIPHY_KEY ?? "",
     },
   },
 
   supabase: {
-    key: import.meta.env["SUPABASE_KEY"],
-    url: import.meta.env["SUPABASE_URL"],
+    key: process.env.SUPABASE_KEY,
+    url: process.env.SUPABASE_URL,
 
     types: import.meta.dirname + "/app/shared/types/database.types.ts",
 
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
 
   image: {
     supabase: {
-      baseURL: `${import.meta.env["SUPABASE_URL"]}/storage/v1/render/image/public/<bucket-name>`
+      baseURL: `${process.env.SUPABASE_URL}/storage/v1/render/image/public/<bucket-name>`
     }
   },
 
