@@ -21,8 +21,11 @@ export default defineNuxtConfig({
     },
   ],
 
+  builder: 'rspack',
+
   experimental: {
     componentIslands: true,
+    watcher: 'builder',
   },
 
   nitro: {
