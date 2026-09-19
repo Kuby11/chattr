@@ -7,19 +7,18 @@ A real-time chat application built with Nuxt 4, Vue 3, Pinia, and Supabase.
 - **Framework**: Nuxt 4 (Vue 3)
 - **State Management**: Pinia
 - **UI Library**: Nuxt UI
-- **Database/Auth**: Supabase (PostgreSQL + Realtime)
+- **Database/Auth**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS (via Nuxt UI)
 - **Icons**: Iconify (Lucide, Simple Icons)
 - **Images**: Nuxt Image + Supabase Storage
 - **Package Manager**: Bun
-- **Builder**: Rspack
 
 ## Project Structure
 
 ```
 app/
 ├── features/       # Domain modules (auth, chat, message, etc.)
-├── shared/         # Cross-cutting utilities, types, UI components
+├── shared/         # Shared utilities, types, UI components
 ├── pages/          # File-based routing (Nuxt conventions)
 ├── layouts/        # Page layouts (auth, main)
 └── middleware/     # Route guards (auth, guest)
@@ -33,12 +32,13 @@ Each feature under `app/features/{domain}/` follows a consistent pattern:
 ├── api/            # External API calls (Supabase, Giphy, etc.)
 ├── composables/    # Vue composables - business logic & state orchestration
 ├── stores/         # Pinia stores - global/shared state
-├── types/          # TypeScript types & Zod schemas
-├── ui/
+├── types/          # TypeScript types 
+├── data/           # Data for features 
+├── utils/          # Pure helper functions
+├── ui/             # features ui components
 │   ├── local/      # Private components (used only within feature)
 │   └── public/     # Exported components (usable by other features)
-├── utils/          # Pure helper functions
-└── index.ts        # Public barrel export
+└── index.ts        # Feature public api
 ```
 
 ### Key Patterns
@@ -79,7 +79,7 @@ bun install
 cp .env.example .env
 
 # Run development server
-bun dev
+bun run dev
 ```
 
 ## Environment Variables
