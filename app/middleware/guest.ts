@@ -1,7 +1,20 @@
-export default defineNuxtRouteMiddleware((_, from) => {
+import { ROUTE_TOKENS } from "@shared/configs"
+
+export default defineNuxtRouteMiddleware(async () => {
 	const session = useSupabaseSession()
 
+	await new Promise((resolve) => {
+		if (session.value !== undefined) {
+			resolve(true)
+		} else {
+			const unwatch = watch(session, () => {
+				unwatch()
+				resolve(true)
+			}, { immediate: true })
+		}
+	})
+
 	if (session.value) {
-		return navigateTo(from.fullPath)
+		return navigateTo(ROUTE_TOKENS.HOME, { replace: true })
 	}
 })
