@@ -60,7 +60,10 @@ export default defineNuxtConfig({
   image: {
     supabase: {
       baseURL: `${process.env.SUPABASE_URL}/storage/v1/render/image/public/<bucket-name>`
-    }
+    },
+    domains: [
+      process.env.SUPABASE_URL || "",
+    ]
   },
 
   devtools: {
