@@ -1,12 +1,16 @@
 <script setup lang="ts">
-const props = defineProps<{
+interface Props {
 	src?: string | null
 	alt: string
-}>()
+}
 
-const emit = defineEmits<{
+interface Emits {
 	select: [file: File]
-}>()
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<Emits>()
 
 const input = useTemplateRef<HTMLInputElement>('input')
 
@@ -40,12 +44,15 @@ function onFileChange(event: Event) {
 		aria-label="Change avatar image"
 		@click="openFilePicker"
 	>
-		<UAvatar
-			:src="props.src ?? undefined"
+		<img
+			v-if="props.src"
+			:src="props.src"
 			:alt="props.alt"
-			class="size-full text-2xl"
-			:ui="{ fallback: 'text-2xl' }"
-		/>
+			class="size-full object-cover"
+		>
+		<div v-else class="size-full flex items-center justify-center text-2xl">
+			<UIcon name="lucide:user" class="text-muted" />
+		</div>
 		<div class="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-xs opacity-0 transition-opacity duration-200 group-hover/avatar:opacity-100 text-white">
 			<UIcon name="lucide:camera" class="size-5" />
 		</div>
