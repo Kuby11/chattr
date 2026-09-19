@@ -14,6 +14,13 @@ export default defineNuxtConfig({
     '@shared': import.meta.dirname + '/app/shared'
   },
 
+  runtimeConfig: {
+    supabase: {
+      secretKey: process.env.SUPABASE_KEY,
+    },
+    giphyKey: process.env.GIPHY_KEY,
+  },
+
   components: [
     {
       path: '~/shared/ui',
@@ -28,12 +35,6 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'netlify'
-  },
-
-  runtimeConfig: {
-    public: {
-      giphyKey: process.env.GIPHY_KEY ?? "",
-    },
   },
 
   supabase: {
