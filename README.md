@@ -1,60 +1,105 @@
-# Nuxt Starter Template
+# Chattr
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+A real-time chat application built with Nuxt 4, Vue 3, Pinia, and Supabase.
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
+## Tech Stack
 
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
+- **Framework**: Nuxt 4 (Vue 3)
+- **State Management**: Pinia
+- **UI Library**: Nuxt UI
+- **Database/Auth**: Supabase (PostgreSQL + Realtime)
+- **Styling**: Tailwind CSS (via Nuxt UI)
+- **Icons**: Iconify (Lucide, Simple Icons)
+- **Images**: Nuxt Image + Supabase Storage
+- **Package Manager**: Bun
+- **Builder**: Rspack
 
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-  </picture>
-</a>
+## Project Structure
 
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
-
-## Quick Start
-
-```bash [Terminal]
-npm create nuxt@latest -- -t github:nuxt-ui-templates/starter
+```
+app/
+├── features/       # Domain modules (auth, chat, message, etc.)
+├── shared/         # Cross-cutting utilities, types, UI components
+├── pages/          # File-based routing (Nuxt conventions)
+├── layouts/        # Page layouts (auth, main)
+└── middleware/     # Route guards (auth, guest)
 ```
 
-## Deploy your own
+### Feature Module Structure
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
+Each feature under `app/features/{domain}/` follows a consistent pattern:
+
+```
+├── api/            # External API calls (Supabase, Giphy, etc.)
+├── composables/    # Vue composables - business logic & state orchestration
+├── stores/         # Pinia stores - global/shared state
+├── types/          # TypeScript types & Zod schemas
+├── ui/
+│   ├── local/      # Private components (used only within feature)
+│   └── public/     # Exported components (usable by other features)
+├── utils/          # Pure helper functions
+└── index.ts        # Public barrel export
+```
+
+### Key Patterns
+
+| Pattern | Purpose |
+|---------|---------|
+| **local vs public UI** | Encapsulation - `local` components are implementation details; `public` are the feature's API |
+| **Composables + Stores** | Composables orchestrate logic; stores hold persistent state |
+| **Aliases (`@features`, `@shared`)** | Clean imports configured in `nuxt.config.ts` |
+| **Auto-imports** | Nuxt auto-imports composables, utils, and shared UI components |
+
+### Shared Layer
+
+`app/shared/` contains truly reusable code:
+- **composables** - generic utilities (`useBreakpoint`, `useSubmit`, etc.)
+- **ui** - primitive components auto-registered globally (`AppButton`, `AppInput`, etc.)
+- **configs** - route/state tokens, aside navigation
+- **types** - DB types, shared primitives
+
+## Features
+
+- **Authentication** - Email/password with Supabase Auth
+- **Real-time Chat** - Direct messages & group chats via Supabase Realtime
+- **Friendships** - Friend requests, presence, user search
+- **Messages** - Text, media, replies, forwarding, pinning, editing
+- **Profile** - User profiles, avatars, presence indicators
+- **Settings** - Appearance, privacy, profile management
+- **Giphy Integration** - GIF search & sharing
+- **Emoji Picker** - Custom emoji support
 
 ## Setup
 
-Make sure to install the dependencies:
-
 ```bash
-pnpm install
+# Install dependencies
+bun install
+
+# Copy environment variables
+cp .env.example .env
+
+# Run development server
+bun dev
 ```
 
-## Development Server
+## Environment Variables
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-pnpm dev
+```env
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
+GIPHY_KEY=your_giphy_api_key
 ```
 
-## Production
-
-Build the application for production:
+## Scripts
 
 ```bash
-pnpm build
+bun dev        # Start dev server
+bun build      # Production build
+bun preview    # Preview production build
+bun lint       # Run ESLint
+bun typecheck  # Run TypeScript checks
 ```
 
-Locally preview production build:
+## License
 
-```bash
-pnpm preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+MIT
