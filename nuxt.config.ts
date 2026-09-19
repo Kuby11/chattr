@@ -27,7 +27,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'bun'
+    preset: 'netlify'
   },
 
   runtimeConfig: {
