@@ -1,0 +1,6 @@
+[build]
+  command = "bun run build"
+  publish = "dist"
+
+[build.environment]
+  NETLIFY_USE_BUN = "1"
