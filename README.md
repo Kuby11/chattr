@@ -87,7 +87,7 @@ bun run dev
 ```env
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_anon_key
-GIPHY_KEY=your_giphy_api_key
+NUXT_PUBLIC_GIPHY_KEY=your_giphy_api_key
 ```
 
 ## Scripts
