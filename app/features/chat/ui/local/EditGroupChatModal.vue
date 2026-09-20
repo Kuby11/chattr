@@ -3,7 +3,7 @@ import type { Tables } from '@shared/types'
 import ImageCropperModal from '@shared/ui/ImageCropperModal.vue'
 import GroupChatPreviewCard from './GroupChatPreviewCard.vue'
 import GroupChatDetailsForm from './GroupChatDetailsForm.vue'
-import { useChat } from '../../composables/useChat.js'
+import { useChat } from '../../composables/useChat'
 import { useBreakpoint } from '@shared/composables'
 
 const props = defineProps<{
