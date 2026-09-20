@@ -5,11 +5,6 @@ publish = "dist"
 [build.environment]
 NETLIFY_USE_BUN = "1"
 
-[[headers]]
-for = "/_nuxt/*"
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
-
 [[redirects]]
 from = "/*"
 to = "/index.html"
