@@ -1,6 +1,16 @@
 [build]
-  command = "bun run build"
-  publish = "dist"
+command = "bun run build"
+publish = "dist"
 
 [build.environment]
-  NETLIFY_USE_BUN = "1"
+NETLIFY_USE_BUN = "1"
+
+[[headers]]
+for = "/index.html"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/_nuxt/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
