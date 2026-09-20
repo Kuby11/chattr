@@ -85,6 +85,8 @@ const canSubmit = computed(() => {
 	return hasContent || hasAssets
 })
 
+const isTyping = computed(() => !!state.content?.trim())
+
 const onSubmit = async ({ data }: FormSubmitEvent<Schema>) => {
 	if(!canSubmit.value){
 		return
@@ -260,25 +262,40 @@ watch(
 					<UInput
 						ref="messageInput"
 						v-model="state.content as string"
-						:ui="{ 
-							root: 'w-full rounded-xl', 
-							base: 'p-4 ring-transparent outline-transparent focus-within:ring-transparent! focus-within:outline-transparent!' 
-						}" 
+						:ui="{
+							root: 'w-full rounded-xl',
+							base: 'py-4 ps-14 ring-transparent outline-transparent focus-within:ring-transparent! focus-within:outline-transparent! transition-[padding] duration-300 ease-in-out ' + (isTyping ? 'pe-16' : 'pe-36')
+						}"
 						placeholder="write message"
 					/>
 				</div>
 
-				<div class="absolute right-2 bottom-2.5 z-220 flex gap-2">
-					<EmojiButton @select="onEmojiSelect"/>
-					<GiphyButton @select="onGifSelect"/>
-					<AssetUploadButton v-model="assets"/>
+				<div class="absolute left-2 bottom-2.5 z-220 flex items-center">
+					<EmojiButton @select="onEmojiSelect" variant="ghost" />
+				</div>
+
+				<div class="absolute right-2 bottom-2.5 z-220 flex gap-2 items-center">
+					<div
+						:aria-hidden="isTyping"
+						:inert="isTyping"
+						:class="[
+							'flex items-center overflow-hidden transition-all duration-300 ease-in-out',
+							isTyping
+								? 'max-w-0 scale-75 translate-x-2 gap-0 opacity-0 pointer-events-none'
+								: 'max-w-75 scale-100 translate-x-0 gap-2 opacity-100'
+						]"
+					>
+						<span class="shrink-0"><GiphyButton @select="onGifSelect" /></span>
+						<span class="shrink-0"><AssetUploadButton v-model="assets" /></span>
+					</div>
 		
 					<UButton 
 						:disabled="!canSubmit" 
 						:color="canSubmit ? 'primary' : 'neutral'"
 						:variant="canSubmit ? 'solid' : 'soft'"
 						icon="lucide:send"
-						type="submit" 
+						type="submit"
+						class="shrink-0"
 					/>
 				</div>
 			</template>
