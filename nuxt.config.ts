@@ -36,7 +36,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'bun'
+    preset: 'vercel'
   },
 
   supabase: {
