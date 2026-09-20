@@ -25,14 +25,14 @@ setCurrentRoute({
 <template>
 	<Suspense>
 		<SettingsPage class="relative">
-			<header class="flex flex-col gap-3 mb-8">
+			<header class="flex flex-col gap-2 sm:gap-3 mb-5 sm:mb-8">
 				<div class="flex items-center gap-3">
-					<h1 class="text-3xl font-semibold tracking-tight">Profile settings</h1>
+					<h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">Profile settings</h1>
 				</div>
 				<p class="text-muted">change how others see you on chattr</p>
 			</header>
 
-			<div class="flex flex-col gap-8 flex-1">
+			<div class="flex flex-col gap-5 sm:gap-8 flex-1">
 				<SettingsProfileForm
 					v-if="userStore.userProfile"
 					:user-profile="userStore.userProfile"

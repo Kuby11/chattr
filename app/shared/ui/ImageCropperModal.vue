@@ -74,8 +74,8 @@ const dragStart = ref({ x: 0, y: 0 })
 const initialTouchDistance = ref<number | null>(null)
 const initialTouchZoom = ref(1)
 
-const canvasWidth = ref(520)
-const canvasHeight = ref(360)
+const canvasWidth = ref(300)
+const canvasHeight = ref(210)
 
 let sourceObjectUrl: string | null = null
 
@@ -447,7 +447,12 @@ watch(
 					const rect = containerRef.value.getBoundingClientRect()
 					if (rect.width > 0) {
 						canvasWidth.value = Math.min(540, Math.round(rect.width))
-						canvasHeight.value = Math.min(380, Math.round(rect.width * 0.7))
+						// Keep the viewport usable on short landscape phones too
+						const maxHeight = Math.round(window.innerHeight * 0.45)
+						canvasHeight.value = Math.max(
+							160,
+							Math.min(380, Math.round(rect.width * 0.7), maxHeight),
+						)
 					}
 				}
 				loadImage()
@@ -466,7 +471,7 @@ watch(
 		:title="title"
 		:description="description"
 		:ui="{
-			content: 'sm:max-w-xl p-6!',
+			content: 'max-w-[calc(100vw-2rem)] sm:max-w-xl p-4! sm:p-6! max-h-[90dvh] overflow-y-auto',
 			header: 'border-none pb-2'
 		}"
 	>
@@ -534,8 +539,8 @@ watch(
 					</div>
 
 					<!-- Quick actions: Rotate & Reset -->
-					<div class="flex items-center justify-between border-t border-default/60 pt-3">
-						<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-2 border-t border-default/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
+						<div class="grid grid-cols-2 gap-2 sm:flex sm:items-center">
 							<UButton
 								type="button"
 								size="sm"
@@ -543,6 +548,7 @@ watch(
 								variant="subtle"
 								icon="lucide:rotate-cw"
 								label="Rotate 90°"
+								class="justify-center"
 								@click="rotate90"
 							/>
 							<UButton
@@ -552,16 +558,18 @@ watch(
 								variant="ghost"
 								icon="lucide:rotate-ccw"
 								label="Reset"
+								class="justify-center"
 								@click="resetTransform(); renderCanvas();"
 							/>
 						</div>
 
-						<div class="flex items-center gap-2">
+						<div class="grid grid-cols-2 gap-2 sm:flex sm:items-center">
 							<UButton
 								type="button"
 								color="neutral"
 								variant="ghost"
 								label="Cancel"
+								class="justify-center"
 								@click="onCancel"
 							/>
 							<UButton
@@ -569,6 +577,7 @@ watch(
 								color="primary"
 								icon="lucide:check"
 								label="Apply Crop"
+								class="justify-center"
 								:disabled="!isImageLoaded"
 								@click="applyCrop"
 							/>

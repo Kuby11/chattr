@@ -78,9 +78,9 @@ onMounted(loadPresencePolicy)
 
 <template>
 	<SettingsPage>
-		<div class="max-w-3xl flex flex-col gap-8 pb-8">
-			<header class="flex flex-col gap-3">
-				<h1 class="text-3xl font-semibold tracking-tight">Privacy settings</h1>
+		<div class="max-w-3xl flex flex-col gap-5 sm:gap-8 pb-6 sm:pb-8">
+			<header class="flex flex-col gap-2 sm:gap-3">
+				<h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">Privacy settings</h1>
 				<p class="text-muted">choose what you share with other people on Chattr</p>
 			</header>
 

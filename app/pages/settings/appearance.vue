@@ -63,10 +63,10 @@ function selectPrimaryColor(name: string) {
 
 <template>
 	<SettingsPage>
-		<h1 class="text-3xl font-semibold">Appearance settings</h1>
-		<p class="text-muted mb-10">customize the look of your app</p>
+		<h1 class="text-2xl sm:text-3xl font-semibold">Appearance settings</h1>
+		<p class="text-muted mb-6 sm:mb-10">customize the look of your app</p>
 
-		<div class="flex flex-col gap-6 max-w-2xl">
+		<div class="flex flex-col gap-5 sm:gap-6 max-w-2xl">
 			<section>
 				<h2 class="text-lg font-medium mb-3">Mode</h2>
 				<UPageCard variant="subtle">

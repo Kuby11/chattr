@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ROUTE_TOKENS } from '@shared/configs';
+import { useBreakpoint } from '@shared/composables';
+
+const { lg } = useBreakpoint()
 
 const settingsRoutes = [
 	{
@@ -33,15 +36,19 @@ const settingsRoutes = [
 			/>
     </div>
 		
-		<div class="w-full h-full overflow-y-auto px-4 pt-4 sm:px-8 sm:pt-8 flex flex-col">
-			<div class="lg:hidden flex gap-2 overflow-x-auto -mx-4 px-4 pb-4 border-b border-default mb-6">
+		<div class="w-full h-full overflow-y-auto pt-0 px-4 xs:px-6 sm:px-8 lg:pt-8 flex flex-col">
+			<div 
+				v-if="lg" 
+				class="lg:hidden sticky -mx-4 xs:-mx-6 sm:-mx-8 top-0 z-10 bg-background/80 backdrop-blur-xl px-4 xs:px-6 sm:px-8 py-3 sm:py-4 mb-4 sm:mb-6 flex gap-2 border-b border-default"
+			>
 				<LazyLinkButton
 					v-for="route in settingsRoutes"
 					:key="route.to"
 					:to="route.to"
 					:label="route.label"
 					:icon="route.icon"
-					class="shrink-0"
+					size="lg"
+					class="flex-1 md:flex-none justify-center px-2"
 				/>
 			</div>
 			<slot/>

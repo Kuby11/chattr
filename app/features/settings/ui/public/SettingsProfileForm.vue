@@ -163,8 +163,8 @@ onBeforeUnmount(() => {
 		class="flex flex-col w-full flex-1 relative transition-opacity"
 		@submit="onSubmit" 
 	>
-		<div class="grid grid-cols-1 md:grid-cols-[minmax(0,35rem)_minmax(0,20rem)] gap-6 sm:gap-8 items-start w-full">
-			<div class="flex flex-col gap-5 md:max-w-140 max-w-full rounded-2xl border border-default bg-elevated p-5 sm:p-7 min-w-0">
+		<div class="grid grid-cols-1 md:grid-cols-[minmax(0,35rem)_minmax(0,20rem)] gap-5 sm:gap-8 items-start w-full">
+			<div class="flex flex-col gap-4 sm:gap-5 md:max-w-140 max-w-full rounded-2xl border border-default bg-elevated p-4 sm:p-7 min-w-0">
 				<header class="flex items-center gap-2.5">
 					<div class="flex items-center justify-center size-9 rounded-lg bg-primary/15 text-primary">
 						<UIcon name="lucide:user-round" class="size-4.5" />
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
 					</div>
 				</header>
 
-				<div class="flex flex-col gap-6">
+				<div class="flex flex-col gap-4 sm:gap-6">
 					<UFormField label="Nickname" name="nickname" :ui="{ label: 'text-sm font-medium mb-1.5' }">
 						<UInput v-model="state.nickname" class="w-full" size="xl" :placeholder="props.userProfile.nickname">
 							<template #leading>
@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
 			</div>
 		</div>
 
-		<div class="border-default flex xs:justify-end gap-3 border-t sticky z-20 bottom-0 sm:-mx-8 -mx-4 sm:mt-auto mt-10 py-3 px-4 xs:px-8 bg-background/80 backdrop-blur-xl">
+		<div class="border-default flex xs:justify-end gap-3 border-t sticky z-20 bottom-0 sm:-mx-8 -mx-4 sm:mt-auto mt-6 py-3 px-4 xs:px-8 bg-background/80 backdrop-blur-xl">
 			<UButton 
 				:disabled="!canSubmit" 
 				class="w-full xs:w-auto justify-center" 
