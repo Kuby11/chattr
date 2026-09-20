@@ -12,5 +12,7 @@ export const ROUTE_TOKENS = {
 		PROFILE: '/settings/profile',
 		APPEARANCE: '/settings/appearance',
 		PRIVACY: '/settings/privacy'
-	}
+	},
+	FORGOT_PASSWORD: '/forgot-password',
+	RESET_PASSWORD: '/reset-password'
 } as const

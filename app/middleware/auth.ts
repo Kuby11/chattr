@@ -1,6 +1,6 @@
 import { ROUTE_TOKENS } from "@shared/configs"
 
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async (_to) => {
 	const session = useSupabaseSession()
 
 	await new Promise((resolve) => {

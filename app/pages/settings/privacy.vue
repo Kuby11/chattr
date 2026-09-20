@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SettingsPage, usePrivacySettings, type PresencePolicy } from '@features/settings'
+import { SettingsPage, SettingsPasswordForm, usePrivacySettings, type PresencePolicy } from '@features/settings'
 import { useCurrentRoute } from '@shared/composables'
 
 definePageMeta({
@@ -17,6 +17,8 @@ setCurrentRoute({
 	route: 'settings/privacy',
 	icon: 'lucide:shield-check'
 })
+
+const toast = useToast()
 
 const {
 	presencePolicy,
@@ -44,8 +46,6 @@ const presenceOptions: Array<{ label: string; value: PresencePolicy; description
 		description: 'Your online status and last seen time stay private.'
 	},
 ]
-
-const toast = useToast()
 
 function isPresencePolicy(value: string): value is PresencePolicy {
 	return presenceOptions.some(option => option.value === value)
@@ -121,6 +121,15 @@ onMounted(loadPresencePolicy)
 						</div>
 					</div>
 				</UPageCard>
+			</section>
+
+			<section class="flex flex-col gap-3">
+				<div>
+					<h2 class="text-lg font-medium">Password</h2>
+					<p class="text-sm text-muted mt-1">Change the password you use to sign in to Chattr.</p>
+				</div>
+
+				<SettingsPasswordForm />
 			</section>
 
 			<UAlert

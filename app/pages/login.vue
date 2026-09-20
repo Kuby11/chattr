@@ -72,7 +72,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 			</template>
 
 			<template #password-hint>
-				<ULink to="#" class="text-primary font-medium" tabindex="-1">Forgot password?</ULink>
+				<ULink :to="ROUTE_TOKENS.FORGOT_PASSWORD" class="text-primary font-medium" tabindex="-1">Forgot password?</ULink>
 			</template>
 
 			<template #validation>

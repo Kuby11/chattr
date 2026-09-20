@@ -36,7 +36,8 @@ const schema = z.object({
     .email('Invalid email'),
   password: z
     .string('Password is required')
-    .min(8, 'Must be at least 8 characters')
+    .min(8, 'Must be at least 8 characters'),
+  confirmPassword: z.string().min(8, 'Password must be at least 8 characters')
 })
 
 type Schema = z.output<typeof schema>
@@ -73,10 +74,26 @@ const fields: AuthFormField[] = [
 		type: 'password',
 		placeholder: '*secure password*',
 		required: true
+	},
+	{
+		name: 'confirmPassword',
+		label: 'Confirm Password',
+		type: 'password',
+		placeholder: '*confirm password*',
+		required: true
 	}
 ]
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+	if (event.data.password !== event.data.confirmPassword) {
+		useToast().add({
+			title: 'Passwords do not match!',
+			icon: 'lucide:x',
+			color: 'error'
+		})
+		return
+	}
+	
 	const signUp = await auth.signUp({
 		email: event.data.email,
 		password: event.data.password,

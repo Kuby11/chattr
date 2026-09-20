@@ -5,7 +5,7 @@ import SettingsProfileAvatar from './SettingsProfileAvatar.vue'
 import SettingsProfileCompactPreview from './SettingsProfileCompactPreview.vue'
 import SettingsProfileCover from './SettingsProfileCover.vue'
 import SettingsProfileIdentity from './SettingsProfileIdentity.vue'
-import type { SettingsProfilePreviewFormState } from '../../types/SettingsProfilePreview.types.js'
+import type { SettingsProfilePreviewFormState } from '../../types/SettingsProfilePreview.types'
 
 const props = defineProps<{
 	profile: Tables<'user_profiles'>

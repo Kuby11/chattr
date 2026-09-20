@@ -1,10 +1,11 @@
 import { ROUTE_TOKENS } from "@shared/configs"
-import { safeValue } from "@shared/utils"
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
+import { useAuthApi } from "../api/useAuthApi"
 
 export const useAuth = () => {
-  const supabase = useSupabaseClient()
+  const authApi = useAuthApi()
 
-  async function signIn({email, password, options}: {
+  async function signIn({ email, password, options }: {
     email: string
     password: string
     options?: {
@@ -12,21 +13,21 @@ export const useAuth = () => {
       captchaToken?: string
     }
   }) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await authApi.signInWithPassword({
       email,
       password,
-      options
+      options,
     })
 
     if (error) {
-      if(error.code === "invalid_credentials")
+      if (error.code === "invalid_credentials")
         throw Error("invalid password or email!")
 
       throw error
     }
 
     if (options?.redirectTo) {
-      const session = data.session ?? (await supabase.auth.getSession()).data.session
+      const session = data.session ?? (await authApi.getSession()).data.session
 
       if (!session) throw new Error('Session could not be established')
 
@@ -38,11 +39,11 @@ export const useAuth = () => {
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    await authApi.signOut()
     return navigateTo(ROUTE_TOKENS.LOGIN)
   }
 
-  async function signUp({email, password, username, nickname, options}: {
+  async function signUp({ email, password, username, nickname, options }: {
     email: string
     password: string
     username: string
@@ -54,31 +55,23 @@ export const useAuth = () => {
       emailRedirectTo?: string
     }
   }) {
-    const findUserProfileByUsername = await supabase
-      .from("user_profiles")
-      .select("*")
-      .ilike("username", safeValue(username))
-      .single()
+    const foundUserProfileByUsername = await authApi.findUserProfileByUsername(username)
 
-    if(findUserProfileByUsername.data)
+    if (foundUserProfileByUsername.data)
       throw new Error("user with this username already exists")
-		
-    if(findUserProfileByUsername.error && findUserProfileByUsername.error?.code !== "PGRST116" )
-      throw findUserProfileByUsername.error?.message
 
-    const findUserProfileByEmail = await supabase
-      .from("user_profiles")
-      .select("*")
-      .ilike("email", safeValue(email))
-      .single()
+    if (foundUserProfileByUsername.error && foundUserProfileByUsername.error?.code !== "PGRST116")
+      throw foundUserProfileByUsername.error?.message
 
-    if(findUserProfileByEmail.data)
+    const foundUserProfileByEmail = await authApi.findUserProfileByEmail(email)
+
+    if (foundUserProfileByEmail.data)
       throw new Error("user with this email already exists")
-    
-    if(findUserProfileByEmail.error && findUserProfileByEmail.error?.code !== "PGRST116" )
-      throw findUserProfileByEmail.error?.message
 
-    const { data, error } = await supabase.auth.signUp({
+    if (foundUserProfileByEmail.error && foundUserProfileByEmail.error?.code !== "PGRST116")
+      throw foundUserProfileByEmail.error?.message
+
+    const { data, error } = await authApi.signUp({
       email,
       password,
       options: {
@@ -86,9 +79,9 @@ export const useAuth = () => {
         data: {
           username,
           nickname,
-          email
-        }
-      }
+          email,
+        },
+      },
     })
 
     if (error) throw error
@@ -97,44 +90,81 @@ export const useAuth = () => {
     return { data, error }
   }
 
-  async function verifyOtp({email, token, redirectTo}: {
+  async function verifyOtp({ email, token, redirectTo }: {
     email: string
     token: string
     redirectTo?: string
   }) {
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { data, error } = await authApi.verifyOtp({
       email,
       token,
-      type: 'signup'
+      type: 'signup',
     })
 
     if (error) throw error
 
     if (redirectTo) {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await authApi.getSession()
 
       if (!session) throw new Error('Session could not be established')
-      
+
       await navigateTo(redirectTo)
     }
 
     return { data, error }
   }
 
-  function onAuthStateChange(callback: Parameters<typeof supabase.auth.onAuthStateChange>[0]){        
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      callback(event, session)
+  async function verifyRecoveryOtp({ email, token }: {
+    email: string
+    token: string
+  }) {
+    const { data, error } = await authApi.verifyOtp({
+      email,
+      token,
+      type: 'recovery',
     })
+
+    if (error) throw error
+
+    return { data, error }
+  }
+
+  async function resetPassword({ email }: {
+    email: string
+  }) {
+    const redirectTo = `${window.location.origin}${ROUTE_TOKENS.RESET_PASSWORD}`
+    const { data, error } = await authApi.resetPasswordForEmail(email, redirectTo)
+
+    if (error) throw error
+
+    return { data, error }
+  }
+
+  async function updatePassword(password: string) {
+    const { data, error } = await authApi.updatePassword(password)
+
+    if (error) throw error
+
+    return { data, error }
+  }
+
+  function onAuthStateChange(
+    callback: (event: AuthChangeEvent, session: Session | null) => void,
+  ) {
+    const { data: { subscription } } = authApi.onAuthStateChange(callback)
 
     onScopeDispose(() => subscription.unsubscribe())
   }
 
-  return {
-    signIn,
-    signUp,
-    signOut,
-    verifyOtp,
-    onAuthStateChange,
-    supabaseAuth: supabase.auth
-  }
+	return {
+		signIn,
+		signUp,
+		signOut,
+		resetPassword,
+		verifyOtp,
+		verifyRecoveryOtp,
+		updatePassword,
+		onAuthStateChange,
+		supabaseAuth: authApi.getAuthClient(),
+	}
 }

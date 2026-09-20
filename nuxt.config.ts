@@ -53,7 +53,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: "/",
       callback: "/confirm",
-      exclude: ["/login", "/register", "/confirm", "/server-error", "/chat/.*", "/__repro", "/invite/.*"]
+      exclude: ["/login", "/register", "/confirm", "/server-error", "/chat/.*", "/__repro", "/invite/.*", "/forgot-password", "/reset-password"]
     }
   },
 
