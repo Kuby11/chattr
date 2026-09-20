@@ -67,6 +67,7 @@ export default defineNuxtConfig({
     },
     domains: [
       process.env.SUPABASE_URL || "",
+      'giphy.com'
     ]
   },
 
