@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Tables } from '@shared/types';
 import { formatBytes } from '@shared/utils';
-import { STATE_TOKENS, ROUTE_TOKENS } from '@shared/configs';
+import { STATE_TOKENS } from '@shared/configs';
 import { useProfileOverlay } from '@features/profile';
 import { useProfile, useProfileStore } from '@features/profile';
 import { useCachedData } from '@shared/composables';
@@ -9,7 +9,6 @@ import { PresenceAvatar, userPresenceLabel } from '@features/user';
 import { useMessage, useMessageStore } from '@features/message';
 import type { ChatMediaItem } from '@features/message';
 import { getChatAssetUrl } from '../../utils/getChatAssetUrl';
-import { useChatInviteApi } from '../../api/useChatInviteApi';
 import ChatAvatar from './ChatAvatar.vue';
 import ChatMemberButton from '../local/ChatMemberButton.vue';
 import GroupChatInviteLink from '../local/GroupChatInviteLink.vue';

@@ -4,23 +4,23 @@ export function useSubmit() {
 	const isSubmitted = ref<boolean>(false)
 	const isSuccess = ref<boolean>(false)
 
-	const handleSubmit = async (submitFn: any) => {
+	const handleSubmit = async (submitFn: unknown) => {
 		isSubmitting.value = true
 		isSubmitted.value = true
 		serverError.value = null
 
 		try {
-			if(typeof submitFn === "function"){
+			if (typeof submitFn === "function") {
 				await submitFn()
-			}else {
+			} else {
 				await submitFn
 			}
 
 			isSuccess.value = true
 		} catch (error) {
-			if(error instanceof Error){
+			if (error instanceof Error) {
 				serverError.value = error.message
-			}else{
+			} else {
 				serverError.value = String(error)
 			}
 
