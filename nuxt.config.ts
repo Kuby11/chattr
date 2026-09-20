@@ -18,7 +18,9 @@ export default defineNuxtConfig({
     supabase: {
       secretKey: process.env.SUPABASE_KEY,
     },
-    giphyKey: process.env.GIPHY_KEY,
+    public: {
+      giphyKey: process.env.NUXT_PUBLIC_GIPHY_KEY || process.env.GIPHY_KEY,
+    },
   },
 
   components: [
@@ -43,6 +45,8 @@ export default defineNuxtConfig({
 
     types: import.meta.dirname + "/app/shared/types/database.types.ts",
 
+    redirect: false,
+
     cookieOptions: {
       path: '/',
       maxAge: 60 * 60 * 8,
@@ -51,7 +55,7 @@ export default defineNuxtConfig({
     },
 
     redirectOptions: {
-      login: "/",
+      login: "/login",
       callback: "/confirm",
       exclude: ["/login", "/register", "/confirm", "/server-error", "/chat/.*", "/__repro", "/invite/.*", "/forgot-password", "/reset-password"]
     }
@@ -75,10 +79,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-
-  routeRules: {
-    '/': { prerender: true }
-  },
 
   icon: {
     mode: 'svg',

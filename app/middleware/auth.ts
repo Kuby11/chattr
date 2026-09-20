@@ -1,20 +1,13 @@
 import { ROUTE_TOKENS } from "@shared/configs"
 
-export default defineNuxtRouteMiddleware(async (_to) => {
-	const session = useSupabaseSession()
+export default defineNuxtRouteMiddleware(async () => {
+	const sessionState = useSupabaseSession()
+	if (sessionState.value) return
 
-	await new Promise((resolve) => {
-		if (session.value !== undefined) {
-			resolve(true)
-		} else {
-			const unwatch = watch(session, () => {
-				unwatch()
-				resolve(true)
-			}, { immediate: true })
-		}
-	})
+	const supabase = useSupabaseClient()
+	const { data: { session } } = await supabase.auth.getSession()
 
-	if (!session.value) {
+	if (!session) {
 		return navigateTo(ROUTE_TOKENS.LOGIN, { replace: true })
 	}
 })

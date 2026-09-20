@@ -12,9 +12,9 @@ export const useGiphyApi = () => {
 	const config = useRuntimeConfig()
 
 	function getApiKey() {
-		const key = config.giphyKey
+		const key = config.public.giphyKey
 		if (!key) {
-			throw new Error("Missing Giphy API key. Set GIPHY_KEY in your environment.")
+			throw new Error("Missing Giphy API key. Set NUXT_PUBLIC_GIPHY_KEY (or GIPHY_KEY) in your environment.")
 		}
 		return key as string
 	}
