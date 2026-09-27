@@ -2,6 +2,7 @@
 import { LogoutButton } from '@features/auth';
 import { useProfile } from '../../composables/useProfile'
 import { FriendRequestButton } from '@features/friendship';
+import { MessageButton } from '@features/message';
 import type { Tables } from '@shared/types';
 import { useProfileOverlay } from '../../composables/useProfileOverlay'
 
@@ -57,6 +58,15 @@ const profileOverlay = useProfileOverlay()
 				<FriendRequestButton
 					v-if="!isCurrentUser($props.profile.user_id)"
 					:user-id="$props.profile.user_id"
+				/>
+				<MessageButton
+					v-if="!isCurrentUser($props.profile.user_id)"
+					:user-id="$props.profile.user_id"
+					label="message"
+					color="neutral"
+					variant="soft"
+					size="lg"
+					class="w-full justify-start"
 				/>
 				<UButton
 					icon="lucide:circle-user-round"
