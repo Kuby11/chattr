@@ -3,9 +3,11 @@ import type { PageCardProps } from '#ui/types';
 import type { UserId } from '@shared/types';
 import { useProfileApi } from '../../api/useProfileApi';
 import { useProfile } from '../../composables/useProfile';
+import { useProfileOverlay } from '../../composables/useProfileOverlay';
 import ProfilePopoverContent from './ProfilePopoverContent.vue';
 import {MessageButton} from '@features/message';
 import { modifiedUI } from '@shared/utils';
+import { useBreakpoint } from '@shared/composables';
 
 const props = defineProps< PageCardProps & { userId: UserId }>()
 
@@ -19,9 +21,16 @@ const pageCardUi = modifiedUI<PageCardProps['ui']>(
 
 const { findUserProfile } = useProfileApi()
 const { isCurrentUser } = useProfile()
+const profileOverlay = useProfileOverlay()
+const breakpoints = useBreakpoint()
 
 const { data: userData } = useLazyAsyncData(`user-${props.userId}`,() => findUserProfile(props.userId))
 
+function openOverlay() {
+	if (userData.value) {
+		profileOverlay.open({ userProfile: userData.value })
+	}
+}
 </script>
 
 <template>
@@ -33,7 +42,7 @@ const { data: userData } = useLazyAsyncData(`user-${props.userId}`,() => findUse
 	>
 		<template #body>
 			<div class="flex min-w-0 items-center gap-2">
-				<UPopover :content="{ side: 'bottom', align: 'start' }" >
+				<UPopover v-if="!breakpoints.xs" :content="{ side: 'bottom', align: 'start' }" >
 					<UUser
 						:name="userData.nickname"
 						:description="userData.bio ?? ''"
@@ -54,6 +63,23 @@ const { data: userData } = useLazyAsyncData(`user-${props.userId}`,() => findUse
 						<ProfilePopoverContent :profile="userData" />
 					</template>
 				</UPopover>
+				<UUser
+					v-else
+					:name="userData.nickname"
+					:description="userData.bio ?? ''"
+					:ui="{
+						root: 'pointer-events-auto',
+						avatar: 'cursor-pointer',
+						name: 'cursor-pointer hover:text-primary not-sm:text-sm',
+						description: 'not-sm:text-xs 	'
+					}"
+					:avatar="{
+						alt: userData.username,
+						src: userData.avatar_url!
+					}"
+					size="xl"
+					@click="openOverlay"
+				/>
 				<slot name="meta" />
 			</div>
 
