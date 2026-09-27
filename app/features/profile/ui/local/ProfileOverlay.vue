@@ -23,7 +23,7 @@ const breakpoints = useBreakpoint()
 		}"
 	>
     <template #content>
-      <ProfileContent :user-profile="$props.userProfile"/>
+      <ProfileContent :user-profile="$props.userProfile" @close="open = false"/>
     </template>
   </UDrawer>
 
@@ -33,7 +33,7 @@ const breakpoints = useBreakpoint()
 		:ui="{ overlay: 'z-[60]', content: 'z-[61] max-w-2xl not-xs:p-0 h-[clamp(25rem,85vh,50rem)]' }"
 	>
 		<template #content>
-			<ProfileContent :user-profile="$props.userProfile"/>
+			<ProfileContent :user-profile="$props.userProfile" @close="open = false"/>
 		</template>
 	</UModal>
 </template>

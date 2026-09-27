@@ -5,6 +5,8 @@ import { useProfile } from '../../composables/useProfile';
 
 defineProps<{ userProfile: Tables<"user_profiles"> }>()
 
+const emit = defineEmits<{ close: [] }>()
+
 const { isCurrentUser } = useProfile()
 
 </script>
@@ -47,6 +49,7 @@ const { isCurrentUser } = useProfile()
 						color="neutral"
 						size="md"
 						class="ml-auto self-end"
+						@click="emit('close')"
 					/>
 				</div>
 			</div>
