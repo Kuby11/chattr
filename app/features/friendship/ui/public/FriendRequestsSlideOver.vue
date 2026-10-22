@@ -30,7 +30,6 @@ const tabItems = computed(() => [
 		<template #body>
 			<UTabs 
 				:items="tabItems" 
-				:unmount-on-hide="false"
 				:ui="{
 					root: 'not-sm:flex-col',
 					trigger: 'not-sm:w-full not-sm:text-xs'
