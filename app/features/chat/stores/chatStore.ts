@@ -1,12 +1,13 @@
-import type { ChatId, Tables } from "@shared/types"
-import { useAuth } from "@features/auth"
-import { useChatApi } from "../api/useChatApi"
-import { useProfile } from "@features/profile"
+import type { ChatId, Tables, UserId } from "@shared/types"
+import { useFeature } from "@shared/composables"
+import { createChatApi } from "../api/chatApi"
 
 export const useChatStore = defineStore('chatStore', () => {
-	const { onAuthStateChange, supabaseAuth } = useAuth()
+	const { useAuth } = useFeature('auth')
+	const { useProfile } = useFeature('profile')
+	const { onAuthStateChange, resolveCurrentUserId } = useAuth()
 	const { findUserProfile } = useProfile()
-	const { fetchChats } = useChatApi()
+	const chatApi = createChatApi(useSupabaseClient())
 
 	const chats = ref<Tables<"chats">[] | undefined>(undefined)
 	let loadPromise: Promise<void> | null = null
@@ -54,10 +55,10 @@ export const useChatStore = defineStore('chatStore', () => {
 		if (chats.value !== undefined || loadPromise) return loadPromise
 
 		loadPromise = (async () => {
-			const userId = (await supabaseAuth.getSession()).data.session?.user.id
+			const userId = await resolveCurrentUserId()
 			if (!userId || chats.value) return
 
-			const chatsData = await fetchChats()
+			const chatsData = await chatApi.fetchChats(userId as UserId)
 			const enrichedChats = await Promise.all(chatsData.map(async (chat) => {
 				if (chat.type === 'DIRECT') {
 					const memberIds = chat.direct_id?.split("__")

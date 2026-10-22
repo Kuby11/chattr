@@ -1,6 +1,5 @@
 export * from './composables/useUserPresence'
-export * from './stores/userPresenceStore'
-export { useUserPresenceApi } from './api/useUserPresenceApi'
+export { createUserPresenceApi } from './api/userPresenceApi'
 
 const userPresenceLabel = defineAsyncComponent(() => import('./ui/public/userPresenceLabel.vue'))
 const PresenceAvatar = defineAsyncComponent(() => import('./ui/public/PresenceAvatar.vue'))

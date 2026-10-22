@@ -1,8 +1,7 @@
-import type { UserId } from '@shared/types'
-import { useProfileStore } from '@features/profile'
-import { useFriendshipStore } from '@features/friendship'
+import type { Tables, UserId } from '@shared/types'
+import { useFeature } from '@shared/composables'
 import { useUserPresenceStore } from '../stores/userPresenceStore'
-import { useUserPresenceApi } from '../api/useUserPresenceApi'
+import { createUserPresenceApi } from '../api/userPresenceApi'
 import { getCurrentScope, onScopeDispose } from 'vue'
 
 let presenceConsumerCount = 0
@@ -10,15 +9,16 @@ let presenceGeneration = 0
 let authSubscription: { unsubscribe: () => void } | null = null
 
 export const useUserPresence = () => {
+	const { useProfile } = useFeature('profile')
+	const { useFriendship } = useFeature('friendship')
 	const supabase = useSupabaseClient()
 	const userPresenceStore = useUserPresenceStore()
-	const userPresenceApi = useUserPresenceApi()
-	const profileStore = useProfileStore()
-	const friendshipStore = useFriendshipStore()
+	const userPresenceApi = createUserPresenceApi(supabase)
+	const { getCurrentUserId } = useProfile()
+	const { isFriend } = useFriendship()
 	const { onlineUsers } = storeToRefs(userPresenceStore)
 
-	async function touchOwnPresence() {
-		const userId = await userPresenceApi.getCurrentUserId()
+	async function touchOwnPresence(userId: UserId) {
 		if (!userId) return
 
 		const now = new Date().toISOString()
@@ -41,7 +41,7 @@ export const useUserPresence = () => {
 		userPresenceApi.subscribeUserPresence(
 			userId as UserId,
 			userPresenceStore.setOnlineUsers,
-			touchOwnPresence
+			() => touchOwnPresence(userId as UserId)
 		)
 	}
 
@@ -63,7 +63,8 @@ export const useUserPresence = () => {
 			})
 
 			authSubscription = subscription
-			userPresenceApi.getCurrentUserId().then((userId) => {
+			supabase.auth.getSession().then(({ data: { session } }) => {
+				const userId = session?.user.id
 				if (generation === presenceGeneration && presenceConsumerCount && userId) {
 					subscribePresence(userId)
 				}
@@ -83,13 +84,13 @@ export const useUserPresence = () => {
 	}
 
 	function canSeeUserPresence(targetUserId: UserId) {
-		if (targetUserId === profileStore.userProfile?.user_id) return true
+		if (targetUserId === getCurrentUserId()) return true
 
 		const row = userPresenceStore.userPresenceRows.get(targetUserId)
 		if (!row) return true
 
 		if (row.presence_policy === 'NOBODY') return false
-		if (row.presence_policy === 'FRIENDS') return friendshipStore.isFriend(targetUserId)
+		if (row.presence_policy === 'FRIENDS') return isFriend(targetUserId)
 
 		return true
 	}
@@ -126,11 +127,16 @@ export const useUserPresence = () => {
 		}
 	}
 
+	function upsertUserPresenceRow(row: Tables<"user_presence">) {
+		userPresenceStore.upsertUserPresenceRow(row)
+	}
+
 	return {
 		onlineUsers,
 		isOnline,
 		isOnlineVisible,
 		lastSeenAt,
 		loadPresenceRows,
+		upsertUserPresenceRow,
 	}
 }

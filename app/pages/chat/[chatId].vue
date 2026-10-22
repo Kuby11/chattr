@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { ChatId, Tables } from '@shared/types';
 import { ChatMain, ChatPage, ChatRightWidget, ChatTopBar, useChat, useChatMember, isDirectId, getDirectIdOtherUserId } from '@features/chat';
-import { useMessage, useMessageStore } from '@features/message';
-import { useProfile, useProfileStore } from '@features/profile';
+import { useMessage, useMessageState } from '@features/message';
+import { useProfile } from '@features/profile';
+import { useAuth } from '@features/auth';
 import { useCachedData, useCurrentRoute } from '@shared/composables';
 
 definePageMeta({
@@ -24,11 +25,11 @@ const activeChatId = ref<ChatId>(chatId.value)
 	
 const nuxtApp = useNuxtApp()
 const { loadMessages, initChannel: initMessageChannel } = useMessage(activeChatId)
-const messageStore = useMessageStore()
+const { getMessages, addMessages } = useMessageState()
 const { chatMembers, loadMembers, initChannel: initMemberChannel } = useChatMember(activeChatId)
 
-const { userProfile } = storeToRefs(useProfileStore())
-const { findUserProfile } = useProfile()
+const { findUserProfile, getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
 const { setCurrentRoute } = useCurrentRoute()
 
 const { data, pending } = useCachedData(
@@ -59,7 +60,7 @@ const { data, pending } = useCachedData(
 	{ watch: [chatId]	}
 )
 
-const currentUserId = computed(() => userProfile.value?.user_id)
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 
 const otherMemberId = computed<string | undefined>(() => {
 	const chat = data.value?.chatData
@@ -152,8 +153,8 @@ watch(
 		activeChatId.value = realId as ChatId
 
 		const cachedMessages = data.value?.messages ?? []
-		if (!messageStore.messages.get(realId)?.length && cachedMessages.length) {
-			messageStore.addMessages(realId, cachedMessages)
+		if (!getMessages(realId as ChatId)?.length && cachedMessages.length) {
+			addMessages(realId as ChatId, cachedMessages)
 		}
 
 		try {

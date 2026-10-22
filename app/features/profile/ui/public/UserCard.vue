@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PageCardProps } from '#ui/types';
 import type { UserId } from '@shared/types';
-import { useProfileApi } from '../../api/useProfileApi';
+import { createProfileApi } from '../../api/profileApi';
 import { useProfile } from '../../composables/useProfile';
 import { useProfileOverlay } from '../../composables/useProfileOverlay';
 import ProfilePopoverContent from './ProfilePopoverContent.vue';
@@ -19,7 +19,7 @@ const pageCardUi = modifiedUI<PageCardProps['ui']>(
 	props.ui
 )
 
-const { findUserProfile } = useProfileApi()
+const { findUserProfile } = createProfileApi(useSupabaseClient())
 const { isCurrentUser } = useProfile()
 const profileOverlay = useProfileOverlay()
 const breakpoints = useBreakpoint()

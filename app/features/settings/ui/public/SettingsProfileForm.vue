@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { useProfile } from '@features/profile';
+import { useFeature } from '@shared/composables';
 import type { Tables } from '@shared/types';
 import ImageCropperModal from '@shared/ui/ImageCropperModal.vue';
 import { SettingsProfilePreview } from '../..';
@@ -8,6 +8,7 @@ import { profileSettingsSchema, type ProfileSettingsSchema } from '../../utils/p
 
 const props = defineProps<{ userProfile: Tables<"user_profiles">}>()
 
+const { useProfile } = useFeature('profile')
 const { updateUserProfile } = useProfile()
 const toast = useToast()
 

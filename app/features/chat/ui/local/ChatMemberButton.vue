@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Enums, Tables } from '@shared/types';
-import { useProfile, useProfileOverlay, useProfileStore, getProfileAssetUrl } from '@features/profile';
-import { useCachedData } from '@shared/composables';
+import { useCachedData, useFeature } from '@shared/composables';
 
 const props = defineProps<{
 	memberData: Tables<"chat_members">,
@@ -14,22 +13,23 @@ const props = defineProps<{
 	onRemove?: (memberId: string) => Promise<void> | void
 }>()
 
-const { findUserProfile } = useProfile()
+const { useProfile, useProfileOverlay, getProfileAssetUrl } = useFeature('profile')
+const { findUserProfile, getCurrentUserProfile } = useProfile()
 const { open } = useProfileOverlay()
-const { userProfile } = storeToRefs(useProfileStore())
 
 const { data } = useCachedData(
 	`chat-member-profile-${props.memberData.user_id}`,
 	async () => {
-		if (userProfile.value?.user_id === props.memberData.user_id) {
-			return userProfile.value
+		const currentProfile = getCurrentUserProfile()
+		if (currentProfile?.user_id === props.memberData.user_id) {
+			return currentProfile
 		}
 
 		return await findUserProfile(props.memberData.user_id)
 	},
 	{
 		lazy: true,
-		watch: [() => props.memberData.user_id, userProfile]
+		watch: [() => props.memberData.user_id, () => getCurrentUserProfile()]
 	}
 )
 

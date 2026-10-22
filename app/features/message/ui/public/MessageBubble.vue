@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useProfileStore } from '@features/profile';
-import { useChatStore } from '@features/chat';
+import { useFeature } from '@shared/composables';
 import { useMessageStore } from '../../stores/messageStore';
 import RepliedMessageContent from '../local/RepliedMessageContent.vue';
 import { useMessage } from '../../composables/useMessage';
@@ -8,7 +7,7 @@ import { useIntersectionObserver } from '@vueuse/core';
 import { useCachedData } from '@shared/composables';
 import ForwardedFrom from '../local/ForwardedFrom.vue';
 import MessageActionsPopover from '../local/MessageActionsPopover.vue';
-import { useMessageApi } from '../../api/messageApi';
+import { createMessageApi } from '../../api/messageApi';
 import MessageBubbleMedia from '../local/MessageBubbleMedia.vue';
 import MessageSingleMedia from '../local/MessageSingleMedia.vue';
 import type { ClientMessage } from '../../types/clientMessage';
@@ -22,19 +21,22 @@ const props = defineProps<{
 
 defineEmits(['gif-loaded', 'media-loaded'])
 
+const { useProfile } = useFeature('profile')
+const { useAuth } = useFeature('auth')
+const { useChat } = useFeature('chat')
 const { getMessage } = useMessageStore()
-const { userProfile } = storeToRefs(useProfileStore())
-const supabaseUser = useSupabaseUser()
+const { getCurrentUserProfile, getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
+const { getChatType } = useChat()
 const { markAsRead, getSenderProfile } = useMessage(props.messageData.chat_id)
-const { fetchMessageById } = useMessageApi(props.messageData.chat_id)
-const chatStore = useChatStore()
+const { fetchMessageById } = createMessageApi(useSupabaseClient(), props.messageData.chat_id)
 
 const targetRef = useTemplateRef<HTMLElement>("targetRef")
 
-const currentUserId = computed(() => userProfile.value?.user_id || supabaseUser.value?.id)
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 const isOwn = computed(() => !!(currentUserId.value && props.messageData.sender_id === currentUserId.value))
 
-const isGroupChat = computed(() => chatStore.chats?.find(chat => chat.id === props.messageData.chat_id)?.type === 'GROUP')
+const isGroupChat = computed(() => getChatType(props.messageData.chat_id) === 'GROUP')
 const isFirstFromSender = computed(() => !props.prevMessageData || props.prevMessageData.sender_id !== props.messageData.sender_id)
 const showSenderName = computed(() => isGroupChat.value && !isOwn.value && isFirstFromSender.value)
 
@@ -42,7 +44,7 @@ const { data: senderProfile } = useCachedData(
 	`message-sender-${props.messageData.sender_id}`,
 	async () => {
 		if (!showSenderName.value) return null
-		if (props.messageData.sender_id === currentUserId.value) return userProfile.value
+		if (props.messageData.sender_id === currentUserId.value) return getCurrentUserProfile()
 
 		try {
 			return await getSenderProfile(props.messageData.sender_id)
@@ -78,7 +80,7 @@ const { data: interactingToProfile } = useCachedData(
 	async () => {
 		const targetId = replySenderId.value ?? props.messageData.forwarded_from
 		if (!targetId) return null
-		if (targetId === currentUserId.value) return userProfile.value
+		if (targetId === currentUserId.value) return getCurrentUserProfile()
 		return getSenderProfile(targetId)
 	},
 	{ watch: [replySenderId, currentUserId] }

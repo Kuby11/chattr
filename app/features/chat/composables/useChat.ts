@@ -1,13 +1,11 @@
 import { useChatStore } from "../stores/chatStore"
-import { useChatApi } from "../api/useChatApi"
-import { buildDirectId, isDirectId, parseDirectId } from "../utils/directId"
-import { useChatMemberApi } from "../api/useChatMemberApi"
+import { createChatApi } from "../api/chatApi"
+import { buildDirectId, isDirectId, parseDirectId } from "@shared/utils"
+import { createChatMemberApi } from "../api/chatMemberApi"
 import { useChatMemberStore } from "../stores/memberStore"
 import type { ChatCreatePayload } from "../types/ChatPayload"
 import type { ChatId, ChatMemberId, Enums, Tables, UserId } from "@shared/types"
-import { useProfile, useProfileStore } from "@features/profile"
-import { useAuth } from "@features/auth"
-import { useMessageStore, useMessageInfo } from "@features/message"
+import { useFeature } from "@shared/composables"
 
 const directChatEnsureCache = new Map<string, Promise<Tables<"chats">>>()
 
@@ -18,23 +16,27 @@ function isDuplicateKeyError(error: unknown): boolean {
 }
 
 export const useChat = () => {
-	const userStore = useProfileStore()
-	const { findUserProfile } = useProfile()
-	const chatStore = useChatStore()
-	const chatService = useChatApi()
-	const chatMemberService = useChatMemberApi()
-	const memberStore = useChatMemberStore()
-	const messageStore = useMessageStore()
+	const { useProfile } = useFeature('profile')
+	const { useAuth } = useFeature('auth')
+	const { useMessageInfo, useMessageState } = useFeature('message')
+
+	const { getCurrentUserId, findUserProfile } = useProfile()
+	const { resolveCurrentUserId: resolveAuthUserId } = useAuth()
+	const { clearChat: clearMessageChat } = useMessageState()
 	const { sendMemberJoinedInfo, sendMemberLeftInfo } = useMessageInfo()
+
+	const supabase = useSupabaseClient()
+	const chatStore = useChatStore()
+	const chatService = createChatApi(supabase)
+	const chatMemberService = createChatMemberApi(supabase)
+	const memberStore = useChatMemberStore()
 
 	async function getDirectChatOtherMember(chatId: ChatId, name: string) {
 		try {
-			const { supabaseAuth } = useAuth()
-			let currentUserId = userStore.userProfile?.user_id
+			let currentUserId = getCurrentUserId()
 
 			if (!currentUserId) {
-				const session = (await supabaseAuth.getSession()).data.session
-				currentUserId = session?.user.id
+				currentUserId = await resolveAuthUserId()
 			}
 
 			const idsFromName = name.split("__")
@@ -171,15 +173,21 @@ export const useChat = () => {
 			updates.description = payload.description?.trim() || null
 		}
 
+		const actorId = payload.avatarFile || payload.coverFile
+			? await resolveCurrentUserId()
+			: undefined
+
 		if (payload.avatarFile) {
-			const path = await chatService.uploadChatAsset(chatId, payload.avatarFile, 'avatar')
+			if (!actorId) throw new Error("Sign in to upload chat assets")
+			const path = await chatService.uploadChatAsset(chatId, payload.avatarFile, 'avatar', actorId)
 			updates.avatar_url = path
 		} else if (payload.removeAvatar) {
 			updates.avatar_url = null
 		}
 
 		if (payload.coverFile) {
-			const path = await chatService.uploadChatAsset(chatId, payload.coverFile, 'cover')
+			if (!actorId) throw new Error("Sign in to upload chat assets")
+			const path = await chatService.uploadChatAsset(chatId, payload.coverFile, 'cover', actorId)
 			updates.cover_url = path
 		} else if (payload.removeCover) {
 			updates.cover_url = null
@@ -198,10 +206,10 @@ export const useChat = () => {
 		await chatService.deleteChat(chatId)
 		chatStore.removeChat(chatId)
 		memberStore.clearMembers(chatId)
-		messageStore.clearChat(chatId)
+		clearMessageChat(chatId)
 		if (directId) {
 			memberStore.clearMembers(directId)
-			messageStore.clearChat(directId)
+			clearMessageChat(directId)
 		}
 		chatMemberService.disposeChannel(chatId)
 
@@ -218,10 +226,10 @@ export const useChat = () => {
 	}
 
 	async function resolveCurrentUserId(): Promise<UserId | undefined> {
-		if (userStore.userProfile?.user_id) return userStore.userProfile.user_id
+		const profileUserId = getCurrentUserId()
+		if (profileUserId) return profileUserId
 
-		const { supabaseAuth } = useAuth()
-		return (await supabaseAuth.getSession()).data.session?.user.id as UserId | undefined
+		return await resolveAuthUserId()
 	}
 
 	function ensureDirectChatById(directId: string): Promise<Tables<"chats">> {
@@ -336,9 +344,24 @@ export const useChat = () => {
 		chatStore.removeChat(chatId)
 	}
 
+	function getChats() {
+		return chatStore.chats
+	}
+
+	function getCachedChat(chatId: ChatId) {
+		return chatStore.chats?.find(chat => chat.id === chatId)
+	}
+
+	function getChatType(chatId: ChatId) {
+		return getCachedChat(chatId)?.type
+	}
+
 	return {
 		createChat,
 		getChat,
+		getChats,
+		getCachedChat,
+		getChatType,
 		resolveChat,
 		ensureDirectChatById,
 		getOrCreateDirectChat,

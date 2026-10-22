@@ -1,5 +1,5 @@
-import type { RealtimeChannel } from '@supabase/supabase-js'
-import type { Enums, Tables, UserId } from "@shared/types"
+import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js'
+import type { Database, Enums, Tables, UserId } from "@shared/types"
 import type { UserPresencePayload } from '../stores/userPresenceStore'
 
 type PresencePolicy = Enums<'user_presence_policy'>
@@ -9,14 +9,7 @@ const USER_PRESENCE_CHANNEL = 'presence-online'
 let userPresenceChannel: RealtimeChannel | null = null
 let activeUserId: UserId | null = null
 
-export const useUserPresenceApi = () => {
-	const supabase = useSupabaseClient()
-
-	async function getCurrentUserId() {
-		const { data: { session } } = await supabase.auth.getSession()
-		return session?.user.id ?? null
-	}
-
+export const createUserPresenceApi = (supabase: SupabaseClient<Database>) => {
 	async function findUserPresenceRecords(userIds: UserId[]) {
 		if (!userIds.length) return []
 
@@ -42,8 +35,7 @@ export const useUserPresenceApi = () => {
 		return data
 	}
 
-	async function findCurrentUserPresence(): Promise<Tables<'user_presence'> | null> {
-		const userId = await getCurrentUserId()
+	async function findCurrentUserPresence(userId: UserId): Promise<Tables<'user_presence'> | null> {
 		if (!userId) return null
 
 		const { data, error } = await supabase
@@ -57,11 +49,10 @@ export const useUserPresenceApi = () => {
 		return data
 	}
 
-	async function updatePresencePolicy(policy: PresencePolicy): Promise<Tables<'user_presence'>> {
-		const userId = await getCurrentUserId()
+	async function updatePresencePolicy(userId: UserId, policy: PresencePolicy): Promise<Tables<'user_presence'>> {
 		if (!userId) throw new Error('user session is undefined')
 
-		const existing = await findCurrentUserPresence()
+		const existing = await findCurrentUserPresence(userId)
 		const query = existing
 			? supabase
 				.from('user_presence')
@@ -160,7 +151,6 @@ export const useUserPresenceApi = () => {
 	}
 
 	return {
-		getCurrentUserId,
 		findUserPresenceRecords,
 		findUserPresenceRecord,
 		findCurrentUserPresence,

@@ -1,25 +1,27 @@
 <script setup lang="ts">
 import type { UserId, ChatId } from '@shared/types';
-import { useProfileStore, useProfileOverlay } from '@features/profile';
 import { PresenceAvatar } from '@features/user';
 import { useCachedData } from '@shared/composables';
-import { getProfileAssetUrl } from '@features/profile';
+import { useFeature } from '@shared/composables';
 import { useMessage } from '../../composables/useMessage';
 
-const props = defineProps<{ senderId: UserId, userId: UserId, chatId: ChatId}>()
+const props = defineProps<{ senderId: UserId, userId?: UserId, chatId: ChatId}>()
 
-const supabaseUser = useSupabaseUser()
+const { useProfile, useProfileOverlay, getProfileAssetUrl } = useFeature('profile')
+const { useAuth } = useFeature('auth')
 const profileOverlay = useProfileOverlay()
-const { userProfile } = storeToRefs(useProfileStore())
+const { getCurrentUserProfile, getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
 const { getSenderProfile } = useMessage(props.chatId)
 
-const currentUserId = computed(() => userProfile.value?.user_id || supabaseUser.value?.id)
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 
 const { data: senderProfile } = useCachedData(
 	`message-avatar-${props.chatId}-${props.senderId}`,
 	async () => {
-    if (props.senderId === props.userId && userProfile.value) {
-			return userProfile.value
+		const currentProfile = getCurrentUserProfile()
+    if (props.senderId === props.userId && currentProfile) {
+			return currentProfile
 		}
 
 		try {
@@ -30,7 +32,7 @@ const { data: senderProfile } = useCachedData(
 		}
 	},
 	{
-		watch: [currentUserId, userProfile],
+		watch: [currentUserId, () => getCurrentUserProfile()],
 	}
 )
 

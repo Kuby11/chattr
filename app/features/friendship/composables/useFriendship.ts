@@ -1,16 +1,22 @@
 import type { FriendshipId, UserId } from "@shared/types"
+import { useFeature } from "@shared/composables"
 import { useFriendshipStore } from "../stores/friendshipStore"
-import { useFriendshipApi } from "../api/useFriendshipApi"
+import { createFriendshipApi } from "../api/friendshipApi"
 
 export const useFriendship = () => {
 	const friendshipStore = useFriendshipStore()
-	const friendshipService = useFriendshipApi()
+	const { useProfile } = useFeature('profile')
+	const { getCurrentUserId } = useProfile()
+	const friendshipService = createFriendshipApi(useSupabaseClient())
 
 	async function sendFriendRequest(userId: UserId){
 		if(friendshipStore.sentRequests.some(req => req.receiver_id === userId)) 
 			throw new Error("already have sent friend request to this user!")
 
-		const friendRequest = await friendshipService.sendFriendRequest(userId)
+		const requesterId = getCurrentUserId()
+		if (!requesterId) throw new Error("Sign in to send friend requests")
+
+		const friendRequest = await friendshipService.sendFriendRequest(userId, requesterId)
 
 		friendshipStore.addRequest('sent', friendRequest)
 	}
@@ -49,7 +55,37 @@ export const useFriendship = () => {
 		friendshipStore.removeFriend(friendId)
 	}
 
+	function getFriends() {
+		return friendshipStore.friends
+	}
+
+	function getFriendIds() {
+		return friendshipStore.friends.map(friend => friend.friendId)
+	}
+
+	function getIncomeRequests() {
+		return friendshipStore.incomeRequests
+	}
+
+	function getSentRequests() {
+		return friendshipStore.sentRequests
+	}
+
+	function friendshipStatus(userId: UserId) {
+		return friendshipStore.friendshipStatus(userId)
+	}
+
+	function filterFriends(term: string) {
+		return friendshipStore.filterFriends(term)
+	}
+
 	return {
+		getFriends,
+		getFriendIds,
+		getIncomeRequests,
+		getSentRequests,
+		friendshipStatus,
+		filterFriends,
 		isFriend: friendshipStore.isFriend,
 		sendFriendRequest,
 		acceptFriendRequest,

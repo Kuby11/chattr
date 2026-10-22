@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ROUTE_TOKENS } from '@shared/configs'
 import type { ChatId, Tables } from '@shared/types';
-import { useChatInviteApi } from '../../api/useChatInviteApi';
+import { createChatInviteApi } from '../../api/chatInviteApi';
 
 const props = defineProps<{ 
   chatId: ChatId, 
@@ -9,7 +9,7 @@ const props = defineProps<{
   currentMember: Tables<"chat_members"> 
 }>()
 
-const { getOrCreateInvite, fetchInviteByChatId } = useChatInviteApi()
+const { getOrCreateInvite, fetchInviteByChatId } = createChatInviteApi(useSupabaseClient())
 const toast = useToast()
 
 const inviteCopied = ref(false)

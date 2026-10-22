@@ -1,50 +1,47 @@
-import { useProfileStore } from "@features/profile"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database, FriendshipId, UserId } from "@shared/types"
 import { safeValue } from "@shared/utils"
-import type { FriendshipId, UserId } from "@shared/types"
 
-export const useFriendshipApi = () => {
-	const supabase = useSupabaseClient()
-	const userStore = useProfileStore() 
-	
-	async function sendFriendRequest(userId: UserId){
-		const { data ,error } = await supabase
+export const createFriendshipApi = (supabase: SupabaseClient<Database>) => {
+	async function sendFriendRequest(userId: UserId, requesterId: UserId) {
+		const { data, error } = await supabase
 			.from("friendships")
 			.insert({
 				status: "PENDING",
-				requester_id: userStore.userProfile?.user_id,
+				requester_id: requesterId,
 				receiver_id: userId
 			})
 			.select("*")
 			.single()
-			
-		if(error)	throw error
-		
+
+		if (error) throw error
+
 		return data
 	}
 
-	async function acceptFriendRequest(id: UserId | FriendshipId){
+	async function acceptFriendRequest(id: UserId | FriendshipId) {
 		const { data, error } = await supabase
 			.from("friendships")
 			.update({ status: "ACCEPTED" })
-			.eq('id',id)
+			.eq('id', id)
 			.select("*")
 			.single();
 
-		if(error) throw error
-			
-		return data
-	} 
+		if (error) throw error
 
-	async function deleteRequest(id: FriendshipId){
+		return data
+	}
+
+	async function deleteRequest(id: FriendshipId) {
 		const { data, error } = await supabase
 			.from("friendships")
 			.delete()
 			.eq('id', id)
 			.select("*")
 			.single();
-			
-		if(error) throw error
-			
+
+		if (error) throw error
+
 		return data
 	}
 
@@ -54,10 +51,10 @@ export const useFriendshipApi = () => {
 			.delete()
 			.or(`receiver_id.eq.${friendId},requester_id.eq.${friendId}`);
 
-		if(error) throw error
+		if (error) throw error
 	}
 
-	async function getUserFriends(userId: UserId){
+	async function getUserFriends(userId: UserId) {
 		const friendsIds: { friendId: UserId }[] = []
 
 		const { data, error } = await supabase
@@ -66,38 +63,38 @@ export const useFriendshipApi = () => {
 			.eq("status", "ACCEPTED")
 			.or(`requester_id.eq.${userId},receiver_id.eq.${userId}`);
 
-		if(error) throw error
+		if (error) throw error
 
 		for (const friendRequest of data) {
-			if(friendRequest.receiver_id === userId) 
-				friendsIds.push({ friendId: friendRequest.requester_id})
-			else 
-				friendsIds.push({ friendId: friendRequest.receiver_id})
+			if (friendRequest.receiver_id === userId)
+				friendsIds.push({ friendId: friendRequest.requester_id })
+			else
+				friendsIds.push({ friendId: friendRequest.receiver_id })
 		}
 
 		return friendsIds
 	}
 
-	async function getIncomeFriendRequests() {
+	async function getIncomeFriendRequests(userId: UserId) {
 		const { data, error } = await supabase
 			.from("friendships")
 			.select("*")
 			.eq('status', 'PENDING')
-			.eq("receiver_id", userStore.userProfile!.user_id);
+			.eq("receiver_id", userId);
 
-		if(error) throw error
+		if (error) throw error
 
 		return data
 	}
 
-	async function getSentFriendRequests() {
+	async function getSentFriendRequests(userId: UserId) {
 		const { data, error } = await supabase
 			.from("friendships")
 			.select("*")
 			.eq('status', 'PENDING')
-			.eq("requester_id", userStore.userProfile!.user_id);
+			.eq("requester_id", userId);
 
-		if(error) throw error
+		if (error) throw error
 
 		return data
 	}

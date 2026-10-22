@@ -1,6 +1,7 @@
-import type { ChatId, ChatMemberId, Enums, Tables, UserId } from "@shared/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { ChatId, ChatMemberId, Database, Enums, Tables, UserId } from "@shared/types"
 import type { RealtimePostgresChangesPayload } from "@supabase/realtime-js"
-import { isDirectId } from "../utils/directId"
+import { isDirectId } from "@shared/utils"
 
 type MemberChangeEvents = "INSERT" | "UPDATE" | "DELETE" | "*"
 type MemberRecord = Partial<Tables<"chat_members">> & { id: string }
@@ -35,19 +36,16 @@ function dispatch(chatId: ChatId, member: MemberRecord, event: Exclude<MemberCha
 
 let chatMembersAuthReady: Promise<void> | null = null
 
-function ensureChatMembersAuth() {
+function ensureChatMembersAuth(supabase: SupabaseClient<Database>) {
 	if (!chatMembersAuthReady) {
-		const supabase = useSupabaseClient()
 		chatMembersAuthReady = supabase.realtime.setAuth()
 	}
 	return chatMembersAuthReady
 }
 
-function ensureChatMembersChannel(chatId: ChatId) {
+function ensureChatMembersChannel(supabase: SupabaseClient<Database>, chatId: ChatId) {
 	if (isDirectId(chatId))
 		return null
-
-	const supabase = useSupabaseClient()
 
 	const channelName = `chat-members-channel:${chatId}`
 	const topic = `realtime:${channelName}`
@@ -93,7 +91,7 @@ function ensureChatMembersChannel(chatId: ChatId) {
 			dispatch(change.member.chat_id, change.member, change.event)
 		})
 
-	void ensureChatMembersAuth().then(() => {
+	void ensureChatMembersAuth(supabase).then(() => {
 		channel.subscribe((status, err) => {
 			if (status === "CHANNEL_ERROR") {
 				console.error("chat members realtime channel error:", err)
@@ -104,11 +102,12 @@ function ensureChatMembersChannel(chatId: ChatId) {
 	return channel
 }
 
-export const useChatMemberApi = (chatId: ChatId = "" as ChatId) => {
-	const supabase = useSupabaseClient()
-
+export const createChatMemberApi = (
+	supabase: SupabaseClient<Database>,
+	chatId: ChatId = "" as ChatId,
+) => {
 	function initChannel(targetChatId?: ChatId) {
-		return ensureChatMembersChannel(targetChatId ?? chatId)
+		return ensureChatMembersChannel(supabase, targetChatId ?? chatId)
 	}
 
 	function disposeChannel(targetChatId: ChatId = chatId) {
@@ -118,7 +117,6 @@ export const useChatMemberApi = (chatId: ChatId = "" as ChatId) => {
 
 		const channelName = `chat-members-channel:${targetChatId}`
 		const topic = `realtime:${channelName}`
-		const supabase = useSupabaseClient()
 		const channel = supabase.getChannels().find(item => item.topic === topic)
 
 		if (channel) {
@@ -137,7 +135,7 @@ export const useChatMemberApi = (chatId: ChatId = "" as ChatId) => {
 		if (isDirectId(targetChatId))
 			return () => { }
 
-		ensureChatMembersChannel(targetChatId)
+		ensureChatMembersChannel(supabase, targetChatId)
 		const callbacks = getListeners(targetChatId)
 		const id = listenerKey(event, key)
 
@@ -158,7 +156,7 @@ export const useChatMemberApi = (chatId: ChatId = "" as ChatId) => {
 		member: MemberRecord,
 		event: Exclude<MemberChangeEvents, "*">
 	) {
-		const channel = ensureChatMembersChannel(targetChatId)
+		const channel = ensureChatMembersChannel(supabase, targetChatId)
 		if (!channel) return
 
 		try {

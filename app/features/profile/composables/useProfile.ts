@@ -1,18 +1,28 @@
 import type { UserId, VueValue } from "@shared/types"
+import { toValue } from "vue"
 import { useProfileStore } from "../stores/profileStore"
-import { useProfileApi } from "../api/useProfileApi"
+import { createProfileApi } from "../api/profileApi"
 
 export const useProfile = () => {
 	const profileStore = useProfileStore()
-	const profileService = useProfileApi()
+	const profileService = createProfileApi(useSupabaseClient())
 
-	function isCurrentUser(userId: VueValue<UserId>){
-		toValue(userId)
-  
-		return userId === profileStore.userProfile!.user_id
+	function getCurrentUserProfile() {
+		return profileStore.userProfile
+	}
+
+	function getCurrentUserId() {
+		return profileStore.userProfile?.user_id
+	}
+
+	function isCurrentUser(userId: VueValue<UserId>) {
+		const resolvedId = toValue(userId)
+		return !!resolvedId && resolvedId === profileStore.userProfile?.user_id
 	}
 
 	return {
+		getCurrentUserProfile,
+		getCurrentUserId,
 		isCurrentUser,
 		findUserProfile: profileService.findUserProfile,
 		findUserProfiles: profileService.findUserProfiles,

@@ -1,12 +1,11 @@
-import type { Tables } from "@shared/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database, Tables, UserId } from "@shared/types"
 
 export type ChatInviteWithChat = Tables<"chat_invites"> & {
 	chats: Tables<"chats"> | null
 }
 
-export const useChatInviteApi = () => {
-	const supabase = useSupabaseClient()
-
+export const createChatInviteApi = (supabase: SupabaseClient<Database>) => {
 	async function getOrCreateInvite(chatId: string): Promise<{ token: string; expires_at: string } | null> {
 		const { data, error } = await supabase.rpc('get_or_create_chat_invite', {
 			p_chat_id: chatId
@@ -57,19 +56,14 @@ export const useChatInviteApi = () => {
 		return count ?? 0
 	}
 
-	async function checkIsMember(chatId: string, userId?: string): Promise<boolean> {
-		let uid = userId
-		if (!uid) {
-			const { data: { session } } = await supabase.auth.getSession()
-			uid = session?.user?.id
-		}
-		if (!uid) return false
+	async function checkIsMember(chatId: string, userId: UserId): Promise<boolean> {
+		if (!userId) return false
 
 		const { data, error } = await supabase
 			.from('chat_members')
 			.select('id')
 			.eq('chat_id', chatId)
-			.eq('user_id', uid)
+			.eq('user_id', userId)
 			.maybeSingle()
 
 		if (error) {

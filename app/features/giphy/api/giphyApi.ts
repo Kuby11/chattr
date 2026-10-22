@@ -8,15 +8,12 @@ import type {
 
 const GIPHY_API_BASE = "https://api.giphy.com/v1/gifs"
 
-export const useGiphyApi = () => {
-	const config = useRuntimeConfig()
-
+export const createGiphyApi = (apiKey: string | undefined) => {
 	function getApiKey() {
-		const key = config.public.giphyKey
-		if (!key) {
+		if (!apiKey) {
 			throw new Error("Missing Giphy API key. Set NUXT_PUBLIC_GIPHY_KEY (or GIPHY_KEY) in your environment.")
 		}
-		return key as string
+		return apiKey
 	}
 
 	async function request(

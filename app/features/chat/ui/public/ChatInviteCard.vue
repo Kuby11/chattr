@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ROUTE_TOKENS } from '@shared/configs'
-import { useAuthStore } from '@features/auth'
+import { useFeature } from '@shared/composables'
 import { useChatStore } from '../../stores/chatStore'
 import { useChatInvite } from '../../composables/useChatInvite'
 import { getChatAssetUrl } from '../../utils/getChatAssetUrl'
@@ -11,7 +11,8 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const authStore = useAuthStore()
+const { useAuth } = useFeature('auth')
+const { getCurrentUserId, isAuthenticated: hasAuthSession } = useAuth()
 const chatStore = useChatStore()
 const toast = useToast()
 const { fetchInviteByToken, fetchMemberCount, checkMembership, joinByInvite } = useChatInvite()
@@ -52,7 +53,6 @@ const isInvalid = computed(() =>
 	!isLoading.value && (!inviteData.value?.invite || !inviteData.value.invite.chats || isExpired.value)
 )
 
-const supabaseUser = useSupabaseUser()
 const isMemberInDb = ref(false)
 
 const isAlreadyMember = computed(() => {
@@ -68,7 +68,7 @@ const isAlreadyMember = computed(() => {
 
 
 const isAuthenticated = computed(() => {
-	return authStore.isUserAuth || !!supabaseUser.value || !!authStore.userSession
+	return hasAuthSession() || !!getCurrentUserId()
 })
 
 const coverUrl = computed(() => {
@@ -122,7 +122,7 @@ async function handleAction() {
 
 
 watch(
-	[() => chat.value?.id, () => authStore.userSession?.id, () => supabaseUser.value?.id, () => chatStore.chats],
+	[() => chat.value?.id, () => getCurrentUserId(), () => chatStore.chats],
 	async () => {
 		isMemberInDb.value = await checkMembership(chat.value?.id)
 	},

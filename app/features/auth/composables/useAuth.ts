@@ -1,9 +1,27 @@
 import { ROUTE_TOKENS } from "@shared/configs"
+import type { UserId } from "@shared/types"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
-import { useAuthApi } from "../api/useAuthApi"
+import { createAuthApi } from "../api/authApi"
 
 export const useAuth = () => {
-  const authApi = useAuthApi()
+  const authApi = createAuthApi(useSupabaseClient())
+  const supabaseUser = useSupabaseUser()
+
+  function getCurrentUserId(): UserId | undefined {
+    return supabaseUser.value?.id
+  }
+
+  function isAuthenticated() {
+    return !!supabaseUser.value
+  }
+
+  async function resolveCurrentUserId(): Promise<UserId | undefined> {
+    const userId = getCurrentUserId()
+    if (userId) return userId
+
+    const { data: { session } } = await authApi.getSession()
+    return session?.user.id
+  }
 
   async function signIn({ email, password, options }: {
     email: string
@@ -157,6 +175,9 @@ export const useAuth = () => {
   }
 
 	return {
+		getCurrentUserId,
+		resolveCurrentUserId,
+		isAuthenticated,
 		signIn,
 		signUp,
 		signOut,
@@ -165,6 +186,5 @@ export const useAuth = () => {
 		verifyRecoveryOtp,
 		updatePassword,
 		onAuthStateChange,
-		supabaseAuth: authApi.getAuthClient(),
 	}
 }

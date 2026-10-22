@@ -1,10 +1,11 @@
-import type { ChatId, MessageId, UserId } from "@shared/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { ChatId, Database, MessageId, UserId } from "@shared/types"
 import type { MessagePayload } from "../types/messagePayload"
 import type { RealtimePostgresChangesPayload } from "@supabase/realtime-js"
 import type { PostgresChangesEvents } from "../types/postgresChangesEvents"
 import type { TypingPayload } from "../types/typingPayload"
 import type { ClientMessage } from "../types/clientMessage"
-import { isDirectId } from "../../chat/utils/directId"
+import { isDirectId } from "@shared/utils"
 
 type ChangePayload = RealtimePostgresChangesPayload<{ [key: string]: unknown }>
 type ChangeCallback = (payload: ChangePayload) => void
@@ -43,19 +44,16 @@ function getPayloadChatId(payload: ChangePayload): ChatId | undefined {
 
 let messageChannelAuthReady: Promise<void> | null = null
 
-function ensureMessageChannelAuth() {
+function ensureMessageChannelAuth(supabase: SupabaseClient<Database>) {
 	if (!messageChannelAuthReady) {
-		const supabase = useSupabaseClient()
 		messageChannelAuthReady = supabase.realtime.setAuth()
 	}
 	return messageChannelAuthReady
 }
 
-function ensureMessageChannel(chatId: ChatId) {
+function ensureMessageChannel(supabase: SupabaseClient<Database>, chatId: ChatId) {
 	if (isDirectId(chatId))
 		return null
-
-	const supabase = useSupabaseClient()
 
 	const channelName = `chat-messages-channel:${chatId}`
 	const topic = `realtime:${channelName}`
@@ -102,18 +100,19 @@ function ensureMessageChannel(chatId: ChatId) {
 			})
 		})
 
-	void ensureMessageChannelAuth().then(() => {
+	void ensureMessageChannelAuth(supabase).then(() => {
 		channel.subscribe()
 	})
 
 	return channel
 }
 
-export const useMessageApi = (chatId: ChatId) => {
-	const supabase = useSupabaseClient()
-
+export const createMessageApi = (
+	supabase: SupabaseClient<Database>,
+	chatId: ChatId,
+) => {
 	function initChannel(targetChatId?: ChatId) {
-		return ensureMessageChannel(targetChatId ?? chatId)
+		return ensureMessageChannel(supabase, targetChatId ?? chatId)
 	}
 
 	function disposeChannel(targetChatId: ChatId = chatId) {
@@ -140,7 +139,7 @@ export const useMessageApi = (chatId: ChatId) => {
 		if (isDirectId(chatId))
 			return () => { }
 
-		ensureMessageChannel(chatId)
+		ensureMessageChannel(supabase, chatId)
 		const callbacks = getListeners(chatId)
 		const id = listenerKey(event, key)
 
@@ -160,7 +159,7 @@ export const useMessageApi = (chatId: ChatId) => {
 		if (isDirectId(chatId))
 			return () => { }
 
-		ensureMessageChannel(chatId)
+		ensureMessageChannel(supabase, chatId)
 		const callbacks = getTypingListeners(chatId)
 		callbacks.add(callback)
 
@@ -174,7 +173,7 @@ export const useMessageApi = (chatId: ChatId) => {
 	async function sendTypingStatus(payload: TypingPayload) {
 		if (isDirectId(chatId)) return
 
-		const channel = ensureMessageChannel(chatId)
+		const channel = ensureMessageChannel(supabase, chatId)
 		if (!channel) return
 
 		await channel.send({
@@ -262,18 +261,17 @@ export const useMessageApi = (chatId: ChatId) => {
 	async function uploadMessageMedia(
 		files: File[],
 		targetChatId: ChatId,
+		senderId: UserId,
 		onUploaded?: (url: string) => void
 	) {
-		const { data: { session } } = await supabase.auth.getSession()
-
-		if (!session)
+		if (!senderId)
 			throw new Error("user is not authenticated")
 
 		const mediaArr: ClientMessage['media'] = []
 
 		for (const file of files) {
 			const extension = file.name.split(".").pop() ?? "bin"
-			const path = `${targetChatId}/${session.user.id}-${crypto.randomUUID()}.${extension}`
+			const path = `${targetChatId}/${senderId}-${crypto.randomUUID()}.${extension}`
 
 			const { data, error } = await supabase.storage
 				.from("chat-media")

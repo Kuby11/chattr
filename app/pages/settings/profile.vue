@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useProfileStore } from '@features/profile';
+import { useProfile } from '@features/profile';
 import { SettingsPage, SettingsProfileForm } from '@features/settings';
 import { useCurrentRoute } from '@shared/composables';
 
@@ -12,7 +12,8 @@ useHead({
 	title: 'Profile settings | Chattr'
 })
 
-const userStore = useProfileStore()
+const { getCurrentUserProfile } = useProfile()
+const currentUserProfile = computed(() => getCurrentUserProfile())
 const { setCurrentRoute } = useCurrentRoute()
 
 setCurrentRoute({
@@ -34,8 +35,8 @@ setCurrentRoute({
 
 			<div class="flex flex-col gap-5 sm:gap-8 flex-1">
 				<SettingsProfileForm
-					v-if="userStore.userProfile"
-					:user-profile="userStore.userProfile"
+					v-if="currentUserProfile"
+					:user-profile="currentUserProfile"
 				/>
 				<USkeleton v-else class="max-w-200 h-181"/>
 			</div>

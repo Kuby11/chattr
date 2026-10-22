@@ -1,11 +1,13 @@
 import type { Tables } from "@shared/types"
-import { useAuth } from "@features/auth"
+import { useFeature } from "@shared/composables"
 import type { ProfileUpdatePayload } from "../types/ProfileUpdatePayload"
-import { useProfileApi } from "../api/useProfileApi"
+import { createProfileApi } from "../api/profileApi"
 
 export const useProfileStore = defineStore('profileStore', () => {
+	const { useAuth } = useFeature('auth')
 	const { onAuthStateChange } = useAuth()
-	const { updateUserProfile, fetchUserProfile } = useProfileApi()
+	const supabase = useSupabaseClient()
+	const { updateUserProfile, fetchUserProfile } = createProfileApi(supabase)
 
 	const userProfile = ref<null | undefined | Tables<"user_profiles">>()
 
@@ -30,7 +32,7 @@ export const useProfileStore = defineStore('profileStore', () => {
 			updated.coverPicture = changedFields.coverPicture
 		}
 
-		const updatedFields = await updateUserProfile(updated)
+		const updatedFields = await updateUserProfile(updated, userProfile.value.user_id)
 
 		userProfile.value = {
 			...userProfile.value,
@@ -40,10 +42,9 @@ export const useProfileStore = defineStore('profileStore', () => {
 
 	async function initUserProfile() {
 		if (userProfile.value) return
-		const client = useSupabaseClient()
-		const session = (await client.auth.getSession()).data.session
+		const session = (await supabase.auth.getSession()).data.session
 		if (session?.user) {
-			userProfile.value = await fetchUserProfile().catch(() => null)
+			userProfile.value = await fetchUserProfile(session.user.id).catch(() => null)
 		}
 	}
 
@@ -56,7 +57,7 @@ export const useProfileStore = defineStore('profileStore', () => {
 		}
 
 		if (session) {
-			userProfile.value = await fetchUserProfile().catch(() => null)
+			userProfile.value = await fetchUserProfile(session.user.id).catch(() => null)
 		}
 	})
 

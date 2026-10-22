@@ -3,4 +3,5 @@ export * from './useDownload'
 export * from './useHeaderDrawer'
 export * from './useCurrentRoute'
 export * from './useCachedData'
+export * from './useFeature'
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Tables } from '@shared/types';
-import { useProfileOverlay } from '@features/profile';
+import { useFeature } from '@shared/composables';
 import type { ClientMessage } from '../../types/clientMessage';
 
 const props = defineProps<{
@@ -9,6 +9,7 @@ const props = defineProps<{
 	messageData: ClientMessage
 }>()
 
+const { useProfileOverlay } = useFeature('profile')
 const supabaseUser = useSupabaseUser()
 const currentUserId = computed(() => supabaseUser.value?.id)
 const profileOverlay = useProfileOverlay()

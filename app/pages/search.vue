@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LazySearchInput } from '#components'
-import { useFriendshipStore, FriendRequestButton } from '@features/friendship'
+import { useFriendship, FriendRequestButton } from '@features/friendship'
 import { useProfile, UserCard } from '@features/profile'
 import { useCurrentRoute } from '@shared/composables';
 
@@ -23,7 +23,7 @@ setCurrentRoute({
 const route = useRoute()
 const user = useProfile()
 
-const { friendshipStatus } = useFriendshipStore()
+const { friendshipStatus } = useFriendship()
 
 const searchTerm = computed(() => route.query.term?.toString())
 

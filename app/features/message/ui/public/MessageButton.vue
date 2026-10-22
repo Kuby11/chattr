@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import type { UserId } from '@shared/types'
 import { ROUTE_TOKENS } from '@shared/configs'
-import { buildDirectId } from '@features/chat'
-import { useProfileStore } from '@features/profile'
+import { buildDirectId } from '@shared/utils'
+import { useFeature } from '@shared/composables'
 import type { ButtonProps } from '#ui/types'
 
 const props = defineProps<ButtonProps & {
 	userId: UserId
 }>()
 
-const { userProfile } = storeToRefs(useProfileStore())
-const supabaseUser = useSupabaseUser()
+const { useProfile } = useFeature('profile')
+const { useAuth } = useFeature('auth')
+const { getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
 const toast = useToast()
 const isNavigating = ref(false)
 
-const currentUserId = computed(() => userProfile.value?.user_id || supabaseUser.value?.id)
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 const isSelf = computed(() => {
 	if (!currentUserId.value || !props.userId) return false
 	return currentUserId.value.toLowerCase() === props.userId.toLowerCase()

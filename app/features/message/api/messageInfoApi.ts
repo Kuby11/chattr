@@ -1,9 +1,9 @@
-import type { ChatId, Tables, UserId } from '@shared/types'
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { ChatId, Database, Tables, UserId } from '@shared/types'
 
 export type MemberInfoEvent = 'joined' | 'leaved'
 
-export const useMessageInfoApi = () => {
-	const supabase = useSupabaseClient()
+export const createMessageInfoApi = (supabase: SupabaseClient<Database>) => {
 
 	async function insertMemberInfo(
 		chatId: ChatId,

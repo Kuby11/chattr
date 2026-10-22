@@ -1,8 +1,8 @@
 import type { ChatId, UserId } from '@shared/types'
-import { useMessageInfoApi, type MemberInfoEvent } from '../api/messageInfoApi'
+import { createMessageInfoApi, type MemberInfoEvent } from '../api/messageInfoApi'
 
 export const useMessageInfo = () => {
-	const messageInfoService = useMessageInfoApi()
+	const messageInfoService = createMessageInfoApi(useSupabaseClient())
 
 	function sendMemberInfo(chatId: ChatId, targetId: UserId, event: MemberInfoEvent) {
 		return messageInfoService.insertMemberInfo(chatId, targetId, event)

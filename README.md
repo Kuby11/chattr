@@ -31,32 +31,56 @@ Each feature under `app/features/{domain}/` follows a consistent pattern:
 ```
 ├── api/            # External API calls (Supabase, Giphy, etc.)
 ├── composables/    # Vue composables - business logic & state orchestration
-├── stores/         # Pinia stores - global/shared state
+├── stores/         # Pinia stores - feature-private state
 ├── types/          # TypeScript types 
 ├── data/           # Data for features 
 ├── utils/          # Pure helper functions
 ├── ui/             # features ui components
 │   ├── local/      # Private components (used only within feature)
 │   └── public/     # Exported components (usable by other features)
+├── plugin.ts       # Feature contract + provider (auto-discovered)
 └── index.ts        # Feature public api
 ```
+
+API modules are dependency-injected factories such as `createChatApi(supabase)`. They never read stores or call composables; pass clients and configuration when creating the factory, and pass request-specific values such as the current user ID as function arguments.
+
+Stores are private to the feature that owns them. They are not exported from the feature's `index.ts` and are not part of the feature registry. Feature UI may read its own store directly, but any state shared with another feature must be exposed through that feature's composable as getter functions (for example `useProfile().getCurrentUserId()`).
 
 ### Key Patterns
 
 | Pattern | Purpose |
 |---------|---------|
 | **local vs public UI** | Encapsulation - `local` components are implementation details; `public` are the feature's API |
-| **Composables + Stores** | Composables orchestrate logic; stores hold persistent state |
+| **Composables + Stores** | Composables orchestrate logic; stores hold feature-private state |
 | **Aliases (`@features`, `@shared`)** | Clean imports configured in `nuxt.config.ts` |
 | **Auto-imports** | Nuxt auto-imports composables, utils, and shared UI components |
+
+### Feature-to-Feature Dependencies
+
+Features do not import each other's logic directly. Runtime dependencies are resolved through typed feature contracts.
+
+```ts
+import { useFeature } from '@shared/composables'
+
+const { useProfile } = useFeature('profile')
+const { getCurrentUserId } = useProfile()
+const { useMessage } = useFeature('message')
+```
+
+Each feature declares its public contract in `app/features/<feature>/plugin.ts` using `defineFeaturePlugin`. That file also augments the shared `FeatureContracts` interface, so `useFeature(name)` stays type-safe without `app/shared/composables/useFeature.ts` importing any feature code. `app/plugins/features.ts` discovers the providers automatically with `import.meta.glob`, so adding a feature does not require editing a central registry. Injection keys are derived from the feature name with `Symbol.for`, keeping them stable across modules.
+
+Add new cross-feature APIs to the owning feature's contract, augmentation, and plugin registration; unknown feature names or methods fail at compile time.
+
+Cross-feature **UI components** may still be imported normally. Cross-feature **state** must be read through getter functions exposed by the owning feature's composable, not by importing its store. Pure helpers should live in `app/shared/utils` instead.
 
 ### Shared Layer
 
 `app/shared/` contains truly reusable code:
-- **composables** - generic utilities (`useBreakpoint`, `useDownload`, etc.)
+- **composables** - generic utilities (`useBreakpoint`, `useDownload`, etc.) plus `useFeature` for typed feature dependencies
 - **ui** - primitive components auto-registered globally (`AppButton`, `AppInput`, etc.)
 - **configs** - route/state tokens, aside navigation
 - **types** - DB types, shared primitives
+- **utils** - pure helpers (`directId`, `formatBytes`, etc.)
 
 ## Features
 

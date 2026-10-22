@@ -1,10 +1,9 @@
-import type { ChatId, Tables } from "@shared/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { ChatId, Database, Tables, UserId } from "@shared/types"
 import type { ChatCreatePayload } from "../types/ChatPayload"
-import { parseDirectId } from "../utils/directId"
+import { parseDirectId } from "@shared/utils"
 
-export const useChatApi = () => {
-	const supabase = useSupabaseClient()
-
+export const createChatApi = (supabase: SupabaseClient<Database>) => {
 	async function removeStorageFolder(bucket: string, folder: string) {
 		const paths: string[] = []
 		let offset = 0
@@ -36,14 +35,13 @@ export const useChatApi = () => {
 		}
 	}
 
-	async function fetchChats() {
-		const { data: { session } } = await supabase.auth.getSession()
-		if (!session?.user) return []
+	async function fetchChats(userId: UserId) {
+		if (!userId) return []
 
 		const { data: memberships, error: membersError } = await supabase
 			.from("chat_members")
 			.select("chat_id")
-			.eq("user_id", session.user.id)
+			.eq("user_id", userId)
 
 		if (membersError) throw membersError
 		if (!memberships.length) return []
@@ -184,9 +182,13 @@ export const useChatApi = () => {
 		return data
 	}
 
-	async function uploadChatAsset(chatId: ChatId, file: File, prefix: 'avatar' | 'cover') {
-		const { data: { session } } = await supabase.auth.getSession()
-		if (!session?.user) throw new Error("Unauthorized")
+	async function uploadChatAsset(
+		chatId: ChatId,
+		file: File,
+		prefix: 'avatar' | 'cover',
+		userId: UserId,
+	) {
+		if (!userId) throw new Error("Unauthorized")
 
 		const { data: existing } = await supabase.storage
 			.from("chat-assets")
@@ -216,7 +218,6 @@ export const useChatApi = () => {
 
 		return path
 	}
-
 
 	return {
 		fetchChats,

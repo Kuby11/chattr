@@ -5,6 +5,5 @@ import FriendRequestCard from './ui/local/FriendRequestCard.vue'
 import FriendRequestsSlideOver from './ui/public/FriendRequestsSlideOver.vue'
 
 export * from './composables/useFriendship'
-export * from './stores/friendshipStore'
 
 export { FriendRequestButton, SendFriendRequestButton, FriendRequestTooltipButton, FriendRequestCard, FriendRequestsSlideOver }

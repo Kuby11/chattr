@@ -1,27 +1,24 @@
 <script setup>
-import { useProfileStore, ProfileButton, useProfileOverlay } from '@features/profile';
+import { useProfile, ProfileButton, useProfileOverlay } from '@features/profile';
 import { SettingsButton } from '@features/settings';
 import { AsideRoutes } from '@shared/configs';
-import { useFriendshipStore } from '@features/friendship';
-import { useMessageStore } from '@features/message';
+import { useFriendship } from '@features/friendship';
+import { useMessageState } from '@features/message';
 
-const userStore = useProfileStore()
+const { getCurrentUserProfile, getCurrentUserId } = useProfile()
 const profileOverlay = useProfileOverlay()
-const friendshipStore = useFriendshipStore()
-const messageStore = useMessageStore()
+const { getIncomeRequests } = useFriendship()
+const { getTotalUnreadCount } = useMessageState()
 
-const friendRequestCount = computed(() => friendshipStore.incomeRequests.length)
+const currentUserProfile = computed(() => getCurrentUserProfile())
+
+const friendRequestCount = computed(() => getIncomeRequests().length)
 
 const unreadMessagesCount = computed(() => {
-	const uid = userStore.userProfile?.user_id
+	const uid = getCurrentUserId()
 	if (!uid) return 0
 
-	return Array.from(messageStore.messages.values()).reduce((total, messages) =>
-		total + messages.reduce((count, message) =>
-			count + (message.sender_id !== uid && !message.seen_at ? 1 : 0),
-		0
-		),
-	0)
+	return getTotalUnreadCount(uid)
 })
 
 const routeBadgeCount = (routeName) => {
@@ -53,14 +50,14 @@ const routeBadgeCount = (routeName) => {
 			</LinkButton>
 			
 			<div class="flex justify-between w-full gap-2 mt-6">
-				<template v-if="userStore.userProfile">
+				<template v-if="currentUserProfile">
 					<UUser
-						:name="userStore.userProfile.nickname"
-						:description="'@' + userStore.userProfile.username"
-						:avatar="{ src: userStore.userProfile.avatar_url }"
+						:name="currentUserProfile.nickname"
+						:description="'@' + currentUserProfile.username"
+						:avatar="{ src: currentUserProfile.avatar_url }"
 						size="xl"
 						target="_blank"
-						@click="profileOverlay.open({ userProfile: userStore.userProfile })"
+						@click="profileOverlay.open({ userProfile: currentUserProfile })"
 					/>
 				</template>
 				<USkeleton v-else class="w-9 aspect-square rounded-full"/>
@@ -71,13 +68,13 @@ const routeBadgeCount = (routeName) => {
 
 		<UMain class="w-full flex-1 min-h-0 overflow-hidden flex" :ui="{ base: 'min-h-0' }">
 			<AppAside
-			:user-profile="userStore.userProfile"
+			:user-profile="currentUserProfile"
 			:friend-request-count="friendRequestCount"
 			:unread-messages-count="unreadMessagesCount"
 		>
 				<ProfileButton
-					v-if="userStore.userProfile"
-					:user-profile="userStore.userProfile"
+					v-if="currentUserProfile"
+					:user-profile="currentUserProfile"
 					:content="{ side: 'right', align: 'end', sideOffset: 6 }"
 				/>
 				<USkeleton v-else class="mt-auto w-10 aspect-square rounded-full"/>

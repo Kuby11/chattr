@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import type { Tables, UserId } from '@shared/types';
 import { ROUTE_TOKENS } from '@shared/configs';
-import { useTyping, useMessageStore } from '@features/message';
-import { PresenceAvatar, userPresenceLabel, useUserPresence } from '@features/user';
-import { useProfile, useProfileStore } from '@features/profile';
+import { PresenceAvatar, userPresenceLabel } from '@features/user';
+import { useFeature } from '@shared/composables';
 import { useChat } from '../../composables/useChat';
 import { useChatMemberStore } from '../../stores/memberStore';
 import ChatAvatar from '../public/ChatAvatar.vue';
 
 const props = defineProps<{ chat: Tables<"chats"> }>()
 
+const { useTyping, useMessageState } = useFeature('message')
+const { useUserPresence } = useFeature('user')
+const { useProfile } = useFeature('profile')
 const { typingLabel } = useTyping(props.chat.id)
-const { userProfile } = storeToRefs(useProfileStore())
-const { findUserProfile } = useProfile()
+const { findUserProfile, getCurrentUserId } = useProfile()
 const { getChatMembers } = useChat()
-const messageStore = useMessageStore()
+const { getLastMessage, getUnreadCount } = useMessageState()
 const memberStore = useChatMemberStore()
 const { loadPresenceRows } = useUserPresence()
 
-const currentUserId = computed(() => userProfile.value?.user_id)
+const currentUserId = computed(() => getCurrentUserId())
 
 const isDirect = computed(() => props.chat.type === 'DIRECT')
 const chatRouteId = computed(() => isDirect.value ? (props.chat.direct_id ?? props.chat.id) : props.chat.id)
@@ -90,19 +91,14 @@ const displaySrc = computed(() => (isDirect.value ? otherProfile.value?.avatar_u
 const displayInitial = computed(() => (otherProfile.value?.nickname?.trim().charAt(0) ?? '').toUpperCase())
 
 const lastMessage = computed(() => {
-	const chatMessages = messageStore.messages.get(props.chat.id)
-	return chatMessages?.length ? chatMessages[chatMessages.length - 1] ?? null : null
+	return getLastMessage(props.chat.id)
 })
 
 const unreadCount = computed(() => {
 	const uid = currentUserId.value
-	const chatMessages = messageStore.messages.get(props.chat.id)
-	if (!uid || !chatMessages?.length) return 0
+	if (!uid) return 0
 
-	return chatMessages.reduce((count, message) => {
-		if (message.sender_id !== uid && !message.seen_at) count++
-		return count
-	}, 0)
+	return getUnreadCount(props.chat.id, uid)
 })
 
 const hasUnread = computed(() => unreadCount.value > 0)

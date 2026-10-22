@@ -1,16 +1,16 @@
-import { safeValue } from "@shared/utils"
 import type {
 	AuthChangeEvent,
 	Session,
 	SignInWithPasswordCredentials,
 	SignInWithPasswordlessCredentials,
 	SignUpWithPasswordCredentials,
+	SupabaseClient,
 	VerifyOtpParams,
 } from "@supabase/supabase-js"
+import type { Database } from "@shared/types"
+import { safeValue } from "@shared/utils"
 
-export const useAuthApi = () => {
-	const supabase = useSupabaseClient()
-
+export const createAuthApi = (supabase: SupabaseClient<Database>) => {
 	async function signInWithPassword(credentials: SignInWithPasswordCredentials) {
 		return await supabase.auth.signInWithPassword(credentials)
 	}

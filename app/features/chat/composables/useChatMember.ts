@@ -1,11 +1,11 @@
 import type { ChatId, Tables } from "@shared/types"
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
-import { useChatMemberApi } from "../api/useChatMemberApi"
+import { createChatMemberApi } from "../api/chatMemberApi"
 import { useChatMemberStore } from "../stores/memberStore"
 
 export const useChatMember = (chatId: MaybeRefOrGetter<ChatId>) => {
 	const currentChatId = computed(() => toValue(chatId))
-	const memberService = useChatMemberApi(currentChatId.value)
+	const memberService = createChatMemberApi(useSupabaseClient(), currentChatId.value)
 	const memberStore = useChatMemberStore()
 
 	const chatMembers = computed(() => memberStore.members.get(currentChatId.value))

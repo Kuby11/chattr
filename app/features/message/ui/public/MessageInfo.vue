@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { ClientMessage } from '../../types/clientMessage'
-import { useProfile } from '@features/profile'
 import { useCachedData } from '@shared/composables'
+import { useFeature } from '@shared/composables'
 
 const props = defineProps<{
 	messageData: ClientMessage
 }>()
 
+const { useProfile } = useFeature('profile')
 const { findUserProfile } = useProfile()
 
 const parsedInfo = computed(() => {

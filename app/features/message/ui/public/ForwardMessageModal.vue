@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { ChatId } from '@shared/types';
-import { useChatStore, ChatAvatar } from '@features/chat';
+import { ChatAvatar } from '@features/chat';
+import { useFeature } from '@shared/composables';
 import { useMessageStore } from '../../stores/messageStore';
 import { useMessage } from '../../composables/useMessage';
 
+const { useChat } = useFeature('chat')
 const messageStore = useMessageStore()
-const chatStore = useChatStore()
+const { getChats } = useChat()
 
 const forwardingMessage = computed(() => messageStore.forwardingMessage)
 const isOpen = computed({
@@ -18,14 +20,15 @@ const selectedChatIds = ref<Set<ChatId>>(new Set())
 const isForwarding = ref(false)
 
 const filteredChats = computed(() => {
-	if (!chatStore.chats) 
+	const chats = getChats()
+	if (!chats)
 		return []
 
 	const q = searchQuery.value.toLowerCase().trim()
 	if (!q) 
-		return chatStore.chats
+		return chats
 	
-	return chatStore.chats.filter(chat =>
+	return chats.filter(chat =>
 		chat.name?.toLowerCase().includes(q)
 	)
 })

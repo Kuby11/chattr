@@ -11,7 +11,6 @@ export * from './composables/useChat'
 export * from './composables/useChatMember'
 export * from './composables/usePrefetchChats'
 export * from './composables/useChatInvite'
-export * from './stores/chatStore'
 export * from './utils/getChatAssetUrl'
-export * from './utils/directId'
+export * from '@shared/utils/directId'
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LazySearchInput } from '#components';
-import { useFriendshipStore, FriendRequestButton, FriendRequestsSlideOver } from '@features/friendship'
+import { useFriendship, FriendRequestButton, FriendRequestsSlideOver } from '@features/friendship'
 import { UserCard } from '@features/profile';
 import { useCurrentRoute } from '@shared/composables';
 
@@ -21,15 +21,15 @@ setCurrentRoute({
 })
 
 const route = useRoute()
-const friendshipStore = useFriendshipStore()
+const { getFriends, getIncomeRequests, getSentRequests, filterFriends } = useFriendship()
 
 const filterTerm = computed(() => route.query.term?.toString() ?? '')
 
 const { data, pending, execute, clear } = useAsyncData(
 	'friends',
-	() => friendshipStore.filterFriends(filterTerm.value), 
+	() => filterFriends(filterTerm.value),
 	{
-		watch: [() => friendshipStore.friends],
+		watch: [() => getFriends()],
 	},
 )
 
@@ -43,7 +43,7 @@ onScopeDispose(clear)
 			
 			<FriendRequestsSlideOver >
 				<UTooltip :text="'your friend requests'" :ui="{ content: 'text-sm p-2' }">
-					<WithCountBadge :value="[...friendshipStore.incomeRequests, ...friendshipStore.sentRequests].length">
+					<WithCountBadge :value="[...getIncomeRequests(), ...getSentRequests()].length">
 						<UButton icon="lucide:user-plus" variant="soft" color="neutral" size="md" />
 					</WithCountBadge>
 				</UTooltip>
@@ -58,7 +58,7 @@ onScopeDispose(clear)
 		
 		<UPageList class="gap-3">
 			<ItemList 
-				v-if="data && friendshipStore.friends"
+				v-if="data && getFriends()"
 				:data="data"
 				:loading="pending"
 				:item-key="friend => friend.friendId"

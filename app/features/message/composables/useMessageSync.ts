@@ -1,13 +1,18 @@
 import type { ChatId, Tables } from "@shared/types";
-import { useMessageApi } from "../api/messageApi";
-import { useMessageStore } from "../stores/messageStore";
+import type { createMessageApi } from "../api/messageApi";
+import type { useMessageStore } from "../stores/messageStore";
 import type { ClientMessage } from "../types/clientMessage";
+
+type MessageApi = ReturnType<typeof createMessageApi>
+type MessageStore = ReturnType<typeof useMessageStore>
 
 export const DEFAULT_PAGE_LIMIT = 30
 
-export async function enrichMessagesWithMedia(chatId: ChatId, messages: Tables<'messages'>[]): Promise<ClientMessage[]> {
-	const messageService = useMessageApi(chatId)
-
+export async function enrichMessagesWithMedia(
+	chatId: ChatId,
+	messages: Tables<'messages'>[],
+	messageService: MessageApi,
+): Promise<ClientMessage[]> {
 	const messagesWithMedia = messages.filter(m => m.media_urls && m.media_urls.length > 0)
 	if (messagesWithMedia.length === 0) {
 		return messages
@@ -68,13 +73,16 @@ export async function enrichMessagesWithMedia(chatId: ChatId, messages: Tables<'
 	return messages
 }
 
-export function syncChatMessagesToStore(chatId: ChatId, messageStore = useMessageStore()) {
-	const messageService = useMessageApi(chatId)
+export function syncChatMessagesToStore(
+	chatId: ChatId,
+	messageStore: MessageStore,
+	messageService: MessageApi,
+) {
 	const channel = messageService.initChannel(chatId)
 
 	messageService.onChannelEvent("INSERT", async (msg) => {
 		const newMsg = msg.new as Tables<"messages">
-		const [enriched] = await enrichMessagesWithMedia(chatId, [newMsg])
+		const [enriched] = await enrichMessagesWithMedia(chatId, [newMsg], messageService)
 		messageStore.addMessage(enriched ?? newMsg)
 	})
 

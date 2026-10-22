@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useProfileOverlay } from '@features/profile'
+import { useFeature } from '@shared/composables'
 import type { Tables } from '@shared/types'
 import SettingsProfileAvatar from './SettingsProfileAvatar.vue'
 import SettingsProfileCompactPreview from './SettingsProfileCompactPreview.vue'
@@ -17,6 +17,8 @@ const emit = defineEmits<{
 }>()
 
 const formState = defineModel<SettingsProfilePreviewFormState>('formState', { required: true })
+
+const { useProfileOverlay } = useFeature('profile')
 const profileOverlay = useProfileOverlay()
 
 const avatarSrc = computed(() => formState.value.avatarPreview ?? props.profile.avatar_url)

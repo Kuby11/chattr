@@ -2,11 +2,9 @@
 import type { Tables } from '@shared/types';
 import { formatBytes } from '@shared/utils';
 import { STATE_TOKENS } from '@shared/configs';
-import { useProfileOverlay } from '@features/profile';
-import { useProfile, useProfileStore } from '@features/profile';
 import { useCachedData } from '@shared/composables';
+import { useFeature } from '@shared/composables';
 import { PresenceAvatar, userPresenceLabel } from '@features/user';
-import { useMessage, useMessageStore } from '@features/message';
 import type { ChatMediaItem } from '@features/message';
 import { getChatAssetUrl } from '../../utils/getChatAssetUrl';
 import ChatAvatar from './ChatAvatar.vue';
@@ -20,11 +18,13 @@ const props = defineProps<{
 	embedded?: boolean
 }>()
 
+const { useProfileOverlay, useProfile } = useFeature('profile')
+const { useAuth } = useFeature('auth')
+const { useMessage, useMessageState } = useFeature('message')
 const { open } = useProfileOverlay()
-const { findUserProfile } = useProfile()
-const { userProfile } = storeToRefs(useProfileStore())
-const supabaseUser = useSupabaseUser()
-const messageStore = useMessageStore()
+const { findUserProfile, getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
+const { getMessages } = useMessageState()
 
 const chatId = computed(() => props.chatData?.id)
 
@@ -37,8 +37,8 @@ const mediaCursor = ref<string | undefined>(undefined)
 const MEDIA_PAGE_SIZE = 30
 let storeMediaUrls = new Set<string>()
 
-const chatMessages = computed(() => messageStore.messages.get(chatId.value ?? '') ?? [])
-const currentUserId = computed(() => userProfile.value?.user_id || supabaseUser.value?.id)
+const chatMessages = computed(() => getMessages(chatId.value ?? '') ?? [])
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 
 const otherMemberId = computed(() => {
 	if (props.chatData?.type !== 'DIRECT')

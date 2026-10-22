@@ -9,11 +9,12 @@ import MessageButton from "./ui/public/MessageButton.vue";
 import MessageInfo from "./ui/public/MessageInfo.vue";
 
 export * from './composables/useMessage'
+export * from './composables/useMessageState'
 export * from './composables/useTyping'
 export * from './composables/useGroupRunAvatars'
 export * from './composables/useMessageScroll'
 export * from './composables/useMessageInfo'
-export * from './stores/messageStore'
+export * from './composables/useMessagePrefetch'
 
 export {
   MessageBubble,

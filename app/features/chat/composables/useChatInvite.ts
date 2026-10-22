@@ -1,16 +1,17 @@
-import { useChatInviteApi, type ChatInviteWithChat } from "../api/useChatInviteApi"
+import { useFeature } from "@shared/composables"
+import { createChatInviteApi, type ChatInviteWithChat } from "../api/chatInviteApi"
 import { useChatStore } from "../stores/chatStore"
-import { useAuthStore } from "@features/auth"
-import { useMessageInfo } from "@features/message"
 import type { ChatId, UserId } from "@shared/types"
 
 export type { ChatInviteWithChat }
 
 export const useChatInvite = () => {
-	const inviteService = useChatInviteApi()
+	const supabase = useSupabaseClient()
+	const inviteService = createChatInviteApi(supabase)
 	const chatStore = useChatStore()
-	const authStore = useAuthStore()
-	const supabaseUser = useSupabaseUser()
+	const { useAuth } = useFeature('auth')
+	const { useMessageInfo } = useFeature('message')
+	const { getCurrentUserId, resolveCurrentUserId } = useAuth()
 	const { sendMemberJoinedInfo } = useMessageInfo()
 
 	async function getOrCreateInvite(chatId: string) {
@@ -19,13 +20,7 @@ export const useChatInvite = () => {
 
 	async function joinByInvite(token: string) {
 		const chatId = await inviteService.joinByInvite(token)
-		let targetId = supabaseUser.value?.id ?? authStore.userSession?.id
-
-		if (!targetId) {
-			const supabase = useSupabaseClient()
-			const { data: { session } } = await supabase.auth.getSession()
-			targetId = session?.user.id
-		}
+		const targetId = await resolveCurrentUserId()
 
 		if (targetId) {
 			try {
@@ -47,7 +42,10 @@ export const useChatInvite = () => {
 	}
 
 	async function checkIsMember(chatId: string, userId?: string) {
-		return await inviteService.checkIsMember(chatId, userId)
+		const uid = userId ?? getCurrentUserId() ?? await resolveCurrentUserId()
+		if (!uid) return false
+
+		return await inviteService.checkIsMember(chatId, uid as UserId)
 	}
 
 	async function checkMembership(chatId?: string, userId?: string): Promise<boolean> {
@@ -57,16 +55,10 @@ export const useChatInvite = () => {
 			return true
 		}
 
-		let uid = userId || authStore.userSession?.id || supabaseUser.value?.id
-		if (!uid) {
-			const supabase = useSupabaseClient()
-			const { data: { session } } = await supabase.auth.getSession()
-			uid = session?.user?.id
-		}
-
+		const uid = userId || getCurrentUserId() || await resolveCurrentUserId()
 		if (!uid) return false
 
-		return await inviteService.checkIsMember(chatId, uid)
+		return await inviteService.checkIsMember(chatId, uid as UserId)
 	}
 
 	return {

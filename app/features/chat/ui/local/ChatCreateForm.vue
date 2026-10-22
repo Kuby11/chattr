@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui';
 import z from 'zod';
-import { useFriendshipStore } from '@features/friendship';
-import { useProfile } from '@features/profile';
+import { useFeature } from '@shared/composables';
 import { useChat } from '../../composables/useChat';
 
 const toast = useToast()
 const { createChat } = useChat()
-const friendshipStore = useFriendshipStore()
+const { useFriendship } = useFeature('friendship')
+const { useProfile } = useFeature('profile')
+const { getFriendIds } = useFriendship()
 const { findUserProfiles } = useProfile()
 
 const schema = z.object({
@@ -31,7 +32,7 @@ const state = reactive<Schema>({
 const isPending = ref(false)
 const selectedFriendIds = ref<string[]>([])
 const friendSearchQuery = ref('')
-const friendIds = computed(() => friendshipStore.friends.map(friend => friend.friendId))
+const friendIds = computed(() => getFriendIds())
 
 const { data: friendProfiles, pending: friendsPending } = useLazyAsyncData(
 	'chat-create-friends',

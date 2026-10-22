@@ -1,9 +1,10 @@
-import { useGiphyApi } from "../api/useGiphyApi"
+import { createGiphyApi } from "../api/giphyApi"
 import { useGiphyStore } from "../stores/giphyStore"
 import type { GiphyGif, GiphySearchParams, GiphyTrendingParams } from "../types/giphy"
 
 export const useGiphy = () => {
-	const giphyService = useGiphyApi()
+	const config = useRuntimeConfig()
+	const giphyService = createGiphyApi(config.public.giphyKey)
 	const giphyStore = useGiphyStore()
 
 	async function search(params: GiphySearchParams | string, append = false) {

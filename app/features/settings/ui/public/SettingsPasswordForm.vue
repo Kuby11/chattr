@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useAuth } from '@features/auth'
+import { useFeature } from '@shared/composables'
 
+const { useAuth } = useFeature('auth')
 const { updatePassword } = useAuth()
 const toast = useToast()
 

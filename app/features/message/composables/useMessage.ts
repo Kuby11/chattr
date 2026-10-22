@@ -1,11 +1,9 @@
 import type { ChatId, MessageId, Tables } from "@shared/types";
 import { computed, toValue, type MaybeRefOrGetter } from "vue";
 import { STATE_TOKENS } from "@shared/configs";
-import { useAuth } from "@features/auth";
-import { useProfileStore } from "@features/profile";
-import { useChat } from "../../chat/composables/useChat";
-import { isDirectId } from "../../chat/utils/directId";
-import { useMessageApi } from "../api/messageApi";
+import { useFeature } from "@shared/composables";
+import { isDirectId } from "@shared/utils";
+import { createMessageApi } from "../api/messageApi";
 import type { MessagePayload } from "../types/messagePayload";
 import { useMessageStore } from "../stores/messageStore";
 import type { ClientMessage } from "../types/clientMessage";
@@ -27,11 +25,14 @@ type PendingMediaUpload = {
 const pendingMediaUploads = new Map<MessageId, PendingMediaUpload>()
 
 export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
-	const { onAuthStateChange } = useAuth()
+	const { useAuth } = useFeature('auth')
+	const { useProfile } = useFeature('profile')
+	const { useChat } = useFeature('chat')
+	const { onAuthStateChange, resolveCurrentUserId } = useAuth()
 	const currentChatId = computed(() => toValue(chatId))
-	const messageService = useMessageApi(currentChatId.value)
+	const messageService = createMessageApi(useSupabaseClient(), currentChatId.value)
 	const messageStore = useMessageStore()
-	const userStore = useProfileStore()
+	const { getCurrentUserId } = useProfile()
 	const { ensureDirectChatById } = useChat()
 
 	const hasMore = computed(() => messageStore.getHasMore(currentChatId.value))
@@ -66,7 +67,9 @@ export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
 			payload = { ...payload, chat_id: ensured.id }
 		}
 
-		const senderId = userStore.userProfile?.user_id ?? ""
+		const senderId = getCurrentUserId()
+			?? (await resolveCurrentUserId())
+			?? ""
 		const tempId = `temp-${crypto.randomUUID()}`
 		const chatId = payload.chat_id!
 		const objectMedia = files.map((file) => ({
@@ -104,6 +107,7 @@ export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
 			const media = await messageService.uploadMessageMedia(
 				files,
 				chatId,
+				senderId,
 				(url) => {
 					pendingUpload.uploadedUrls.push(url)
 					if (pendingUpload.cancelled) throw new Error("Media upload cancelled")
@@ -240,7 +244,7 @@ export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
 
 			if (error) throw error
 
-			const enrichedData = data ? await enrichMessagesWithMedia(targetChatId, data) : []
+			const enrichedData = data ? await enrichMessagesWithMedia(targetChatId, data, messageService) : []
 			messageStore.addMessages(targetChatId, enrichedData)
 			messageStore.setHasMore(targetChatId, enrichedData.length >= limit)
 			return enrichedData
@@ -270,7 +274,7 @@ export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
 				throw error
 
 			if (data) {
-				const enrichedData = await enrichMessagesWithMedia(targetChatId, data)
+				const enrichedData = await enrichMessagesWithMedia(targetChatId, data, messageService)
 				messageStore.addMessages(targetChatId, enrichedData)
 				messageStore.setHasMore(targetChatId, data.length >= limit)
 			}
@@ -347,7 +351,7 @@ export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
 		if (error) throw error
 
 		const rows = data ?? []
-		const items = await enrichMessagesWithMedia(targetChatId, rows)
+		const items = await enrichMessagesWithMedia(targetChatId, rows, messageService)
 
 		return {
 			items,
@@ -357,7 +361,7 @@ export const useMessage = (chatId: MaybeRefOrGetter<ChatId>) => {
 	}
 
 	function initChannel(targetChatId: ChatId = currentChatId.value) {
-		return syncChatMessagesToStore(targetChatId, messageStore)
+		return syncChatMessagesToStore(targetChatId, messageStore, messageService)
 	}
 
 	onAuthStateChange(async (event) => {

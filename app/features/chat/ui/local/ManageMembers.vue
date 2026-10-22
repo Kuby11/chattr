@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Enums, Tables } from '@shared/types';
-import { useProfileStore, useProfile } from '@features/profile';
-import { useBreakpoint } from '@shared/composables';
+import { useBreakpoint, useFeature } from '@shared/composables';
 import { useChat } from '../../composables/useChat';
 import ChatMemberButton from './ChatMemberButton.vue';
 
@@ -18,14 +17,14 @@ const isOpen = defineModel<boolean>('open', { default: false })
 
 const { sm: isMobile } = useBreakpoint()
 
+const { useProfile } = useFeature('profile')
 const { updateMemberRole, updateMemberMute, removeGroupMember } = useChat()
-const { findUserProfiles } = useProfile()
-const { userProfile } = storeToRefs(useProfileStore())
+const { findUserProfiles, getCurrentUserId } = useProfile()
 const toast = useToast()
 
 const searchQuery = ref('')
 
-const currentUserId = computed(() => userProfile.value?.user_id)
+const currentUserId = computed(() => getCurrentUserId())
 
 const currentMember = computed(() => {
 	const uid = currentUserId.value

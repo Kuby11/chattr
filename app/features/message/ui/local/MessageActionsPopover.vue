@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { useProfileStore } from '@features/profile';
+import { useBreakpoint, useFeature } from '@shared/composables';
 import { useMessageStore } from '../../stores/messageStore';
 import { useMessage } from '../../composables/useMessage';
-import { useBreakpoint } from '@shared/composables';
 import { useElementSize, onLongPress } from '@vueuse/core';
 import type { ClientMessage } from '../../types/clientMessage';
 
 const props = defineProps<{ messageData: ClientMessage, isOwn: boolean }>()
 
+const { useProfile } = useFeature('profile')
 const messageStore = useMessageStore()
 const { deleteMessage, pinOrUnpinMessage } = useMessage(props.messageData.chat_id)
-const { userProfile } = storeToRefs(useProfileStore())
+const { getCurrentUserId } = useProfile()
 
 const { sm } = useBreakpoint()
 const buttonSize = computed(() => sm ? 'md' : 'lg')
@@ -137,7 +137,7 @@ const canEditAndDelete = computed(() => {
 	
 	const timeDiff = Math.floor((clientTime.value - new Date(props.messageData.sent_at).getTime()) / (1000 * 60 * 60))
 
-	if (props.messageData.sender_id === userProfile.value?.user_id && timeDiff <= TIME_LIMIT_IN_HOURS)
+	if (props.messageData.sender_id === getCurrentUserId() && timeDiff <= TIME_LIMIT_IN_HOURS)
 		return true
 
 	if(timeDiff >= TIME_LIMIT_IN_HOURS)

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { MessageBubble, MessageInfo, MessageForm, MessageSenderAvatar, useMessage, useMessageStore, useGroupRunAvatars, useMessageScroll } from '@features/message';
-import { useChatStore } from '@features/chat';
-import { useProfileStore } from '@features/profile';
+import { MessageBubble, MessageInfo, MessageForm, MessageSenderAvatar } from '@features/message';
+import { useFeature } from '@shared/composables';
 import type { ChatId, Tables } from '@shared/types';
 import { toRef } from 'vue';
+import { useChatStore } from '../../stores/chatStore';
 
 const props = defineProps<{
 	loading: boolean
@@ -14,22 +14,26 @@ const emit = defineEmits<{
 	(e: 'chat-created', chat: Tables<"chats">): void
 }>()
 
-const { userProfile } = storeToRefs(useProfileStore())
-const { getReplyingTo, getEditing } = useMessageStore()
+const { useProfile } = useFeature('profile')
+const { useAuth } = useFeature('auth')
+const { useMessage, useMessageState, useGroupRunAvatars, useMessageScroll } = useFeature('message')
+
+const { getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
+const { getReplyingTo, getEditing } = useMessageState()
 
 const chatId = toRef(props, 'chatId')
 
 const { chatMessages, loadMoreMessages, hasMore, loadingMore, markAsRead } = useMessage(chatId)
-const supabaseUser = useSupabaseUser()
 const chatStore = useChatStore()
 
 const currentMemberMutedUntil = computed(() => {
-	const uid = userProfile.value?.user_id
+	const uid = getProfileUserId() ?? getAuthUserId()
 	if (!uid) return null
 	return props.chatMembers.find(member => member.user_id === uid)?.muted_until ?? null
 })
 
-const currentUserId = computed(() => userProfile.value?.user_id || supabaseUser.value?.id)
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 const isGroupChat = computed(() =>
 	chatStore.chats?.find(chat => chat.id === props.chatId)?.type === 'GROUP'
 )

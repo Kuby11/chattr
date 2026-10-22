@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useProfileOverlay } from '@features/profile';
+import { useFeature } from '@shared/composables';
 import type { Tables } from '@shared/types';
 
 const props = defineProps<{
   forwarderProfile: Tables<"user_profiles">
 }>()
 
+const { useProfileOverlay } = useFeature('profile')
 const supabaseUser = useSupabaseUser()
 const currentUserId = computed(() => supabaseUser.value?.id)
 const { open } = useProfileOverlay()

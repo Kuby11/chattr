@@ -1,13 +1,14 @@
 import type { FriendshipId, Tables, UserId } from "@shared/types"
-import { useProfileStore } from "@features/profile"
-import { useAuth } from "@features/auth"
-import { useFriendshipApi } from "../api/useFriendshipApi"
+import { useFeature } from "@shared/composables"
+import { createFriendshipApi } from "../api/friendshipApi"
 import type { FriendRequestType } from "../types/FriendRequestTypes"
 import { defineStore } from "pinia"
 
 export const useFriendshipStore = defineStore('friendshipStore', () => {
-	const userStore = useProfileStore()
-	const friendshipService = useFriendshipApi()
+	const { useProfile } = useFeature('profile')
+	const { useAuth } = useFeature('auth')
+	const { getCurrentUserId, getCurrentUserProfile } = useProfile()
+	const friendshipService = createFriendshipApi(useSupabaseClient())
 	const { onAuthStateChange } = useAuth()
 	
 	const friends = ref<{ friendId: Tables<"user_profiles">['id']}[]>([])
@@ -44,7 +45,7 @@ export const useFriendshipStore = defineStore('friendshipStore', () => {
 		let status: "IS_FRIEND" | "SENT_REQUEST" | "PENDING_REQUEST" | "NOT_FRIEND" | "YOURSELF"
 
 		switch (true) {
-			case friendId === userStore.userProfile?.user_id:
+			case friendId === getCurrentUserId():
 				status = "YOURSELF" 
 				break;
 			case sentRequests.value.some(req => req.receiver_id === friendId):
@@ -88,12 +89,13 @@ export const useFriendshipStore = defineStore('friendshipStore', () => {
 		return currentFriends.filter(friend => matchingIds.has(friend.friendId))
 	}
 
-	watch(() => userStore.userProfile,() => {
-		if(userStore.userProfile){
+	watch(() => getCurrentUserProfile(),() => {
+		const userId = getCurrentUserId()
+		if(userId){
 			Promise.all([
-				friendshipService.getUserFriends(userStore.userProfile.user_id),
-				friendshipService.getIncomeFriendRequests(),	
-				friendshipService.getSentFriendRequests()
+				friendshipService.getUserFriends(userId),
+				friendshipService.getIncomeFriendRequests(userId),
+				friendshipService.getSentFriendRequests(userId)
 			])
 			.then(([friendsData, incomeRequestsData, sentRequestsData]) => {
 				friends.value = friendsData

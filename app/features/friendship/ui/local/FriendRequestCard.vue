@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FriendshipId, UserId } from '@shared/types';
-import { useProfile } from '@features/profile'
+import { useFeature } from '@shared/composables'
 import { useFriendship } from '../../composables/useFriendship'
 
 const props = defineProps<{
@@ -10,6 +10,7 @@ const props = defineProps<{
 }>()
 
 const { cancelFriendRequest, acceptFriendRequest, rejectFriendRequest } = useFriendship()
+const { useProfile } = useFeature('profile')
 const { findUserProfile } = useProfile()
 
 const { data: userData } = useLazyAsyncData(`friendRequest-${props.requestId}`,async () => findUserProfile(props.userId))

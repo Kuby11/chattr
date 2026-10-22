@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useProfileStore } from '@features/profile';
-import { useCachedData } from '@shared/composables';
+import { useCachedData, useFeature } from '@shared/composables';
 import type { ChatId } from '@shared/types';
 import { useMessageStore } from '../../stores/messageStore';
 import MessageFormPreview from './MessageFormPreview.vue';
@@ -8,9 +7,10 @@ import { useMessage } from '../../composables/useMessage';
 
 const props = defineProps<{ chatId: ChatId }>()
 
+const { useProfile } = useFeature('profile')
 const messageStore = useMessageStore()
 const { getSenderProfile } = useMessage(props.chatId)
-const { userProfile } = storeToRefs(useProfileStore())
+const { getCurrentUserId } = useProfile()
 
 const replyingTo = computed(() => messageStore.getReplyingTo(props.chatId))
 
@@ -20,7 +20,7 @@ const { data: replySender } = useCachedData(
 	`interacting-sender-${replyingTo.value?.id}`,
 	async () => {
 		if (!replySenderId.value) return null
-		if (replySenderId.value === userProfile.value?.user_id) return null
+		if (replySenderId.value === getCurrentUserId()) return null
 		return getSenderProfile(replySenderId.value)
 	},
 	{ 
@@ -29,9 +29,9 @@ const { data: replySender } = useCachedData(
 )
 
 const replyingToUsername = computed(() => {
-	if (!replyingTo.value) 
+	if (!replyingTo.value)
 		return
-	if (replySenderId.value === userProfile.value?.user_id) 
+	if (replySenderId.value === getCurrentUserId())
 		return 'me'
 	
 	return replySender.value?.username ?? '...'

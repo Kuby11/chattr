@@ -4,5 +4,4 @@ import GiphyPicker from "./ui/local/GiphyPicker.vue"
 export { GiphyButton, GiphyPicker }
 
 export * from "./composables/useGiphy"
-export * from "./stores/giphyStore"
 export * from "./types/giphy"

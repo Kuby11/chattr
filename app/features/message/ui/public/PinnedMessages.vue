@@ -3,9 +3,9 @@ import type { ChatId, Tables } from '@shared/types';
 import { STATE_TOKENS } from '@shared/configs';
 import { createReusableTemplate } from '@vueuse/core';
 import { useBreakpoint, useCachedData } from '@shared/composables';
-import { useProfileStore } from '@features/profile';
+import { useFeature } from '@shared/composables';
 import { useMessage } from '../../composables/useMessage';
-import { useMessageApi } from '../../api/messageApi';
+import { createMessageApi } from '../../api/messageApi';
 import type { ClientMessage } from '../../types/clientMessage';
 
 type PinnedMediaItem = { url: string; type: 'image' | 'video'; size: number }
@@ -21,9 +21,10 @@ const { sm: isSm } = useBreakpoint()
 const [DefineListTemplate, ReuseListTemplate] = createReusableTemplate()
 const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
 
-const { userProfile } = storeToRefs(useProfileStore())
+const { useProfile } = useFeature('profile')
+const { getCurrentUserProfile } = useProfile()
 const { chatMessages, getSenderProfile } = useMessage(props.chatId)
-const { fetchPinnedMessages } = useMessageApi(props.chatId)
+const { fetchPinnedMessages } = createMessageApi(useSupabaseClient(), props.chatId)
 
 function isVideoUrl(url: string) {
 	const withoutQuery = url.split("?")[0] ?? ""
@@ -139,7 +140,7 @@ const senderProfiles = ref(new Map<string, Tables<"user_profiles">>())
 function senderName(senderId: string) {
 	const profile = senderProfiles.value.get(senderId)
 	if (!profile) return '…'
-	return profile.user_id === userProfile.value?.user_id ? 'you' : profile.nickname
+	return profile.user_id === getCurrentUserProfile()?.user_id ? 'you' : profile.nickname
 }
 
 function senderAvatar(senderId: string) {
@@ -181,7 +182,8 @@ watch(pinnedMessages, async (messages) => {
 				const profile = await getSenderProfile(id)
 				senderProfiles.value.set(id, profile)
 			} catch {
-				senderProfiles.value.set(id, userProfile.value!)
+				const currentProfile = getCurrentUserProfile()
+				if (currentProfile) senderProfiles.value.set(id, currentProfile)
 			}
 		})
 	)

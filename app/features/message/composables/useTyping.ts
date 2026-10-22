@@ -1,6 +1,6 @@
 import type { ChatId } from "@shared/types"
-import { useProfileStore } from "@features/profile"
-import { useMessageApi } from "../api/messageApi"
+import { useFeature } from "@shared/composables"
+import { createMessageApi } from "../api/messageApi"
 import type { TypingPayload } from "../types/typingPayload"
 
 const typingByChat = ref(new Map<ChatId, Map<string, string>>())
@@ -57,14 +57,15 @@ function clearRemoteTyping(chatId: ChatId) {
 }
 
 export const useTyping = (chatId: ChatId) => {
-	const userStore = useProfileStore()
-	const messageService = useMessageApi(chatId)
+	const { useProfile } = useFeature('profile')
+	const { getCurrentUserId, getCurrentUserProfile } = useProfile()
+	const messageService = createMessageApi(useSupabaseClient(), chatId)
 
 	const typingUsers = computed(() => {
 		const users = typingByChat.value.get(chatId)
 		if (!users) return []
 
-		const selfId = userStore.userProfile?.user_id
+		const selfId = getCurrentUserId()
 		return [...users.entries()]
 			.filter(([userId]) => userId !== selfId)
 			.map(([userId, nickname]) => ({ userId, nickname }))
@@ -83,7 +84,7 @@ export const useTyping = (chatId: ChatId) => {
 	let lastBroadcastAt = 0
 
 	async function broadcast(isTyping: boolean) {
-		const profile = userStore.userProfile
+		const profile = getCurrentUserProfile()
 		if (!profile) return
 
 		await messageService.sendTypingStatus({

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ForwardMessageModal } from '@features/message';
 import { useBreakpoint } from '@shared/composables';
-import { useChatStore, usePrefetchChats } from '@features/chat';
+import { usePrefetchChats } from '@features/chat';
+import { useChatStore } from '../../stores/chatStore';
 import ChatLink from '../local/ChatLink.vue';
 
 const ChatCreateForm = defineLazyHydrationComponent(

@@ -4,8 +4,8 @@ import { ROUTE_TOKENS } from '@shared/configs';
 import { useBreakpoint, useCachedData } from '@shared/composables';
 import { PresenceAvatar, userPresenceLabel } from '@features/user';
 import { SendFriendRequestButton } from '@features/friendship';
-import { TypingIndicator, useTyping, PinnedMessages, SearchMessagesModal } from '@features/message';
-import { useProfile, useProfileStore } from '@features/profile';
+import { TypingIndicator, PinnedMessages, SearchMessagesModal } from '@features/message';
+import { useFeature } from '@shared/composables';
 import ChatAvatar from './ChatAvatar.vue';
 import EditGroupChatModal from '../local/EditGroupChatModal.vue';
 import ManageMembers from '../local/ManageMembers.vue';
@@ -13,7 +13,7 @@ import DeleteChatButton from '../local/DeleteChatButton.vue';
 import LeaveChatButton from '../local/LeaveChatButton.vue';
 import ChatRightWidget from './ChatRightWidget.vue';
 import { useChat } from '../../composables/useChat';
-import { isDirectId } from '../../utils/directId';
+import { isDirectId } from '@shared/utils';
 
 const props = defineProps<{
 	chatData?: Tables<"chats"> | null
@@ -27,11 +27,13 @@ const emit = defineEmits<{
 	(e: 'member-updated', member: Tables<"chat_members">): void
 }>()
 
+const { useTyping } = useFeature('message')
+const { useProfile } = useFeature('profile')
+const { useAuth } = useFeature('auth')
 const { typingLabel } = useTyping(props.chatId)
-const { findUserProfile } = useProfile()
+const { findUserProfile, getCurrentUserId: getProfileUserId } = useProfile()
+const { getCurrentUserId: getAuthUserId } = useAuth()
 const { getChatMembers } = useChat()
-const { userProfile } = storeToRefs(useProfileStore())
-const supabaseUser = useSupabaseUser()
 const { xl, md } = useBreakpoint()
 
 const isSearchOpen = ref(false)
@@ -41,7 +43,7 @@ const searchInitialQuery = ref('')
 const isCompactLayout = xl
 const isTabletLayout = xl && !md
 
-const currentUserId = computed(() => userProfile.value?.user_id || supabaseUser.value?.id)
+const currentUserId = computed(() => getProfileUserId() ?? getAuthUserId())
 
 const fallbackMembers = ref<Tables<"chat_members">[]>([])
 const fallbackLoadedFor = ref<ChatId | null>(null)

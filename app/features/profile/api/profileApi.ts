@@ -1,4 +1,5 @@
-import type { Tables, UserId } from "@shared/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database, Tables, UserId } from "@shared/types"
 import { safeValue } from "@shared/utils"
 import type { ProfileUpdatePayload } from "../types/ProfileUpdatePayload"
 
@@ -15,8 +16,7 @@ function getStoragePathFromUrl(url: string | null | undefined, bucket: string): 
 	return decodeURIComponent(cleanPath)
 }
 
-export const useProfileApi = () => {
-	const supabase = useSupabaseClient()
+export const createProfileApi = (supabase: SupabaseClient<Database>) => {
 
 	async function searchUserProfiles(searchTerm: string) {
 		const { data, error } = await supabase
@@ -54,9 +54,7 @@ export const useProfileApi = () => {
 		return data
 	}
 
-	async function updateUserProfile(changedFields: ProfileUpdatePayload) {
-		const userId = (await supabase.auth.getSession()).data.session?.user.id
-
+	async function updateUserProfile(changedFields: ProfileUpdatePayload, userId: UserId) {
 		if (!userId)
 			throw new Error('user profile is undefined')
 
@@ -182,15 +180,13 @@ export const useProfileApi = () => {
 		return updatedFields
 	}
 
-	async function fetchUserProfile() {
-		const { data: { session } } = await supabase.auth.getSession()
-
-		if (!session) return null
+	async function fetchUserProfile(userId: UserId) {
+		if (!userId) return null
 
 		const profile = await supabase
 			.from("user_profiles")
 			.select("*")
-			.eq("user_id", session.user.id)
+			.eq("user_id", userId)
 			.single()
 
 		if (profile.error) throw profile.error

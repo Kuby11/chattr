@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ChatId, ChatMemberId, Tables } from '@shared/types';
+import { useFeature } from '@shared/composables';
 import { useChat } from '../../composables/useChat';
-import { useProfile } from '@features/profile';
 import { ROUTE_TOKENS } from '~/shared/configs';
 import { useChatStore } from '../../stores/chatStore';
 
@@ -13,6 +13,7 @@ const props = defineProps<{
 	currentUserId?: string
 }>()
 
+const { useProfile } = useFeature('profile')
 const { deleteChat, leaveGroup } = useChat()
 const { findUserProfiles } = useProfile()
 const chatStore = useChatStore()
