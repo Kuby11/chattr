@@ -53,7 +53,7 @@ Each feature under `app/features/{domain}/` follows a consistent pattern:
 ### Shared Layer
 
 `app/shared/` contains truly reusable code:
-- **composables** - generic utilities (`useBreakpoint`, `useSubmit`, etc.)
+- **composables** - generic utilities (`useBreakpoint`, `useDownload`, etc.)
 - **ui** - primitive components auto-registered globally (`AppButton`, `AppInput`, etc.)
 - **configs** - route/state tokens, aside navigation
 - **types** - DB types, shared primitives

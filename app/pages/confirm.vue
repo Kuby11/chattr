@@ -3,7 +3,6 @@ import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui'
 import { useAuth } from '@features/auth'
 import z from 'zod'
 import { ROUTE_TOKENS } from '~/shared/configs'
-import { useSubmit } from '@shared/composables'
 
 definePageMeta({
   layout: 'auth',
@@ -15,8 +14,23 @@ useHead({
 })
 
 const auth = useAuth()
-const submitHandler = useSubmit()
 const route = useRoute()
+
+const serverError = ref<string | null>(null)
+const isSubmitting = ref<boolean>(false)
+
+const handleSubmit = async (submitFn: () => Promise<unknown>) => {
+  isSubmitting.value = true
+  serverError.value = null
+
+  try {
+    await submitFn()
+  } catch (error) {
+    serverError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    isSubmitting.value = false
+  }
+}
 
 const schema = z.object({
   token: z.array(z.string(), 'please enter a code!').length(8, 'enter a 8 digit code!')
@@ -54,20 +68,20 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 	<UPageCard class="w-full max-w-md p-5">
 		<UAuthForm
 			:ui="{ otp: 'w-full flex justify-between' }"
-			:disabled="submitHandler.isSubmitting.value"
-			:loading="submitHandler.isSubmitting.value"
+			:disabled="isSubmitting"
+			:loading="isSubmitting"
 			:schema="schema"
 			:fields="fields"
 			title="enter a verification code to continue!"
 			icon="i-lucide-user"
-			@submit="submitHandler.handleSubmit(onSubmit($event))"
+			@submit="handleSubmit(() => onSubmit($event))"
 		>
 			<template #validation>
 				<UAlert
-					v-if="submitHandler.serverError.value"
+					v-if="serverError"
 					color="error"
 					icon="i-lucide-info"
-					:title="submitHandler.serverError.value!"
+					:title="serverError"
 				/>
 			</template>
 		</UAuthForm>

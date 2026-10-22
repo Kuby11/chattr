@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { AuthFormField, AuthFormInputField, FormSubmitEvent } from '@nuxt/ui'
 import { useAuth } from '@features/auth'
-import { useSubmit } from '@shared/composables'
 import { ROUTE_TOKENS } from '@shared/configs'
 import z from 'zod'
 
@@ -15,7 +14,22 @@ useHead({
 })
 
 const auth = useAuth()
-const submitHandler = useSubmit()
+
+const serverError = ref<string | null>(null)
+const isSubmitting = ref<boolean>(false)
+
+const handleSubmit = async (submitFn: () => Promise<unknown>) => {
+	isSubmitting.value = true
+	serverError.value = null
+
+	try {
+		await submitFn()
+	} catch (error) {
+		serverError.value = error instanceof Error ? error.message : String(error)
+	} finally {
+		isSubmitting.value = false
+	}
+}
 
 const schema = z.object({
   username: z
@@ -111,13 +125,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 <template>
 	<UPageCard class="w-[clamp(20rem,80%,25rem)]">
 		<UAuthForm
-			:disabled="submitHandler.isSubmitting.value"
-			:loading="submitHandler.isSubmitting.value"
+			:disabled="isSubmitting"
+			:loading="isSubmitting"
 			:schema="schema"
 			:fields="fields as AuthFormInputField[]"
 			title="Welcome to chattr!"
 			icon="ix:user"
-			@submit="submitHandler.handleSubmit(onSubmit($event))"
+			@submit="handleSubmit(() => onSubmit($event))"
 		>
 			<template #description>
 				Already have an account? <ULink :to="	ROUTE_TOKENS.LOGIN" class="text-primary font-medium">Sign in</ULink>.
@@ -125,10 +139,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 			
 			<template #validation>
 				<UAlert
-					v-if="submitHandler.serverError.value"
+					v-if="serverError"
 					color="error"
 					icon="i-lucide-info"
-					:title="submitHandler.serverError.value"
+					:title="serverError"
 				/>
 			</template>
 		</UAuthForm>
