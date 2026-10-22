@@ -1,5 +1,5 @@
-import type { UserId, VueValue } from "@shared/types"
-import { toValue } from "vue"
+import type { UserId } from "@shared/types"
+import { toValue, type MaybeRefOrGetter } from "vue"
 import { useProfileStore } from "../stores/profileStore"
 import { createProfileApi } from "../api/profileApi"
 
@@ -15,7 +15,7 @@ export const useProfile = () => {
 		return profileStore.userProfile?.user_id
 	}
 
-	function isCurrentUser(userId: VueValue<UserId>) {
+	function isCurrentUser(userId: MaybeRefOrGetter<UserId>) {
 		const resolvedId = toValue(userId)
 		return !!resolvedId && resolvedId === profileStore.userProfile?.user_id
 	}
