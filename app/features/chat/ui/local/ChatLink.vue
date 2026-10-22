@@ -2,6 +2,7 @@
 import type { Tables, UserId } from '@shared/types';
 import { ROUTE_TOKENS } from '@shared/configs';
 import { PresenceAvatar, userPresenceLabel } from '@features/user';
+import { TypingIndicator } from '@features/message';
 import { useFeature } from '@shared/composables';
 import { useChat } from '../../composables/useChat';
 import { useChatMemberStore } from '../../stores/memberStore';
@@ -163,8 +164,8 @@ const lastMessagePreview = computed(() => {
 				</span>
 			</div>
 			<div class="flex items-center gap-2 min-w-0">
-				<span v-if="typingLabel" class="truncate text-dimmed text-sm not-sm:text-[13px]">{{ typingLabel }}</span>
-				<template v-else-if="lastMessage">
+				<TypingIndicator :label="typingLabel" class="min-w-0" />
+				<template v-if="!typingLabel && lastMessage">
 					<span
 						class="truncate text-sm not-sm:text-[13px]"
 						:class="hasUnread ? 'text-default font-medium' : 'text-dimmed'"
