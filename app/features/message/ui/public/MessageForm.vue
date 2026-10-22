@@ -26,7 +26,7 @@ const assets = defineModel<File[]>('assets', { required: true })
 const { getReplyingTo, resetReply, getEditing } = useMessageStore()
 const chatId = toRef(props, 'chatId')
 const { sendMessage, sendMessageWithMedia, editMessage } = useMessage(chatId)
-const { notifyTyping, stopTyping } = useTyping(props.chatId)
+const { notifyTyping, stopTyping } = useTyping(chatId)
 const toast = useToast()
 const isSending = ref(false)
 

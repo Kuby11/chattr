@@ -1,4 +1,5 @@
 import type { ChatId } from "@shared/types"
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from "vue"
 import { useFeature } from "@shared/composables"
 import { createMessageApi } from "../api/messageApi"
 import type { TypingPayload } from "../types/typingPayload"
@@ -56,13 +57,15 @@ function clearRemoteTyping(chatId: ChatId) {
 	typingByChat.value = next
 }
 
-export const useTyping = (chatId: ChatId) => {
+export const useTyping = (chatId: MaybeRefOrGetter<ChatId>) => {
 	const { useProfile } = useFeature('profile')
 	const { getCurrentUserId, getCurrentUserProfile } = useProfile()
-	const messageService = createMessageApi(useSupabaseClient(), chatId)
+	const activeChatId = computed(() => toValue(chatId))
+	const supabase = useSupabaseClient()
+	const messageService = computed(() => createMessageApi(supabase, activeChatId.value))
 
 	const typingUsers = computed(() => {
-		const users = typingByChat.value.get(chatId)
+		const users = typingByChat.value.get(activeChatId.value)
 		if (!users) return []
 
 		const selfId = getCurrentUserId()
@@ -87,7 +90,7 @@ export const useTyping = (chatId: ChatId) => {
 		const profile = getCurrentUserProfile()
 		if (!profile) return
 
-		await messageService.sendTypingStatus({
+		await messageService.value.sendTypingStatus({
 			userId: profile.user_id,
 			nickname: profile.nickname,
 			isTyping,
@@ -120,14 +123,23 @@ export const useTyping = (chatId: ChatId) => {
 		broadcast(false)
 	}
 
-	const stopListen = messageService.onTyping((payload) => {
-		setRemoteTyping(chatId, payload)
-	})
+	let stopListen: (() => void) | undefined
+
+	watch(
+		activeChatId,
+		(currentChatId) => {
+			stopListen?.()
+			stopListen = messageService.value.onTyping((payload) => {
+				setRemoteTyping(currentChatId, payload)
+			})
+		},
+		{ immediate: true }
+	)
 
 	onScopeDispose(() => {
 		stopTyping()
-		stopListen()
-		clearRemoteTyping(chatId)
+		stopListen?.()
+		clearRemoteTyping(activeChatId.value)
 	})
 
 	return {

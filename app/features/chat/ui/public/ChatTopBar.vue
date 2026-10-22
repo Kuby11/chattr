@@ -30,7 +30,7 @@ const emit = defineEmits<{
 const { useTyping } = useFeature('message')
 const { useProfile } = useFeature('profile')
 const { useAuth } = useFeature('auth')
-const { typingLabel } = useTyping(props.chatId)
+const { typingLabel } = useTyping(() => props.chatId)
 const { findUserProfile, getCurrentUserId: getProfileUserId } = useProfile()
 const { getCurrentUserId: getAuthUserId } = useAuth()
 const { getChatMembers } = useChat()
