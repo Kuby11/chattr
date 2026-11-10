@@ -112,7 +112,12 @@ bun run dev
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_anon_key
 NUXT_PUBLIC_GIPHY_KEY=your_giphy_api_key
+NUXT_PUBLIC_APP_URL=your_production_app_url
 ```
+
+`NUXT_PUBLIC_APP_URL` is used to build auth redirect links (such as the password
+reset link). It defaults to the production deployment and should also be added
+to your Supabase project's allowed redirect URLs.
 
 ## Scripts
 

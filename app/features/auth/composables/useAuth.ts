@@ -4,6 +4,7 @@ import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 import { createAuthApi } from "../api/authApi"
 
 export const useAuth = () => {
+  const config = useRuntimeConfig()
   const authApi = createAuthApi(useSupabaseClient())
   const supabaseUser = useSupabaseUser()
 
@@ -150,7 +151,10 @@ export const useAuth = () => {
   async function resetPassword({ email }: {
     email: string
   }) {
-    const redirectTo = `${window.location.origin}${ROUTE_TOKENS.RESET_PASSWORD}`
+    const appUrl = import.meta.dev
+      ? window.location.origin
+      : config.public.appUrl || window.location.origin
+    const redirectTo = `${appUrl}${ROUTE_TOKENS.RESET_PASSWORD}`
     const { data, error } = await authApi.resetPasswordForEmail(email, redirectTo)
 
     if (error) throw error

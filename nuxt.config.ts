@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     },
     public: {
       giphyKey: process.env.NUXT_PUBLIC_GIPHY_KEY || process.env.GIPHY_KEY,
+      appUrl: process.env.NUXT_PUBLIC_APP_URL,
     },
   },
 
