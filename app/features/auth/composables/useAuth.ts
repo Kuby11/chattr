@@ -151,7 +151,7 @@ export const useAuth = () => {
   async function resetPassword({ email }: {
     email: string
   }) {
-    const appUrl = config.public.appUrl || 'https://chattr-kuby11.vercel.app'
+    const appUrl = config.public.appUrl
     const redirectTo = `${appUrl}${ROUTE_TOKENS.RESET_PASSWORD}`
     const { data, error } = await authApi.resetPasswordForEmail(email, redirectTo)
 
@@ -176,17 +176,17 @@ export const useAuth = () => {
     onScopeDispose(() => subscription.unsubscribe())
   }
 
-	return {
-		getCurrentUserId,
-		resolveCurrentUserId,
-		isAuthenticated,
-		signIn,
-		signUp,
-		signOut,
-		resetPassword,
-		verifyOtp,
-		verifyRecoveryOtp,
-		updatePassword,
-		onAuthStateChange,
-	}
+  return {
+    getCurrentUserId,
+    resolveCurrentUserId,
+    isAuthenticated,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    verifyOtp,
+    verifyRecoveryOtp,
+    updatePassword,
+    onAuthStateChange,
+  }
 }
