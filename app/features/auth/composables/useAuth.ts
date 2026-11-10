@@ -151,9 +151,7 @@ export const useAuth = () => {
   async function resetPassword({ email }: {
     email: string
   }) {
-    const appUrl = import.meta.dev
-      ? window.location.origin
-      : config.public.appUrl || window.location.origin
+    const appUrl = config.public.appUrl || 'https://chattr-kuby11.vercel.app'
     const redirectTo = `${appUrl}${ROUTE_TOKENS.RESET_PASSWORD}`
     const { data, error } = await authApi.resetPasswordForEmail(email, redirectTo)
 
